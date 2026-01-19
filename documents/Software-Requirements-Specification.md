@@ -1,88 +1,68 @@
-## 5. Software Requirements Specification: ARCHIVAL
+# 5. Software Requirements Specification: ARCHIVAL
 
-### 5.1 Requirements Introduction
-**Archival** is a specialized web-based registry and design memory system curated for historians and collectors of 20th-century material culture. The system functions as a formal digital archive for tracking design artifacts across categories such as Decor, Fashion, and Books, organizing them by historical design movements. Utilizing a sharp, architectural interface, the application provides visual analytics through temporal intensity mapping and structured categorical vaulting to help users understand the "aesthetic DNA" of their collection.
+## 5.1 Requirements Introduction
+**Archival** is a sophisticated curation platform designed to document and analyze the historical "DNA" of a user’s possessions. Moving beyond simple inventory tracking, Archival treats Books, Fashion, and Decor as equal data points in a single "Aesthetic Profile." Utilizing an architectural interface, the application provides visual analytics through temporal intensity mapping and structured categorical vaulting to help users understand the design evolution within their own collection.
 
 
 
 #### High-Level System Components
-The system architecture follows the **Angular Enterprise Pattern**:
+The system architecture follows a **Full-Stack Managed Pattern**:
 
-* **Component Architecture (Angular):** Orchestrates state transitions and view logic for the analytical dashboard, catalog grid, and registration portal using standalone components.
-* **Reactive State Layer (RxJS/Signals):** Manages a stream of artifact metadata, ensuring type-safe handling of unique identifiers, titles, and temporal data.
-* **UI Component Layer (Tailwind CSS):** Implements a sharp-edged, high-contrast visual design inspired by modern museum archives, integrated via Angular's specialized style encapsulation.
-* **Filtering Engine:** A dedicated Angular Pipe or Service layer that handles real-time categorical sorting and chronological ordering of registry items.
-
-The remainder of this document is structured as follows. Section 5.2 contains Functional Requirements detailing the specific operations of the system. Section 5.3 contains Performance Requirements regarding response times and UI stability. Section 5.4 details the Environment Requirements for both development and execution.
-
----
-
-### 5.2 Functional Requirements
-The functional requirements describe the specific services and features provided by the Archival system, organized by their primary user-facing perspectives.
-
-#### 5.2.1 Navigation and Global Interface
-The system provides a consistent frame for accessing the various archival views via **Angular Router**.
-* **5.2.1.1** The system shall provide a fixed navigation masthead at the top of the browser window.
-    * The masthead will contain `routerLink` directives for the Dashboard, Catalog, Timeline, and Archive views.
-    * Navigation links will be styled in lowercase to maintain the boutique aesthetic.
-* **5.2.1.2** The system shall utilize a custom monogram logo (composed of geometric bars) as a return link to the Dashboard.
-* **5.2.1.3** The system shall indicate the currently active view using `routerLinkActive` with a primary accent underline in the masthead.
-    * The underline will use the **'Steel Blue'** primary accent color.
-
-#### 5.2.2 Dashboard Analytics
-The dashboard provides a high-level summary of the repository's current status.
-* **5.2.2.1** The system shall display the heading **"collected / forms."** as the primary interface title.
-* **5.2.2.2** The system shall visualize "Temporal Intensity" using a sharp-edged bar graph.
-    * The graph shall represent the frequency of items across a historical timeline from 1920 to 2026.
-    * Bars in the graph will alternate colors between the defined 'Navy', 'Steel Blue', and 'Sage' palette.
-* **5.2.2.3** The system shall display a large-scale numerical counter of the total objects currently archived using an async pipe.
-
-#### 5.2.3 Artifact Catalog and Filtering
-The catalog allows for detailed scanning and sorting of individual registry entries.
-* **5.2.3.1** The system shall provide a responsive grid layout of all registered artifacts using `*ngFor` or the `@for` control flow.
-* **5.2.3.2** Each artifact entry shall display a unique ID, category tag, title, creator, and year.
-* **5.2.3.3** The system shall provide category filters for **"All"**, **"Decor"**, **"Fashion"**, and **"Books"**.
-    * Clicking a filter will update the observable stream in real-time.
-    * The active filter will be highlighted with an inverted color scheme (black background).
-
-#### 5.2.4 Chronological Timeline
-The timeline provides a path-based visualization of the collection's history.
-* **5.2.4.1** The system shall provide a "Journey" view that automatically sorts artifacts by year in ascending order.
-* **5.2.4.2** The timeline shall utilize a central vertical anchor line to connect historical entries.
-* **5.2.4.3** The system shall display the year in oversized, high-contrast typography for each timeline node.
-
-#### 5.2.5 Taxonomic Archive (Vault)
-The vault view provides grouping based on design movements.
-* **5.2.5.1** The system shall group artifacts into sections based on their assigned "Design Movement."
-* **5.2.5.2** Each movement section shall display the total count of entries associated with that taxonomy.
-
-#### 5.2.6 Artifact Registration
-The portal allows users to add new data to the system.
-* **5.2.6.1** The system shall provide an "Add Artifact" form using **Angular Reactive Forms**.
-* **5.2.6.2** The form shall include validated text inputs for Title, Year, Brand, and Movement with built-in `Validators`.
-* **5.2.6.3** The system shall provide a dedicated visual documentation upload area with a sharp-edged boundary.
+* **Frontend Layer (Angular 17+):** A responsive gallery interface using standalone components and Signals for high-performance state management.
+* **Styling Layer (Tailwind CSS):** Implements a sharp-edged, high-contrast visual design inspired by modern museum archives.
+* **Visualization Engine (D3.js or Chart.js):** Transforms database results into interactive "Density Maps" and "Style Correlation" charts.
+* **Backend API (Node.js):** A RESTful service layer managing polymorphic data routing, historical logic, and SQL query execution.
+* **Persistence Layer (PostgreSQL):** A relational SQL database designed to manage complex metadata associations between different item categories.
 
 ---
 
-### 5.3 Performance Requirements
+## 5.2 Functional Requirements
+The functional requirements describe the specific services and features provided by the Archival system, as outlined in the project proposal.
+
+### 5.2.1 Unified Archive & Registration
+* **5.2.1.1** The system shall provide a **Polymorphic Entry System** to register diverse item types including Decor, Fashion, Books, and Records.
+* **5.2.1.2** Each entry type shall support unique metadata fields (e.g., ISBN/Publisher for Books, Material/Designer for Decor, Fabric/Brand for Fashion).
+* **5.2.1.3** The system shall provide a dedicated visual documentation upload area with sharp-edged UI boundaries for high-fidelity item photography.
+
+### 5.2.2 Historical Mapping & Taxonomy
+* **5.2.2.1** The system shall implement a database-driven tagging system that aligns every item with a specific **Design Movement** (e.g., Bauhaus, Mid-Century Modern, Minimalism).
+* **5.2.2.2** The system shall allow users to browse the "Vault" view, where artifacts are grouped by their design taxonomy rather than their object category.
+
+### 5.2.3 Era Analysis & Data Visualization
+* **5.2.3.1** The system shall visualize "Temporal Intensity" using an interactive bar graph or density map powered by D3.js or Chart.js.
+* **5.2.3.2** The visualization shall represent the frequency of items across a historical timeline ranging from 1920 to 2026.
+* **5.2.3.3** The system shall provide a **Chronological Journey** view, sorting the entire collection by year in ascending order to reveal aesthetic evolution.
+
+### 5.2.4 Style Correlation Engine
+* **5.2.4.1** The logic engine shall analyze the collection to identify percentage overlaps (e.g., "70% of your archive aligns with Scandinavian Design").
+* **5.2.4.2** The system shall suggest correlations between disparate categories based on shared historical eras or movements.
+
+---
+
+## 5.3 Performance Requirements
 
 | ID | Requirement | Target Metric |
 | :--- | :--- | :--- |
-| **5.3.1.1** | Routing Transition | < 200ms using Angular's optimized router |
-| **5.3.1.2** | Filter Refresh Rate | < 100ms via OnPush change detection |
-| **5.3.1.3** | Interaction Fluidity | Constant 60fps during hovers |
-| **5.3.2.1** | Data Capacity | Support 500+ artifacts with Virtual Scroll if necessary |
+| **5.3.1.1** | View Transitions | < 200 milliseconds using Angular Router |
+| **5.3.1.2** | Query Performance | Complex SQL joins (PostgreSQL) must resolve in < 150ms |
+| **5.3.1.3** | Visualization Render | Charts must be interactive and render at 60fps |
+| **5.3.2.1** | Capacity | Support 1,000+ items with polymorphic metadata without DOM lag |
 
 ---
 
-### 5.4 Environment Requirements
+## 5.4 Environment Requirements
 
-#### 5.4.1 Development Environment Requirements
-* **Framework:** Angular CLI (latest stable version).
-* **Language:** TypeScript 5.x for strict type checking.
+### 5.4.1 Development Environment Requirements
+* **Frameworks:** Angular 17+ (Frontend), Express/Node.js (Backend).
+* **Database:** PostgreSQL 15+ for relational data management.
 * **Version Control:** Git for source management and collaborative tracking.
-* **Styling:** Tailwind CSS integrated via PostCSS.
-* **Typography:** Access to Google Fonts for the **'Schibsted Grotesk'** family.
+* **Visualization:** D3.js or Chart.js libraries for SVG/Canvas rendering.
+* **Typography:** 'Schibsted Grotesk' via Google Fonts for a boutique museum aesthetic.
+
+### 5.4.2 Execution Environment Requirements
+* **Hardware:** Modern computing device (minimum resolution 1024x768).
+* **Software:** Evergreen web browsers (Chrome 90+, Safari 14+, Firefox 88+).
+* **Connectivity:** Active internet connection to interface with the Node.js API and fetch remote assets.
 
 #### 5.4.2 Execution Environment Requirements
 * **Hardware:** A modern computing device (minimum resolution of 1024x768).
