@@ -8,7 +8,7 @@ Archival is a specialized, full-stack curation platform engineered for design en
 The remainder of this document is structured as follows. Section 5.2 contains Functional Requirements describing the specific services and features provided by the system, such as polymorphic item registration and the style correlation engine. Section 5.3 contains Performance Requirements detailing the target metrics for interface responsiveness and complex SQL query execution. Section 5.4 details the Environment Requirements, specifying the hardware and software resources required for the development and execution of the application, including the Node.js runtime and PostgreSQL database.
 
 ### 5.1.2 UML Diagram
-![UML Diagram](UML_Diagram.png)
+![UML Diagram](UML-Diagram.png)
 * **Frontend Layer (Angular 17+):** A responsive gallery interface using standalone components and Signals for high-performance state management.
 * **Styling Layer (Tailwind CSS):** Implements a sharp-edged, high-contrast visual design inspired by modern museum archives.
 * **Visualization Engine (D3.js or Chart.js):** Transforms database results into interactive "Density Maps" and "Style Correlation" charts.
