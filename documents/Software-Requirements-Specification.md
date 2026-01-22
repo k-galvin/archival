@@ -9,58 +9,46 @@ The application utilizes an Angular-based "Museum View" to visualize the chronol
 
 ![UML Diagram](UML-Diagram.png)
 
-The remainder of this document is structured as follows. The **Functional Requirements** section presents features as User Stories to define project value. The **Performance Requirements** section details interface responsiveness metrics. Finally, the **Environment Requirements** section specifies the resources required for development and execution.
+The remainder of this document is structured as follows. The Functional Requirements section presents features as User Stories to define project value. The Performance Requirements section details interface responsiveness metrics. Finally, the Environment Requirements section specifies the resources required for development and execution.
 
 ---
 
 ## Functional Requirements
+### Epic 1: Acquisitions
+* **FR 1** As a design enthusiast, I want to enter the name of a book or album and see suggested covers, so that I can populate my archive with high-quality visuals without manual searching.
+* **FR 2** As a meticulous collector, I want the entry form to show only relevant fields (e.g., "Fabric" for fashion vs. "Author" for books), so that I don't get distracted by irrelevant metadata.
+* **FR 3** As a curator, I want the system to suggest a "Design Movement" based on the item I type, so that I can maintain a consistent historical record without being a design expert.
+* **FR 4** As a user with unique items, I want to upload my own high-resolution photograph, so that I can document pieces that are not available in public databases.
+* **FR 5** As a meticulous curator, I want to edit the details of an existing acquisition, so that I can correct errors or update information as I learn more about a piece's history.
 
-The following requirements describe the features of the Archival system from the perspective of the user. These stories focus on delivering business value and enabling a "museum-quality" curation experience.
+### Epic 2: The Vault
+* **FR 6** As a museum-minded user, I want to view my items in a clean, high-contrast grid, so that I can appreciate the aesthetic value of my collection at a glance in "The Vault."
+* **FR 7** As a user with a growing collection, I want to filter my archive by design movement and year, so that I can quickly find items belonging to a specific era like "Bauhaus."
+* **FR 8** As a curator, I want to search for items by creator or brand, so that I can see the breadth of my holdings from a specific designer.
 
-### Epic: Intelligent Curation & Entry
-* **FR-1** As a **Design Enthusiast**, I want to **input a title for a book or record and have metadata automatically populate**, so that **I can maintain a historically accurate archive without manual data entry.**
-* **FR-2** As a **Collector**, I want to **upload personal photographs or use stylistic placeholders**, so that **I can maintain a visual record of my unique pieces even if I haven't photographed them yet.**
-* **FR-3** As an **Archivist**, I want the **system to suggest a design movement based on the item I enter**, so that **I can learn more about the historical lineage of my belongings.**
-* **FR-4** As a **User**, I want to **add category-specific metadata (e.g., Author for books, Brand for fashion)**, so that **my archive contains the necessary detail for professional-grade analysis.**
+### Epic 3: Chronology
+* **FR 9** As a design historian, I want to see my items plotted on a horizontal timeline in "Chronology," so that I can visualize the historical density and evolution of my belongings.
+* **FR 10** As an interactive user, I want to click on a node in the timeline to see the full item details, so that I can transition seamlessly between historical context and specific data.
 
-### Epic: The "Museum View" Visualization
-* **FR-5** As a **User**, I want to **view my items on an interactive chronological timeline**, so that **I can see the "Temporal Intensity" and historical clusters of my collection.**
-* **FR-6** As a **Curator**, I want to **group items into themed "Collections" (e.g., "The Radical Design Era")**, so that **I can visualize how specific aesthetics manifest across different types of objects.**
-* **FR-7** As a **User**, I want to **search and filter "The Vault" by movement or year**, so that **I can quickly locate specific artifacts within a large personal archive.**
+### Epic 4: Analytics Dashboard
+* **FR 11** As an intentional collector, I want to see a chart showing "Style Correlations," so that I can understand the dominant design movements that define my personal taste.
+* **FR 12** As a data enthusiast, I want a "Temporal Intensity" bar graph on my Dashboard, so that I can see which decades are most represented in my home.
 
-### Epic: Style Correlation Engine
-* **FR-8** As an **Intentional Collector**, I want to **see a "Style Correlation" percentage on my dashboard**, so that **I can understand which design movements most influence my personal environment.**
-* **FR-9** As a **User**, I want the **system to identify "hidden threads" across my categories**, so that **I can discover unexpected aesthetic links between my literature and my furniture.**
+### Epic 5: Collections & Curation
+* **FR 13** As a home curator, I want to create named "Collections," so that I can group items by room, theme, or personal exhibition.
+* **FR 14** As a sophisticated user, I want to see "Related Items" when viewing an artifact, so that the system helps me discover connections between my furniture, books, and records.
 
 ---
 
 ## Performance Requirements
-
-These requirements ensure that the high-fidelity visual interface remains responsive and the archive feels like a premium digital experience.
-
-* **PR-1** The application shall **complete view transitions within 200ms**, ensuring that movement between the Dashboard and The Vault feels instantaneous.
-* **PR-2** The system shall **update filtered results in "The Vault" within 100ms**, allowing for lag-free exploration of design movements.
-* **PR-3** The application shall **maintain a consistent 60fps during all animations**, preventing "stuttering" in the Chronology and Dashboard visualizations.
-* **PR-4** The system shall **maintain these performance standards for collections up to 1,000 unique artifacts**, ensuring scalability for serious collectors.
+* **PR 1** As a private collector, I want my archive to be accessible only to me via secure login, so that my personal possessions and data are kept secure and private.
+* **PR 2** As a mobile user, I want the interface to respond instantly when I apply filters or navigate views, so that the experience feels fluid and professional regardless of my device.
+* **PR 3** As a user in a low-connectivity area, I want to be notified if the system cannot reach external APIs (Discogs, Google Books, etc.), so that I understand why certain "Auto-Curation" features are temporarily unavailable.
+* **PR 4** As a user viewing many images, I want the gallery to load assets efficiently, so that I don't experience lag while scrolling through "The Vault."
 
 ---
 
-## Environment Requirements
-
-### Development Environment Requirements
-* **Workstation:** Minimum 8GB RAM (macOS, Windows, or Linux) to support the Angular development server.
-* **IDE:** Visual Studio Code with Angular Language Service and Tailwind CSS extensions.
-* **Runtime:** Node.js (Version 18.x or higher - LTS).
-* **Version Control:** Git 2.x for source management and GitHub for collaboration.
-
-### Execution Environment Requirements
-
-| Category | Requirement | Justification |
-| :--- | :--- | :--- |
-| **Hosting** | Vercel or Netlify | Supports modern CI/CD pipelines for Angular applications. |
-| **BaaS** | Supabase | Managed PostgreSQL, Row Level Security, and Object Storage for photos. |
-| **External APIs** | Google Books, Discogs, Unsplash | Essential for the Automated Asset Discovery stories (**FR-1**, **FR-2**). |
-| **Client** | Evergreen Web Browser | Must support HTML5 Canvas and SVG for D3.js/Chart.js visualizations. |
-| **Network** | Persistent Connection | Required for real-time metadata fetching from external design databases. |
-* **Network Connectivity:** A persistent internet connection. This is a functional necessity as the app relies on real-time fetching from external APIs to provide the "Auto-Curation" features.
-* **Resource Acquisition:** All software tools are open-source. Supabase, Vercel, and the three external APIs offer free-tier plans that accommodate the scope of this project. No additional financial resources are required.
+## Enviornment Requirements
+* **ER 1** As a multi-device user, I want the application to be hosted in the cloud, so that I can accession new items from my phone while viewing my full dashboard on a desktop.
+* **ER 2** As a user who values aesthetics, I want the application to render correctly on screens with at least 1024x768 resolution, so that the specialized museum-grade typography and layouts are displayed as intended.
+* **ER 3** As a long-term collector, I want my data stored in a managed relational database, so that my archive remains persisted and safe from data loss over several years.
