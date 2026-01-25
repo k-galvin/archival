@@ -1,0 +1,38 @@
+
+CMSI 4072 Spring 2026
+Project Proposal Feedback
+Project: Schedulr
+=========================
+Proposal Document [2 points]:
+   Verbal Description:
+      You provide a very clear explanation of what the project does, and a
+      strong explanation of the problem and differentiators.  You have very
+      well-defined features, and you are clear about your tech stack.  You
+      also define your end user well.  You could improve this portion by
+      adding:
+         User workflow
+         MVP clarity
+         Explicit system assumptions/constraints
+
+   Justification:
+      This section meets key requirements very well.  You explicitly
+      reference prior experience with Angular, TypeScript, and web app
+      development, and your gallery internship UI/UX experience.  You also
+      provide clear explanation of growth opportunities and good
+      articulation of technical difficulty.
+
+
+Proposal Presentation [Slides and video] [3 points]:
+   Slides:
+      Your slides have a nice minimal feel to them which makes it even more
+      dramatic when there are actual color graphics included ~ really wakes
+      the audience up.  Having the tech requirements in a table is a novel
+      approach!  Nice work on this.
+
+   Video:
+
+
+Summary:
+--------
+
+Nice job overall!  Keep up the good work.  Will update after video is posted.
