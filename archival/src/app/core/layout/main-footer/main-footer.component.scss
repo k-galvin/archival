@@ -1,0 +1,69 @@
+.footer-container {
+  position: relative;
+  z-index: 102;
+  width: 100%;
+  padding: 2rem 0;
+  margin-top: auto;
+  background: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  // Align with the main content area (accounting for the 6rem spine + 3rem gutter)
+  padding-left: 9rem;
+  padding-right: 4rem;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: 1.5rem;
+    padding-bottom: 3rem;
+  }
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+}
+
+.status-group,
+.branding-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stats-group {
+  display: flex;
+  gap: 3rem;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+
+    @media (max-width: 640px) {
+      align-items: flex-start;
+    }
+  }
+
+  .stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    // Color inherited from .text-accent utility in HTML
+  }
+}
+
+.branding-group {
+  text-align: right;
+
+  @media (max-width: 640px) {
+    text-align: left;
+  }
+}

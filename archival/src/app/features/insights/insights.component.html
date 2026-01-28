@@ -1,0 +1,96 @@
+<div class="insights-container fade-in">
+  <!-- Top Level Stats -->
+  <header class="insights-header">
+    <div class="stats-ribbon">
+      <div class="stat-card">
+        <span class="archival-overline">items archived</span>
+        <p class="stat-value">{{ collection().length }}</p>
+      </div>
+      <div class="stat-card">
+        <span class="archival-overline">geographies</span>
+        <p class="stat-value">{{ uniqueOriginsCount() }}</p>
+      </div>
+      <div class="stat-card">
+        <span class="archival-overline">status</span>
+        <p class="stat-value font-editorial">verified</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Temporal Analysis -->
+  <section class="analysis-section">
+    <span class="section-label archival-overline"
+      >temporal distribution (1920 — 2020)</span
+    >
+    <div class="chart-container">
+      <svg
+        viewBox="0 0 1000 120"
+        preserveAspectRatio="none"
+        class="temporal-chart"
+      >
+        <!-- Baseline -->
+        <line
+          x1="0"
+          y1="100"
+          x2="1000"
+          y2="100"
+          stroke="rgba(0,0,0,0.05)"
+          stroke-width="1"
+        />
+
+        <!-- Data Path -->
+        <path [attr.d]="temporalLinePath()" fill="none" class="chart-line" />
+
+        <!-- Data Points & Labels -->
+        @for (d of temporalData(); track d.decade; let i = $index) {
+          @let x = (i / (temporalData().length - 1)) * 1000;
+          @let y = 100 - (d.count / temporalData().length) * 100;
+
+          <g class="chart-group">
+            <circle [attr.cx]="x" [attr.cy]="y" r="3" class="chart-dot" />
+            <text [attr.x]="x" y="118" text-anchor="middle" class="chart-label">
+              {{ d.decade }}s
+            </text>
+          </g>
+        }
+      </svg>
+    </div>
+  </section>
+
+  <!-- Taxonomy / Movement Grid -->
+  <section class="taxonomy-section">
+    <div class="distribution-grid">
+      @for (cat of ["decor", "music", "books", "fashion"]; track cat) {
+        <div class="dist-col">
+          <span class="dist-label text-accent archival-overline"
+            >{{ cat }} taxonomy</span
+          >
+          <div class="dist-rows">
+            @for (row of getTaxonomyCounts(cat); track row.label) {
+              <div
+                class="dist-row"
+                (mouseenter)="hoveredMovement.set(row.label)"
+                (mouseleave)="hoveredMovement.set(null)"
+              >
+                <span class="row-label">{{ row.label }}</span>
+                <span class="row-val text-accent">{{ row.count }}</span>
+
+                @if (hoveredMovement() === row.label) {
+                  <div class="movement-tooltip fade-in-fast">
+                    <p class="tooltip-title text-accent">{{ row.label }}</p>
+                    <p class="tooltip-desc">
+                      {{ getMovementDescription(row.label) }}
+                    </p>
+                    <div class="tooltip-arrow"></div>
+                  </div>
+                }
+              </div>
+            } @empty {
+              <p class="empty-hint">no records found</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

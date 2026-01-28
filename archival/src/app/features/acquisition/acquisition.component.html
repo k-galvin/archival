@@ -1,0 +1,94 @@
+<div class="acquisition-container fade-in">
+  <!-- Registration Header -->
+  <header class="acquisition-header">
+    <span class="archival-overline text-accent">Registration Protocol</span>
+    <h2 class="view-title">acquisition record</h2>
+  </header>
+
+  <!-- Category Selection -->
+  <nav class="category-tabs">
+    @for (cat of ["decor", "music", "books", "fashion"]; track cat) {
+      <button
+        (click)="setCategory($any(cat))"
+        class="tab-btn"
+        [class.active]="newItem.category === cat"
+      >
+        {{ cat }}
+      </button>
+    }
+  </nav>
+
+  <!-- Input Form -->
+  <form (ngSubmit)="registerRecord()" class="registration-form">
+    <div class="form-section">
+      <input
+        [(ngModel)]="newItem.name"
+        name="name"
+        class="title-input"
+        placeholder="item title / nomenclature..."
+        required
+      />
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="archival-overline">Creator / Designer</label>
+          <input
+            [(ngModel)]="newItem.designer"
+            name="designer"
+            placeholder="name of originator"
+          />
+        </div>
+        <div class="field">
+          <label class="archival-overline">Origin Year</label>
+          <input
+            [(ngModel)]="newItem.year"
+            name="year"
+            placeholder="YYYY"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="archival-overline">Geography</label>
+          <input
+            [(ngModel)]="newItem.origin"
+            name="origin"
+            placeholder="country of origin"
+          />
+        </div>
+        <div class="field">
+          <label class="archival-overline">Spatial Assignment</label>
+          <select [(ngModel)]="newItem.room" name="room">
+            @for (r of rooms(); track r.id) {
+              <option [value]="r.name">{{ r.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="archival-overline">Stylistic Movement</label>
+        <select [(ngModel)]="newItem.movementId" name="movementId">
+          @for (m of getMovementsByCategory(newItem.category!); track m.id) {
+            <option [value]="m.id">{{ m.name }} ({{ m.era }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="archival-overline">Provenance Notes</label>
+        <textarea
+          [(ngModel)]="newItem.note"
+          name="note"
+          placeholder="technical details, condition, or acquisition history..."
+        ></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn bg-accent">
+      register record into system
+    </button>
+  </form>
+</div>

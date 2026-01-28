@@ -1,0 +1,157 @@
+.acquisition-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.acquisition-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.view-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #0047ab;
+  }
+
+  &.active {
+    color: #0047ab;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.title-input {
+  width: 100%;
+  padding: 0.75rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "heldane", Georgia, serif;
+  font-size: 1.75rem;
+  font-style: italic;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: #0047ab;
+  }
+
+  &::placeholder {
+    opacity: 0.2;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  input,
+  select,
+  textarea {
+    padding: 0.5rem 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: #0047ab;
+    }
+  }
+
+  textarea {
+    height: 8rem;
+    padding: 1.25rem;
+    background: #fafafa;
+    border: 1px solid transparent;
+    font-style: italic;
+    resize: none;
+
+    &:focus {
+      background: white;
+      border-color: rgba(0, 71, 171, 0.15);
+    }
+  }
+
+  select {
+    cursor: pointer;
+    text-transform: lowercase;
+  }
+}
+
+.submit-btn {
+  // Utility classes in HTML handle background color,
+  // but specific padding and font styles are defined here.
+  width: 100%;
+  padding: 1.25rem;
+  border: none;
+  color: white;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

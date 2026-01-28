@@ -1,0 +1,356 @@
+.gallery-container {
+  display: flex;
+  flex-direction: column;
+}
+
+// Header Layout
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+  }
+
+  .view-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .record-count {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .filter-toggle {
+    background: none;
+    border: none;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #0047ab;
+    }
+  }
+}
+
+// Filter Drawer
+.filter-drawer {
+  background: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 3rem;
+  overflow: hidden;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding-bottom: 2rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filter-tray {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .tray-label {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .tray-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 10rem;
+    overflow-y: auto;
+  }
+
+  .filter-opt {
+    text-align: left;
+    background: none;
+    border: none;
+    font-size: 12px;
+    text-transform: lowercase;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5);
+    transition: color 0.2s;
+
+    &:hover {
+      color: #1a1a1a;
+    }
+    &.active {
+      color: #0047ab;
+      font-weight: 700;
+    }
+  }
+}
+
+// Records Grid
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4rem 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.record-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.image-wrapper {
+  aspect-ratio: 3/4;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+
+  .record-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+    transition: filter 0.6s ease;
+  }
+
+  &:hover .record-image {
+    filter: grayscale(0);
+  }
+
+  .image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 71, 171, 0.05);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover .image-overlay {
+    opacity: 1;
+  }
+}
+
+.action-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  color: #0047ab;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.record-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  padding-left: 1rem;
+
+  .detail-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .item-name {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-year {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    opacity: 0.4;
+  }
+
+  .item-designer {
+    font-family: "heldane", Georgia, serif;
+    font-style: italic;
+    font-size: 12px;
+    margin: 0;
+    color: #0047ab;
+  }
+
+  .item-meta {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 8px;
+    text-transform: uppercase;
+    opacity: 0.25;
+    letter-spacing: -0.02em;
+  }
+}
+
+// Picker Modal Styling
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.picker-modal {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  width: 100%;
+  max-width: 24rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .modal-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .picker-title {
+    font-family: "heldane", Georgia, serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .picker-subtitle {
+    font-size: 11px;
+    opacity: 0.4;
+    margin: 0;
+  }
+}
+
+.picker-list {
+  max-height: 15rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.picker-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  .col-name {
+    font-size: 13px;
+    text-transform: lowercase;
+  }
+
+  .col-count {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+  }
+
+  &:hover {
+    background: #0047ab;
+    color: white;
+    .col-count {
+      color: white !important;
+    }
+  }
+}
+
+.cancel-btn {
+  background: none;
+  border: none;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.3;
+  cursor: pointer;
+  margin-top: 1rem;
+
+  &:hover {
+    opacity: 1;
+    color: #ef4444;
+  }
+}
+
+.empty-picker {
+  text-align: center;
+  padding: 2rem 0;
+  opacity: 0.3;
+  font-style: italic;
+  font-size: 12px;
+  p {
+    margin: 0;
+  }
+  .small {
+    font-size: 9px;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 10rem 0;
+  opacity: 0.3;
+  font-style: italic;
+}

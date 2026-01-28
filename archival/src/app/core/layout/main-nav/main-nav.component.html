@@ -1,0 +1,89 @@
+<nav class="nav-wrapper">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-toggle">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Desktop Navigation Links -->
+  <div class="nav-links">
+    @for (link of navLinks; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="active" class="nav-link">
+        {{ link.label }}
+        <div class="active-underline bg-accent"></div>
+      </a>
+    }
+  </div>
+
+  <!-- User Actions & Acquisitions -->
+  <div class="nav-actions">
+    @if (user()) {
+      <div class="user-profile">
+        <button
+          (click)="logout()"
+          class="action-icon-btn logout"
+          title="Sign out"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+        <div class="avatar-circle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+      </div>
+    } @else {
+      <a routerLink="/auth" class="auth-link archival-overline">sign in</a>
+    }
+
+    <!-- Primary Acquisition Button -->
+    <a routerLink="/acquire" class="acquire-btn" title="Add new record">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </a>
+  </div>
+</nav>

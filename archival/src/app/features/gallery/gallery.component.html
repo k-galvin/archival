@@ -1,0 +1,124 @@
+<div class="gallery-container fade-in">
+  <!-- View Header -->
+  <header class="view-header">
+    <div class="header-left">
+      <h2 class="view-title">index</h2>
+      <span class="record-count">{{ filteredItems().length }} records</span>
+    </div>
+    <button (click)="toggleFilters()" class="filter-toggle">
+      {{ showFilters() ? "close" : "filter" }}
+    </button>
+  </header>
+
+  <!-- Filter Drawer -->
+  @if (showFilters()) {
+    <div class="filter-drawer slide-down">
+      <div class="filter-grid">
+        @for (tray of ["category", "origin", "era"]; track tray) {
+          <div class="filter-tray">
+            <span class="tray-label">{{ tray }}</span>
+            <div class="tray-options custom-scrollbar">
+              @for (opt of $any(filterOptions())[tray]; track opt) {
+                <button
+                  (click)="setFilter(tray, opt)"
+                  class="filter-opt"
+                  [class.active]="$any(activeFilters())[tray] === opt"
+                >
+                  {{ opt }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Records Grid -->
+  <div class="records-grid">
+    @for (item of filteredItems(); track item.id) {
+      <div class="record-card">
+        <div class="image-wrapper">
+          <img [src]="item.image" [alt]="item.name" class="record-image" />
+          <div class="image-overlay">
+            <button
+              (click)="openCollectionPicker(item)"
+              class="action-btn"
+              title="Add to curation"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="record-details">
+          <div class="detail-top">
+            <h3 class="item-name">{{ item.name }}</h3>
+            <span class="item-year">{{ item.year }}</span>
+          </div>
+          <p class="item-designer">{{ item.designer }}</p>
+          <span class="item-meta">Provenance: {{ item.origin }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Routing Picker Modal -->
+  @if (collectionPickerItem()) {
+    <div class="modal-backdrop fade-in-fast">
+      <div class="picker-modal zoom-in">
+        <div class="modal-header">
+          <span class="archival-overline text-accent">Archive Routing</span>
+          <h3 class="picker-title">
+            Routing: {{ collectionPickerItem()?.name }}
+          </h3>
+          <p class="picker-subtitle">Select target curation for this record.</p>
+        </div>
+
+        <div class="picker-list custom-scrollbar">
+          @for (col of userCollections(); track col.id) {
+            <button
+              (click)="addToCollection(col.id, collectionPickerItem()!.id)"
+              class="picker-btn"
+            >
+              <span class="col-name">{{ col.title }}</span>
+              <span class="col-count text-accent">{{
+                col.itemIds.length
+              }}</span>
+            </button>
+          } @empty {
+            <div class="empty-picker">
+              <p>No active curations detected.</p>
+              <p class="small">Visit 'Collections' to create an archive.</p>
+            </div>
+          }
+        </div>
+
+        <button (click)="collectionPickerItem.set(null)" class="cancel-btn">
+          Cancel Routing
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (filteredItems().length === 0) {
+    <div class="empty-state">
+      <p>No records match the current filter criteria.</p>
+    </div>
+  }
+</div>

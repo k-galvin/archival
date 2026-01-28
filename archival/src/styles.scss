@@ -1,1 +1,205 @@
-/* You can add global styles to this file, and also import other style files */
+// --- ARCHIVAL GLOBAL VARIABLES ---
+$primary-blue: #0047ab;
+$text-black: #1a1a1a;
+$bg-white: #ffffff;
+$bg-gray: #fafafa;
+$border-light: rgba(0, 0, 0, 0.1);
+$border-ultra-light: rgba(0, 0, 0, 0.05);
+
+// --- BASE STYLES ---
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: $bg-white;
+  color: $text-black;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: $primary-blue;
+  color: white;
+}
+
+// --- UTILITY CLASSES ---
+
+// Accent Colors
+.text-accent {
+  color: $primary-blue !important;
+}
+.bg-accent {
+  background-color: $primary-blue !important;
+}
+
+// Typography
+.font-editorial {
+  font-family: "heldane", Georgia, serif;
+  font-style: italic;
+}
+
+.archival-overline {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  opacity: 0.4;
+
+  &.text-accent {
+    opacity: 1;
+  }
+}
+
+// Shared UI Elements
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background: $primary-blue;
+  color: white;
+  border: none;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+
+  &:hover {
+    background: darken($primary-blue, 10%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Scrollbar Handling
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 71, 171, 0.1);
+    border-radius: 10px;
+  }
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// --- GLOBAL ANIMATIONS ---
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.fade-in-fast {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+.slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+.zoom-in {
+  animation: zoomIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Loading Flip Animation
+@keyframes flip {
+  0%,
+  5% {
+    d: path("M 100,40 L 165,40 L 165,140 L 100,140 Z");
+  }
+  30% {
+    d: path("M 100,40 Q 130,30 145,35 L 145,145 Q 130,150 100,140 Z");
+  }
+  50% {
+    d: path("M 100,40 Q 100,20 100,30 L 100,150 Q 100,160 100,140 Z");
+  }
+  70% {
+    d: path("M 100,40 Q 70,30 55,35 L 55,145 Q 70,150 100,140 Z");
+  }
+  95%,
+  100% {
+    d: path("M 100,40 L 35,40 L 35,140 L 100,140 Z");
+  }
+}
+
+// --- DEPRECATION FIXES ---
+// Ensuring properties are declared before nested rules to satisfy new Sass standards
+
+button.mobile-toggle {
+  border: none;
+  background: none;
+  opacity: 0.6;
+  cursor: pointer;
+  display: flex; // Property moved above media query
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.blueprint-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: radial-gradient($primary-blue 0.8px, transparent 0.8px);
+  background-size: 30px 30px;
+}

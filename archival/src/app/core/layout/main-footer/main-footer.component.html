@@ -1,0 +1,27 @@
+<footer class="footer-container">
+  <div class="footer-inner">
+    <!-- Left: Global Status -->
+    <div class="status-group">
+      <span class="archival-overline">Status: Online</span>
+      <span class="archival-overline">Archive Live</span>
+    </div>
+
+    <!-- Center: Statistics -->
+    <div class="stats-group">
+      <div class="stat-item">
+        <span class="archival-overline">Records</span>
+        <span class="stat-value text-accent">{{ itemCount() }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="archival-overline">Volumes</span>
+        <span class="stat-value text-accent">{{ roomCount() }}</span>
+      </div>
+    </div>
+
+    <!-- Right: Branding & Year -->
+    <div class="branding-group">
+      <span class="archival-overline">Archival System</span>
+      <span class="archival-overline">© {{ currentYear }}</span>
+    </div>
+  </div>
+</footer>

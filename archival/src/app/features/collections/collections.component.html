@@ -1,0 +1,87 @@
+<div class="collections-page fade-in-anim">
+  <!-- Page Header & Collection Creation -->
+  <header class="collections-header">
+    <div class="header-text">
+      <span class="archival-overline text-accent">Personal Archives</span>
+      <h2 class="view-title">curated collections</h2>
+    </div>
+
+    <div class="create-control">
+      <input
+        [(ngModel)]="newCollectionTitle"
+        (keyup.enter)="createCollection()"
+        placeholder="new collection title..."
+        class="create-input"
+      />
+      <button (click)="createCollection()" class="text-accent action-link">
+        create
+      </button>
+    </div>
+  </header>
+
+  <!-- Collections List -->
+  @if (userCollections().length === 0) {
+    <div class="empty-state">
+      <p>No curated collections recorded. Create your first archive above.</p>
+    </div>
+  } @else {
+    <div class="collections-grid">
+      @for (col of userCollections(); track col.id) {
+        <section class="collection-card">
+          <div class="card-header">
+            <div class="header-meta">
+              <h3 class="col-title">{{ col.title }}</h3>
+              <span class="archival-overline"
+                >{{ col.itemIds.length }} items</span
+              >
+            </div>
+            <button (click)="deleteCollection(col.id)" class="delete-btn">
+              delete archive
+            </button>
+          </div>
+
+          <div class="items-strip custom-scrollbar">
+            @for (itemId of col.itemIds; track itemId) {
+              @let item = getItemById(itemId);
+              @if (item) {
+                <div class="item-thumb-wrapper">
+                  <div class="thumb-box">
+                    <img
+                      [src]="item.image"
+                      [alt]="item.name"
+                      class="thumb-img"
+                    />
+                    <button
+                      (click)="removeFromCollection(col.id, itemId)"
+                      class="remove-item-btn"
+                      title="Remove from collection"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <p class="thumb-label">{{ item.name }}</p>
+                </div>
+              }
+            } @empty {
+              <div class="vacant-hint">
+                <p>Archive currently vacant.</p>
+                <p class="small">Add items from the index.</p>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>

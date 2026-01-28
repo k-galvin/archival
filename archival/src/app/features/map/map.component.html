@@ -1,0 +1,126 @@
+<div class="map-container fade-in">
+  <!-- Spatial Header -->
+  <header class="map-header">
+    <div class="header-left">
+      <span class="archival-overline text-accent">Spatial Index</span>
+      <h2 class="view-title">blueprint</h2>
+    </div>
+
+    <div class="map-controls">
+      <input
+        [(ngModel)]="newRoomName"
+        (keyup.enter)="addRoom()"
+        placeholder="add room label..."
+        class="room-input"
+      />
+      <button
+        (click)="addRoom()"
+        class="add-room-btn"
+        title="Register spatial volume"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Blueprint Layout -->
+  <div class="blueprint-layout">
+    <!-- Sidebar: Room Directory - Now expands to fill 50% of the view -->
+    <aside class="room-sidebar custom-scrollbar">
+      <div class="room-list">
+        @for (r of rooms(); track r.id) {
+          <div
+            class="room-list-item"
+            (mouseenter)="hoveredRoomId.set(r.id)"
+            (mouseleave)="hoveredRoomId.set(null)"
+            [class.is-hovered]="hoveredRoomId() === r.id"
+          >
+            <div class="room-info">
+              <span class="room-label">{{ r.name }}</span>
+              <span class="item-count"
+                >{{ getItemsInRoom(r.name).length }} items</span
+              >
+            </div>
+            <button
+              (click)="deleteRoom(r.id)"
+              class="room-delete"
+              title="Decommission room"
+            >
+              ×
+            </button>
+          </div>
+        }
+      </div>
+    </aside>
+
+    <!-- Main View: Blueprint Canvas - Restricted to 50% width via SCSS -->
+    <div class="blueprint-canvas-wrapper">
+      <div class="blueprint-canvas hide-scrollbar">
+        <!-- Drafting paper pattern background -->
+        <div class="blueprint-pattern"></div>
+
+        <!-- Spatial Grid -->
+        <div
+          class="grid-layer"
+          [style.grid-template-columns]="'repeat(' + gridSize().size + ', 1fr)'"
+        >
+          @for (cell of gridSize().cells; track $index) {
+            @let room = getRoomAt(cell.x, cell.y);
+            <div
+              class="grid-cell"
+              (mouseenter)="room && hoveredRoomId.set(room.id)"
+              (mouseleave)="hoveredRoomId.set(null)"
+            >
+              @if (room) {
+                <div class="cell-content">
+                  <!-- Active highlight border -->
+                  <div
+                    class="cell-border"
+                    [class.active]="hoveredRoomId() === room.id"
+                  ></div>
+
+                  <span class="room-id">V.{{ $index + 1 }}</span>
+                  <h4 class="cell-name text-accent">{{ room.name }}</h4>
+
+                  <div class="occupancy-indicator">
+                    <div class="pulse-dot bg-accent"></div>
+                    <span class="meta">{{
+                      getItemsInRoom(room.name).length
+                    }}</span>
+                  </div>
+                </div>
+
+                <!-- Interactive Detail Overlay on Hover -->
+                @if (hoveredRoomId() === room.id) {
+                  <div class="room-overlay fade-in-fast">
+                    <span class="overlay-header archival-overline"
+                      >inventory contents</span
+                    >
+                    <ul class="overlay-list custom-scrollbar">
+                      @for (item of getItemsInRoom(room.name); track item.id) {
+                        <li>{{ item.name }}</li>
+                      } @empty {
+                        <li class="empty-hint">room vacant</li>
+                      }
+                    </ul>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="auth-container fade-in">
+  <div class="auth-box">
+    <!-- Header -->
+    <header class="auth-header">
+      <span class="archival-overline text-accent">Access Protocol</span>
+      <h2 class="auth-title">
+        {{ isLogin() ? "Archivist Login" : "Register Volume" }}
+      </h2>
+    </header>
+
+    <!-- Form -->
+    <form (ngSubmit)="handleSubmit()" class="auth-form">
+      @if (!isLogin()) {
+        <div class="field-group slide-down">
+          <label class="archival-overline">Identity</label>
+          <input
+            type="text"
+            [(ngModel)]="authData.name"
+            name="name"
+            placeholder="full name / identifier"
+            required
+          />
+        </div>
+      }
+
+      <div class="field-group">
+        <label class="archival-overline">Credentials</label>
+        <input
+          type="email"
+          [(ngModel)]="authData.email"
+          name="email"
+          placeholder="email address"
+          required
+        />
+        <input
+          type="password"
+          [(ngModel)]="authData.password"
+          name="password"
+          placeholder="passcode"
+          required
+        />
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="submit-btn bg-accent">
+          {{ isLogin() ? "Authenticate" : "Open Record" }}
+        </button>
+
+        <button type="button" (click)="toggleMode()" class="toggle-link">
+          {{ isLogin() ? "Request new access" : "Existing archivist sign-in" }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer Meta -->
+    <footer class="auth-footer">
+      <p class="archival-overline">Secure Archival System v1.0.4</p>
+    </footer>
+  </div>
+</div>
