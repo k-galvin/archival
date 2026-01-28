@@ -61,7 +61,7 @@ export class MapComponent {
    * Removes a room from the spatial index
    */
   deleteRoom(id: string | number): void {
-    this.archive.rooms.update((prev) => prev.filter((r) => r.id !== id));
+    this.archive.deleteRoom(id);
   }
 
   /**
@@ -77,7 +77,7 @@ export class MapComponent {
   getItemsInRoom(roomName: string) {
     return this.collection().filter(
       (item) =>
-        item.room.toLowerCase().trim() === roomName.toLowerCase().trim(),
+        (item.room ?? '').toLowerCase().trim() === roomName.toLowerCase().trim(),
     );
   }
 }

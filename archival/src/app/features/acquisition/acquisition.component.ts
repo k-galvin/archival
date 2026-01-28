@@ -1,9 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem, Movement } from '../../shared/models/archive.models';
+import { CollectionItem } from '../../shared/models/archive.models';
 
 @Component({
   selector: 'app-acquisition',
@@ -14,66 +13,106 @@ import { CollectionItem, Movement } from '../../shared/models/archive.models';
 })
 export class AcquisitionComponent {
   private archive = inject(ArchiveService);
-  private router = inject(Router);
 
-  // Available rooms for spatial assignment from the central service
+  // Form State
+  isSubmitting = signal(false);
+  successMessage = signal<string | null>(null);
+
+  // Image Upload State
+  selectedFile = signal<File | null>(null);
+  imagePreview = signal<string | null>(null);
+
+  // Archive signals for dropdowns
   rooms = this.archive.rooms;
+  movements = this.archive.movements; // Make movements signal available
 
-  // Local state for the acquisition form
   newItem: Partial<CollectionItem> = {
     category: 'decor',
-    room: 'living room',
-    movementId: 'm1',
+    name: '',
+    designer: '',
+    year: 2024,
+    origin: '',
+    note: '',
+    room: '', // Initialize room property
+    movementId: '', // Initialize movementId property
   };
 
-  // Curated movement metadata for registration
-  // In a production environment, these would be managed via the ArchiveService
-  movements: Movement[] = [
-    { id: 'm1', category: 'decor', name: 'Bauhaus', era: '1919–1933' },
-    {
-      id: 'm2',
+  // Filter movements based on the selected category
+  filteredMovements = computed(() => {
+    const selectedCategory = this.newItem.category;
+    return this.movements().filter(
+      (m) => m.category === selectedCategory,
+    );
+  });
+
+  /**
+   * Handles local file selection and generates a preview
+   */
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile.set(file);
+
+      // Generate a local preview for immediate visual feedback
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Orchestrates the upload and registration protocol
+   */
+  async handleSubmit(): Promise<void> {
+    if (!this.newItem.name) return;
+
+    this.isSubmitting.set(true);
+    this.successMessage.set(null);
+
+    try {
+      let imageUrl = '';
+
+      // 1. Upload to Supabase Storage if a file was selected
+      const file = this.selectedFile();
+      if (file) {
+        const uploadedUrl = await this.archive.uploadImage(file);
+        if (uploadedUrl) imageUrl = uploadedUrl;
+      }
+
+      // 2. Register the full record with the image URL
+      const newItemData = await this.archive.addItem({
+        ...this.newItem,
+        image:
+          imageUrl ||
+          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Fallback
+      } as CollectionItem);
+
+      if (newItemData) {
+        this.successMessage.set('Record successfully integrated into archive.');
+        this.resetForm();
+      } else {
+        // Optionally, set an error message here if needed.
+        // For now, just ensuring success message isn't shown on failure.
+      }
+    } catch (err) {
+      console.error('Acquisition failed:', err);
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
+  private resetForm(): void {
+    this.newItem = {
       category: 'decor',
-      name: 'Mid-Century Modern',
-      era: '1945–1969',
-    },
-    { id: 'm3', category: 'decor', name: 'Space Age', era: '1950s–1970s' },
-    { id: 'm4', category: 'music', name: 'IDM', era: '1990s' },
-    { id: 'm5', category: 'music', name: 'Cool Jazz', era: '1940s–1950s' },
-    { id: 'm7', category: 'books', name: 'Modernism', era: '1890s–1940s' },
-    { id: 'm9', category: 'fashion', name: 'Mod', era: '1960s' },
-  ];
-
-  /**
-   * Filters the available design movements based on the active category
-   */
-  getMovementsByCategory(cat: string) {
-    return this.movements.filter((m) => m.category === cat);
-  }
-
-  /**
-   * Updates the selected category and resets the default movement selection
-   */
-  setCategory(cat: 'decor' | 'music' | 'books' | 'fashion') {
-    this.newItem.category = cat;
-    const firstMove = this.getMovementsByCategory(cat)[0];
-    if (firstMove) this.newItem.movementId = firstMove.id;
-  }
-
-  /**
-   * Registers the new item in the global archive and redirects to index gallery
-   */
-  registerRecord(): void {
-    if (!this.newItem.name || !this.newItem.year) return;
-
-    const record: CollectionItem = {
-      ...(this.newItem as CollectionItem),
-      id: Math.random().toString(36).substring(2, 8),
-      // Default archival placeholder image for new acquisitions
-      image:
-        'https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&q=80&w=800',
+      name: '',
+      designer: '',
+      year: 2024,
+      origin: '',
+      note: '',
     };
-
-    this.archive.addItem(record);
-    this.router.navigate(['/gallery']);
+    this.selectedFile.set(null);
+    this.imagePreview.set(null);
   }
 }

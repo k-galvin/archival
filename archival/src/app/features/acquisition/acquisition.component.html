@@ -1,94 +1,162 @@
 <div class="acquisition-container fade-in">
-  <!-- Registration Header -->
-  <header class="acquisition-header">
-    <span class="archival-overline text-accent">Registration Protocol</span>
-    <h2 class="view-title">acquisition record</h2>
+  <!-- View Header -->
+  <header class="view-header">
+    <div class="header-left">
+      <h2 class="view-title">acquisition</h2>
+      <span class="archival-overline">New Record Entry</span>
+    </div>
   </header>
 
-  <!-- Category Selection -->
-  <nav class="category-tabs">
-    @for (cat of ["decor", "music", "books", "fashion"]; track cat) {
-      <button
-        (click)="setCategory($any(cat))"
-        class="tab-btn"
-        [class.active]="newItem.category === cat"
+  <div class="entry-layout">
+    <!-- Image Upload Zone -->
+    <div class="upload-zone">
+      <div
+        class="preview-container"
+        [class.has-image]="imagePreview()"
+        (click)="fileInput.click()"
       >
-        {{ cat }}
-      </button>
-    }
-  </nav>
-
-  <!-- Input Form -->
-  <form (ngSubmit)="registerRecord()" class="registration-form">
-    <div class="form-section">
-      <input
-        [(ngModel)]="newItem.name"
-        name="name"
-        class="title-input"
-        placeholder="item title / nomenclature..."
-        required
-      />
-
-      <div class="form-grid">
-        <div class="field">
-          <label class="archival-overline">Creator / Designer</label>
-          <input
-            [(ngModel)]="newItem.designer"
-            name="designer"
-            placeholder="name of originator"
+        @if (imagePreview()) {
+          <img
+            [src]="imagePreview()"
+            alt="Archive Preview"
+            class="upload-preview"
           />
-        </div>
-        <div class="field">
-          <label class="archival-overline">Origin Year</label>
+          <div class="change-overlay">
+            <span class="archival-overline">Change Photograph</span>
+          </div>
+        } @else {
+          <div class="placeholder-ui">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <span class="archival-overline">Upload Documentation</span>
+            <p class="upload-hint">Drag file or click to select</p>
+          </div>
+        }
+      </div>
+      <input
+        #fileInput
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        style="display: none"
+      />
+    </div>
+
+    <!-- Form Details -->
+    <form (ngSubmit)="handleSubmit()" class="acquisition-form">
+      <div class="form-grid">
+        <!-- Identification Group -->
+        <div class="field-group full-width">
+          <label class="archival-overline">Object Nomenclature</label>
           <input
-            [(ngModel)]="newItem.year"
-            name="year"
-            placeholder="YYYY"
+            type="text"
+            [(ngModel)]="newItem.name"
+            name="name"
+            placeholder="e.g. Wassily Chair, Model B3"
             required
           />
         </div>
-      </div>
 
-      <div class="form-grid">
-        <div class="field">
-          <label class="archival-overline">Geography</label>
+        <div class="field-group">
+          <label class="archival-overline">Category</label>
+          <select [(ngModel)]="newItem.category" name="category">
+            <option value="decor">Decor</option>
+            <option value="music">Music</option>
+            <option value="books">Books</option>
+            <option value="fashion">Fashion</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="archival-overline">Archival Year</label>
           <input
-            [(ngModel)]="newItem.origin"
-            name="origin"
-            placeholder="country of origin"
+            type="number"
+            [(ngModel)]="newItem.year"
+            name="year"
+            placeholder="1925"
           />
         </div>
-        <div class="field">
-          <label class="archival-overline">Spatial Assignment</label>
+
+        <div class="field-group">
+          <label class="archival-overline">Designer / Author</label>
+          <input
+            type="text"
+            [(ngModel)]="newItem.designer"
+            name="designer"
+            placeholder="Marcel Breuer"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="archival-overline">Provenance / Origin</label>
+          <input
+            type="text"
+            [(ngModel)]="newItem.origin"
+            name="origin"
+            placeholder="Dessau, Germany"
+          />
+        </div>
+
+        <!-- New: Room Selection -->
+        <div class="field-group">
+          <label class="archival-overline">Assign Room</label>
           <select [(ngModel)]="newItem.room" name="room">
-            @for (r of rooms(); track r.id) {
-              <option [value]="r.name">{{ r.name }}</option>
+            <option value="">Select Room</option>
+            @for (room of rooms(); track room.id) {
+              <option [value]="room.id">{{ room.name }}</option>
             }
           </select>
         </div>
+
+        <!-- New: Movement Selection -->
+        <div class="field-group">
+          <label class="archival-overline">Associated Movement</label>
+          <select [(ngModel)]="newItem.movementId" name="movement">
+            <option value="">Select Movement</option>
+            @for (movement of filteredMovements(); track movement.id) {
+              <option [value]="movement.id">{{ movement.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field-group full-width">
+          <label class="archival-overline">Archivist Notes</label>
+          <textarea
+            [(ngModel)]="newItem.note"
+            name="note"
+            rows="3"
+            placeholder="Condition details, historical context..."
+          ></textarea>
+        </div>
       </div>
 
-      <div class="field">
-        <label class="archival-overline">Stylistic Movement</label>
-        <select [(ngModel)]="newItem.movementId" name="movementId">
-          @for (m of getMovementsByCategory(newItem.category!); track m.id) {
-            <option [value]="m.id">{{ m.name }} ({{ m.era }})</option>
-          }
-        </select>
-      </div>
+      <!-- Action Footer -->
+      <footer class="form-footer">
+        @if (successMessage()) {
+          <p class="success-txt slide-down">{{ successMessage() }}</p>
+        }
 
-      <div class="field">
-        <label class="archival-overline">Provenance Notes</label>
-        <textarea
-          [(ngModel)]="newItem.note"
-          name="note"
-          placeholder="technical details, condition, or acquisition history..."
-        ></textarea>
-      </div>
-    </div>
-
-    <button type="submit" class="submit-btn bg-accent">
-      register record into system
-    </button>
-  </form>
+        <button
+          type="submit"
+          class="submit-btn bg-accent"
+          [disabled]="isSubmitting() || !newItem.name"
+        >
+          {{ isSubmitting() ? "Integrating..." : "Register Record" }}
+        </button>
+      </footer>
+    </form>
+  </div>
 </div>

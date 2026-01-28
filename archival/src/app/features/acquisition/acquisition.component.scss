@@ -1,101 +1,113 @@
 .acquisition-container {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  max-width: 40rem;
-  margin: 0 auto;
 }
 
-.acquisition-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.view-title {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.category-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+.view-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
+  margin-bottom: 3rem;
 
-.tab-btn {
-  background: none;
-  border: none;
-  font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    color: #0047ab;
-  }
-
-  &.active {
-    color: #0047ab;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  .view-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-transform: lowercase;
   }
 }
 
-.registration-form {
-  display: flex;
-  flex-direction: column;
+.entry-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
   gap: 4rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
-.form-section {
+// Upload UI
+.upload-zone {
+  .preview-container {
+    aspect-ratio: 1/1;
+    background: #fafafa;
+    border: 1px dashed rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #0047ab;
+      background: rgba(0, 71, 171, 0.02);
+    }
+
+    &.has-image {
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .placeholder-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: rgba(0, 0, 0, 0.2);
+    text-align: center;
+
+    .upload-hint {
+      font-size: 10px;
+      margin: 0;
+    }
+  }
+
+  .upload-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .change-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: white;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Form UI
+.acquisition-form {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-}
-
-.title-input {
-  width: 100%;
-  padding: 0.75rem 0;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  font-family: "heldane", Georgia, serif;
-  font-size: 1.75rem;
-  font-style: italic;
-  outline: none;
-  transition: border-color 0.2s;
-
-  &:focus {
-    border-color: #0047ab;
-  }
-
-  &::placeholder {
-    opacity: 0.2;
-  }
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+  .full-width {
+    grid-column: span 2;
   }
 }
 
-.field {
+.field-group {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -103,55 +115,59 @@
   input,
   select,
   textarea {
-    padding: 0.5rem 0;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    font-size: 13px;
-    outline: none;
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #f9f9f9;
+    font-size: 14px;
+    width: 100%;
     transition: all 0.2s;
 
     &:focus {
+      outline: none;
       border-color: #0047ab;
+      background: white;
     }
   }
 
   textarea {
-    height: 8rem;
-    padding: 1.25rem;
-    background: #fafafa;
-    border: 1px solid transparent;
-    font-style: italic;
-    resize: none;
-
-    &:focus {
-      background: white;
-      border-color: rgba(0, 71, 171, 0.15);
-    }
+    resize: vertical;
   }
+}
 
-  select {
-    cursor: pointer;
-    text-transform: lowercase;
+.form-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  .success-txt {
+    font-size: 12px;
+    color: #10b981;
+    font-style: italic;
+    margin: 0;
   }
 }
 
 .submit-btn {
-  // Utility classes in HTML handle background color,
-  // but specific padding and font styles are defined here.
-  width: 100%;
-  padding: 1.25rem;
+  padding: 1rem 3rem;
   border: none;
   color: white;
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-weight: 700;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
 
-  &:hover {
-    opacity: 0.9;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
   }
 }

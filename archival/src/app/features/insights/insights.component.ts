@@ -95,7 +95,9 @@ export class InsightsComponent {
     const counts: Record<string, number> = {};
 
     items.forEach((i) => {
-      counts[i.movementId] = (counts[i.movementId] || 0) + 1;
+      if (i.movementName) { // Only count if a movement name exists
+        counts[i.movementName] = (counts[i.movementName] || 0) + 1;
+      }
     });
 
     return Object.entries(counts)

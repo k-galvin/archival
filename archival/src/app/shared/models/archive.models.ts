@@ -16,6 +16,7 @@ export interface CollectionItem {
   image: string;
   note: string;
   movementId: string;
+  movementName: string; // New property to store the movement name
 }
 
 export interface UserCollection {

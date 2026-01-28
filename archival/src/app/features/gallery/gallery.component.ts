@@ -103,4 +103,9 @@ export class GalleryComponent {
     this.archive.addToUserCollection(colId, itemId);
     this.collectionPickerItem.set(null);
   }
+
+  deleteItem(id: string): void {
+    this.archive.deleteItem(id);
+  }
+
 }

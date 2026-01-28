@@ -4,10 +4,11 @@ import {
   CollectionItem,
   Room,
   UserCollection,
+  Movement, // Import Movement interface
 } from '../../shared/models/archive.models';
 
 /**
- * CRITICAL: Replace these placeholders with your actual Supabase credentials.
+ * Supabase Project Credentials
  */
 const SUPABASE_URL = 'https://oaqzbymmhusbhvscfcrp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Y8hY9if-e5PdwcmCKALzsQ_bzUpYVHp';
@@ -22,6 +23,7 @@ export class ArchiveService {
   collection = signal<CollectionItem[]>([]);
   rooms = signal<Room[]>([]);
   userCollections = signal<UserCollection[]>([]);
+  movements = signal<Movement[]>([]);
 
   // Auth state signals
   user = signal<any>(null);
@@ -115,23 +117,40 @@ export class ArchiveService {
       .select('*, collection_items(item_id)')
       .eq('user_id', userId);
 
-    const [itemsRes, roomsRes, collectionsRes] = await Promise.all([
+    const movementsReq = this.supabase.from('movements').select('*');
+
+    const [itemsRes, roomsRes, collectionsRes, movementsRes] = await Promise.all([
       itemsReq,
       roomsReq,
       colReq,
+      movementsReq,
     ]);
 
+    // Populate rooms and movements first, so they are available for item processing
+    if (roomsRes.data) this.rooms.set(roomsRes.data);
+    if (movementsRes.data) this.movements.set(movementsRes.data);
+
     if (itemsRes.data) {
+      const roomMap = new Map<string, string>();
+      this.rooms().forEach(room => {
+        roomMap.set(room.id as string, room.name);
+      });
+
+      const movementMap = new Map<string, string>();
+      this.movements().forEach(movement => {
+        movementMap.set(movement.id, movement.name);
+      });
+
       this.collection.set(
         itemsRes.data.map((i) => ({
           ...i,
           image: i.image_url,
           year: i.year,
+          room: i.room_id ? roomMap.get(i.room_id) || '' : '',
+          movementName: i.movement_id ? movementMap.get(i.movement_id) || '' : '',
         })),
       );
     }
-
-    if (roomsRes.data) this.rooms.set(roomsRes.data);
 
     if (collectionsRes.data) {
       this.userCollections.set(
@@ -155,21 +174,68 @@ export class ArchiveService {
   // --- Write Operations ---
 
   /**
+   * Uploads an archival photograph to Supabase Storage.
+   * Assumes a bucket named 'item-photos' exists with public read access.
+   */
+  async uploadImage(file: File): Promise<string | null> {
+    const currentUser = this.user();
+    if (!currentUser) return null;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${currentUser.id}/${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${currentUser.id}/acquisitions/${fileName}`;
+
+    const { error: uploadError } = await this.supabase.storage
+      .from('item-photos')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Archive Storage Error:', uploadError.message);
+      return null;
+    }
+
+    const { data } = this.supabase.storage
+      .from('item-photos')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  }
+
+  /**
    * Registers a new spatial volume into the 'rooms' table in Supabase.
    */
+  async deleteItem(id: string) {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    const { error } = await this.supabase
+      .from('items')
+      .delete()
+      .eq('id', id); // Delete the item where id matches
+
+    if (error) {
+      console.error('Error deleting item:', error.message);
+    } else {
+      // Optimistically update the local signal if delete was successful
+      this.collection.update((prev) => prev.filter((item) => item.id !== id));
+    }
+  }
+
   async addRoom(name: string) {
     const currentUser = this.user();
     if (!currentUser) return;
 
     const currentCount = this.rooms().length;
+    // Calculate dynamic grid size for the next room to be added
+    const gridSize = Math.max(2, Math.ceil(Math.sqrt(currentCount + 1)));
     const { data, error } = await this.supabase
       .from('rooms')
       .insert({
         user_id: currentUser.id,
         name: name.toLowerCase(),
-        // Simple logic to place rooms in a 2-column grid automatically
-        x: currentCount % 2,
-        y: Math.floor(currentCount / 2),
+        // Dynamic logic to place rooms in an expanding grid
+        x: currentCount % gridSize, // Use the calculated gridSize
+        y: Math.floor(currentCount / gridSize), // Use the calculated gridSize
       })
       .select()
       .single();
@@ -178,6 +244,23 @@ export class ArchiveService {
       this.rooms.update((prev) => [...prev, data]);
     } else if (error) {
       console.error('Error adding room:', error.message);
+    }
+  }
+
+  async deleteRoom(id: string | number) {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    const { error } = await this.supabase
+      .from('rooms')
+      .delete()
+      .eq('id', id); // Delete the room where id matches
+
+    if (error) {
+      console.error('Error deleting room:', error.message);
+    } else {
+      // Optimistically update the local signal if delete was successful
+      this.rooms.update((prev) => prev.filter((r) => r.id !== id));
     }
   }
 
@@ -207,7 +290,7 @@ export class ArchiveService {
     const currentUser = this.user();
     if (!currentUser) return;
 
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from('items')
       .insert({
         user_id: currentUser.id,
@@ -218,15 +301,27 @@ export class ArchiveService {
         category: item.category,
         image_url: item.image,
         note: item.note,
-        movement_id: item.movementId,
+        movement_id: item.movementId === '' ? null : item.movementId,
+        room_id: item.room === '' ? null : item.room, // Handle empty string for room_id // Corrected column name
       })
       .select()
       .single();
 
-    if (data)
+    if (data) {
+      // Find the room name from the rooms signal using data.room_id
+      const roomName = data.room_id ? this.rooms().find(r => r.id === data.room_id)?.name || '' : '';
+      // Find the movement name from the movements signal using data.movement_id
+      const movementName = data.movement_id ? this.movements().find(m => m.id === data.movement_id)?.name || '' : '';
+
       this.collection.update((prev) => [
-        { ...data, image: data.image_url },
+        { ...data, image: data.image_url, room: roomName, movementName: movementName }, // Add room and movement name
         ...prev,
       ]);
+      return { ...data, room: roomName, movementName: movementName }; // Also return the data with room and movement name
+    } else if (error) {
+      console.error('Record Registration Error:', error.message);
+      return null; // Return null on error
+    }
+    return null; // Should not be reached, but good for type safety
   }
 }
