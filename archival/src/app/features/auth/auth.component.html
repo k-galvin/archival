@@ -8,6 +8,13 @@
       </h2>
     </header>
 
+    <!-- Error Messaging -->
+    @if (errorMessage()) {
+      <div class="auth-error-box slide-down">
+        <span class="error-text">{{ errorMessage() }}</span>
+      </div>
+    }
+
     <!-- Form -->
     <form (ngSubmit)="handleSubmit()" class="auth-form">
       @if (!isLogin()) {
@@ -42,17 +49,31 @@
       </div>
 
       <div class="actions">
-        <button type="submit" class="submit-btn bg-accent">
-          {{ isLogin() ? "Authenticate" : "Open Record" }}
+        <button
+          type="submit"
+          class="submit-btn bg-accent"
+          [disabled]="isSubmitting()"
+        >
+          {{
+            isSubmitting()
+              ? "Verifying..."
+              : isLogin()
+                ? "Authenticate"
+                : "Open Record"
+          }}
         </button>
 
-        <button type="button" (click)="toggleMode()" class="toggle-link">
+        <button
+          type="button"
+          (click)="toggleMode()"
+          class="toggle-link"
+          [disabled]="isSubmitting()"
+        >
           {{ isLogin() ? "Request new access" : "Existing archivist sign-in" }}
         </button>
       </div>
     </form>
 
-    <!-- Footer Meta -->
     <footer class="auth-footer">
       <p class="archival-overline">Secure Archival System v1.0.4</p>
     </footer>

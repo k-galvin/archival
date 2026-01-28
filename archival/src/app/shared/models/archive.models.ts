@@ -10,7 +10,7 @@ export interface CollectionItem {
   category: 'decor' | 'music' | 'books' | 'fashion';
   name: string;
   designer: string;
-  year: string;
+  year: number; // Root Fix: Aligned with Supabase 'integer' type
   origin: string;
   room: string;
   image: string;

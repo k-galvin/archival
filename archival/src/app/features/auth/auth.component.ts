@@ -15,10 +15,15 @@ export class AuthComponent {
   private archive = inject(ArchiveService);
   private router = inject(Router);
 
-  // UI State
+  // UI State Signals
   isLogin = signal(true);
+  isSubmitting = signal(false);
+  successMessage = signal<string | null>(null);
 
-  // Form Data
+  // Bind to the service's error signal for reactive UI updates
+  errorMessage = this.archive.authError;
+
+  // Local form state
   authData = {
     email: '',
     password: '',
@@ -26,26 +31,54 @@ export class AuthComponent {
   };
 
   /**
-   * Toggles between Login and Registration views
+   * Toggles between Login and Registration modes.
+   * Resets status messages on switch.
    */
   toggleMode(): void {
     this.isLogin.update((v) => !v);
+    this.successMessage.set(null);
+    this.archive.authError.set(null);
   }
 
   /**
-   * Simulates authentication and updates the global user state
+   * Handles the authentication submission.
+   * On registration, handles the "Email Confirmation Required" scenario common in Supabase.
    */
-  handleSubmit(): void {
-    // Basic validation
-    if (!this.authData.email || !this.authData.password) return;
+  async handleSubmit(): Promise<void> {
+    const { email, password, name } = this.authData;
+    if (!email || !password || (!this.isLogin() && !name)) return;
 
-    // In a real app, this would be an API call.
-    // Here we update the central signal in the ArchiveService.
-    this.archive.user.set({
-      name: this.authData.name || 'Senior Archivist',
-    });
+    this.isSubmitting.set(true);
+    this.successMessage.set(null);
 
-    // Redirect to the main index after successful authentication
-    this.router.navigate(['/gallery']);
+    try {
+      if (this.isLogin()) {
+        await this.archive.signIn(email, password);
+        // Successful sign-in triggers the ArchiveService.user signal,
+        // which automatically fetches data via effect()
+        this.router.navigate(['/gallery']);
+      } else {
+        const result = await this.archive.signUp(email, password, name);
+
+        /**
+         * Root Fix for "Not Reflected in Supabase":
+         * If Supabase has 'Email Confirmation' enabled (default), result.session
+         * will be null and the user won't be fully "signed in" until confirmed.
+         */
+        if (result.user && !result.session) {
+          this.successMessage.set(
+            'Registration successful. Please check your email inbox to confirm your account before logging in.',
+          );
+          this.isLogin.set(true); // Switch to login so they can sign in after confirming
+        } else {
+          this.router.navigate(['/gallery']);
+        }
+      }
+    } catch (err) {
+      // Errors (like 'User already registered') are handled by the signal in ArchiveService
+      console.error('Authentication attempt failed:', err);
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 }

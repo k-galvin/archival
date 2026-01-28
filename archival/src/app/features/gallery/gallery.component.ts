@@ -1,4 +1,10 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
@@ -9,11 +15,12 @@ import { CollectionItem } from '../../shared/models/archive.models';
   imports: [CommonModule],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GalleryComponent {
   private archive = inject(ArchiveService);
 
-  // Local UI State
+  // Local UI State for filters and interaction
   showFilters = signal(false);
   activeFilters = signal<Record<string, string>>({
     category: 'all',
@@ -21,13 +28,18 @@ export class GalleryComponent {
     era: 'all',
   });
 
-  // Picker State for Routing Items to Collections
+  // Modal state for routing items to personal collections
   collectionPickerItem = signal<CollectionItem | null>(null);
 
-  // Derived State from Central Service
+  // Direct access to the Supabase-driven signals from the ArchiveService
   items = this.archive.collection;
   userCollections = this.archive.userCollections;
 
+  /**
+   * Computes the filtered list of records based on active UI selections.
+   * Since 'item.year' is now a number in the Canvas, we perform
+   * direct numeric operations for decade grouping.
+   */
   filteredItems = computed(() => {
     const items = this.items();
     const filters = this.activeFilters();
@@ -38,16 +50,18 @@ export class GalleryComponent {
       const origMatch =
         filters['origin'] === 'all' || item.origin === filters['origin'];
 
-      const yearInt = parseInt(item.year);
-      const decade = isNaN(yearInt)
-        ? 'unknown'
-        : Math.floor(yearInt / 10) * 10 + 's';
+      // Root Fix: 'item.year' is now a number. No parseInt required.
+      const yr = item.year;
+      const decade = !yr ? 'unknown' : Math.floor(yr / 10) * 10 + 's';
       const eraMatch = filters['era'] === 'all' || decade === filters['era'];
 
       return catMatch && origMatch && eraMatch;
     });
   });
 
+  /**
+   * Generates dynamic filter categories based on the current archival data set.
+   */
   filterOptions = computed(() => {
     const items = this.items();
     return {
@@ -57,15 +71,15 @@ export class GalleryComponent {
         'all',
         ...new Set(
           items.map((i) => {
-            const y = parseInt(i.year);
-            return isNaN(y) ? 'unknown' : Math.floor(y / 10) * 10 + 's';
+            const yr = i.year;
+            return !yr ? 'unknown' : Math.floor(yr / 10) * 10 + 's';
           }),
         ),
       ].sort(),
     };
   });
 
-  // --- Actions ---
+  // --- Interaction Logic ---
 
   toggleFilters(): void {
     this.showFilters.update((v) => !v);
@@ -76,14 +90,14 @@ export class GalleryComponent {
   }
 
   /**
-   * Opens the routing picker for a specific record
+   * Opens the collection routing modal for a specific archival record.
    */
   openCollectionPicker(item: CollectionItem): void {
     this.collectionPickerItem.set(item);
   }
 
   /**
-   * Routes an item to a specific personal archive
+   * Triggers the Supabase junction table insertion via the ArchiveService.
    */
   addToCollection(colId: string, itemId: string): void {
     this.archive.addToUserCollection(colId, itemId);

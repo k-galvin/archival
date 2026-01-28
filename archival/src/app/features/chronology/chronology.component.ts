@@ -26,9 +26,7 @@ export class ChronologyComponent {
   collection = this.archive.collection;
 
   sortedCollection = computed(() => {
-    return [...this.collection()].sort(
-      (a, b) => parseInt(a.year) - parseInt(b.year),
-    );
+    return [...this.collection()].sort((a, b) => (a.year || 0) - (b.year || 0));
   });
 
   // Define the temporal bounds of the archive

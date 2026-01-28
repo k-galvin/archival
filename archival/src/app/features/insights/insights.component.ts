@@ -57,7 +57,7 @@ export class InsightsComponent {
     decades.forEach((d) => (counts[d] = 0));
 
     this.collection().forEach((item) => {
-      const year = parseInt(item.year);
+      const year = item.year;
       if (!isNaN(year)) {
         const d = Math.floor(year / 10) * 10;
         if (d in counts) counts[d]++;
