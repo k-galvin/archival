@@ -14,6 +14,6 @@ export class MainFooterComponent {
 
   // Derived state for footer metadata
   itemCount = computed(() => this.archive.collection().length);
-  roomCount = computed(() => this.archive.rooms().length);
+  collectionCount = computed(() => this.archive.userCollections().length);
   currentYear = new Date().getFullYear();
 }
