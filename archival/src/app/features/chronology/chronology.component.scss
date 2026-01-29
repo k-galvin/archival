@@ -250,6 +250,13 @@
     margin-bottom: 0;
   }
 
+  .card-img-wrapper.is-book-cover {
+    background-color: white; // White background for book covers
+    .card-img {
+      object-fit: contain; // Scale image to fit inside, add whitespace
+    }
+  }
+
   .card-meta {
     flex-grow: 1;
   }

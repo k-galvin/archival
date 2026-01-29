@@ -61,13 +61,50 @@
         <!-- Identification Group -->
         <div class="field-group full-width">
           <label class="archival-overline">Object Nomenclature</label>
-          <input
-            type="text"
-            [(ngModel)]="newItem().name"
-            name="name"
-            placeholder="e.g. Wassily Chair, Model B3"
-            required
-          />
+          <div class="search-wrapper">
+            <input
+              type="text"
+              [value]="newItem().name"
+              (input)="onNomenclatureChange($event)"
+              name="name"
+              placeholder="e.g. The Sun Also Rises"
+              required
+              autocomplete="off"
+            />
+            <!-- Book Search Results Dropdown -->
+            @if (isSearchingBooks() || bookSearchResults().length > 0) {
+              <div class="search-results custom-scrollbar">
+                @if (isSearchingBooks()) {
+                  <div class="result-item">Searching...</div>
+                } @else {
+                  @for (book of bookSearchResults(); track $index) {
+                    <div
+                      class="result-item book-result"
+                      (click)="selectBook(book)"
+                    >
+                      <img
+                        [src]="book.volumeInfo.imageLinks?.thumbnail"
+                        class="book-thumb"
+                        alt="Cover"
+                      />
+                      <div class="book-meta">
+                        <span class="book-title">{{
+                          book.volumeInfo.title
+                        }}</span>
+                        <span class="book-author">{{
+                          book.volumeInfo.authors?.join(', ')
+                        }}</span>
+                      </div>
+                    </div>
+                  } @empty {
+                    @if (newItem().name && newItem().category === 'books') {
+                      <div class="result-item">No books found.</div>
+                    }
+                  }
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <div class="field-group">

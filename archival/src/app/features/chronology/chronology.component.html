@@ -70,7 +70,10 @@
           <div class="node-hover-card">
             @for (item of group.items; track item.id) {
               <div class="card-item">
-                <div class="card-img-wrapper">
+                <div
+                  class="card-img-wrapper"
+                  [class.is-book-cover]="item.image.includes('books.google.com')"
+                >
                   <img
                     [src]="item.image"
                     [alt]="item.name"

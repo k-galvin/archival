@@ -38,7 +38,10 @@
   <div class="records-grid">
     @for (item of filteredItems(); track item.id) {
       <div class="record-card">
-        <div class="image-wrapper">
+        <div
+          class="image-wrapper"
+          [class.is-book-cover]="item.image.includes('books.google.com')"
+        >
           <img [src]="item.image" [alt]="item.name" class="record-image" />
           <div class="image-overlay">
             <button

@@ -1,8 +1,24 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
+import {
+  Subject,
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  of,
+} from 'rxjs';
 
 @Component({
   selector: 'app-acquisition',
@@ -11,7 +27,7 @@ import { CollectionItem } from '../../shared/models/archive.models';
   templateUrl: './acquisition.component.html',
   styleUrl: './acquisition.component.scss',
 })
-export class AcquisitionComponent {
+export class AcquisitionComponent implements OnInit, OnDestroy {
   private archive = inject(ArchiveService);
 
   // Form State
@@ -22,13 +38,19 @@ export class AcquisitionComponent {
   selectedFile = signal<File | null>(null);
   imagePreview = signal<string | null>(null);
 
+  // Book Search State
+  bookSearchResults = signal<any[]>([]);
+  isSearchingBooks = signal(false);
+  private bookSearch$ = new Subject<string>();
+  private bookSearchSubscription!: Subscription;
+
   // Archive signals for dropdowns
   rooms = this.archive.rooms;
-  movements = this.archive.movements; // Make movements signal available
+  movements = this.archive.movements;
 
   // Form data as a signal
   newItem = signal<Partial<CollectionItem>>({
-    category: 'decor', // Explicitly set to a valid category type
+    category: 'decor',
     name: '',
     designer: '',
     year: 2024,
@@ -36,6 +58,7 @@ export class AcquisitionComponent {
     note: '',
     room: '',
     movementId: '',
+    image: '', // For book cover URL
   });
 
   // Filter movements based on the selected category from the signal
@@ -44,23 +67,82 @@ export class AcquisitionComponent {
     if (!selectedCategory) {
       return this.movements();
     }
-    return this.movements().filter(
-      (m) => m.category === selectedCategory,
-    );
+    return this.movements().filter((m) => m.category === selectedCategory);
   });
+
+  ngOnInit(): void {
+    this.bookSearchSubscription = this.bookSearch$
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((query) => {
+          if (!query || this.newItem().category !== 'books') {
+            this.bookSearchResults.set([]);
+            return of({ items: [] });
+          }
+          this.isSearchingBooks.set(true);
+          return this.archive.searchBooks(query).pipe(
+            catchError(() => {
+              this.isSearchingBooks.set(false);
+              return of({ items: [] });
+            }),
+          );
+        }),
+      )
+      .subscribe((results) => {
+        this.isSearchingBooks.set(false);
+        this.bookSearchResults.set(results.items || []);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.bookSearchSubscription.unsubscribe();
+  }
+
+  onNomenclatureChange(event: Event): void {
+    const query = (event.target as HTMLInputElement).value;
+    this.newItem.update((item) => ({ ...item, name: query }));
+    this.bookSearch$.next(query);
+  }
+
+  selectBook(book: any): void {
+    const volumeInfo = book.volumeInfo;
+    const year = volumeInfo.publishedDate
+      ? parseInt(volumeInfo.publishedDate.substring(0, 4))
+      : this.newItem().year;
+
+    const imageUrl = volumeInfo.imageLinks?.thumbnail?.replace(
+      /^http:\/\//i,
+      'https://',
+    );
+
+    this.newItem.update((item) => ({
+      ...item,
+      name: volumeInfo.title,
+      designer: volumeInfo.authors ? volumeInfo.authors.join(', ') : '',
+      year: year,
+      image: imageUrl || '',
+      note: volumeInfo.description || '', // Auto-populate description
+    }));
+
+    this.imagePreview.set(imageUrl || null);
+    this.bookSearchResults.set([]);
+    this.selectedFile.set(null);
+  }
 
   /**
    * Handles category changes to reset dependent selections
-   * @param newCategory The new category value, typed according to CollectionItem
    */
-  onCategoryChange(
-    newCategory: 'decor' | 'music' | 'books' | 'fashion',
-  ): void {
+  onCategoryChange(newCategory: 'decor' | 'music' | 'books' | 'fashion'): void {
     this.newItem.update((item) => ({
       ...item,
       category: newCategory,
-      movementId: '', // Reset movement selection
+      movementId: '',
     }));
+    // If category is not books, clear search results
+    if (newCategory !== 'books') {
+      this.bookSearchResults.set([]);
+    }
   }
 
   /**
@@ -70,13 +152,9 @@ export class AcquisitionComponent {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile.set(file);
-
-      // Generate a local preview for immediate visual feedback
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview.set(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      this.imagePreview.set(URL.createObjectURL(file));
+      // Clear book image if a local file is chosen
+      this.newItem.update((item) => ({ ...item, image: '' }));
     }
   }
 
@@ -91,11 +169,11 @@ export class AcquisitionComponent {
     this.successMessage.set(null);
 
     try {
-      let imageUrl = '';
+      let imageUrl = currentItem.image || ''; // Use book cover URL if available
 
-      // 1. Upload to Supabase Storage if a file was selected
+      // 1. Upload to Supabase Storage if a local file was selected
       const file = this.selectedFile();
-      if (file) {
+      if (file && !imageUrl) {
         const uploadedUrl = await this.archive.uploadImage(file);
         if (uploadedUrl) imageUrl = uploadedUrl;
       }
@@ -105,13 +183,12 @@ export class AcquisitionComponent {
         ...currentItem,
         image:
           imageUrl ||
-          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Fallback
+          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800',
       } as CollectionItem);
 
       if (newItemData) {
         this.successMessage.set('Record successfully integrated into archive.');
         this.resetForm();
-      } else {
       }
     } catch (err) {
       console.error('Acquisition failed:', err);
@@ -130,8 +207,11 @@ export class AcquisitionComponent {
       note: '',
       room: '',
       movementId: '',
+      image: '',
     });
     this.selectedFile.set(null);
     this.imagePreview.set(null);
+    this.bookSearchResults.set([]);
+    this.isSearchingBooks.set(false);
   }
 }

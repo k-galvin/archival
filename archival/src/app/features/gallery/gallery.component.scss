@@ -185,6 +185,15 @@
   }
 }
 
+// Styling for Google Book Covers
+.image-wrapper.is-book-cover {
+  background-color: white; // White background for book covers
+  padding: 1rem; // Add whitespace around the image
+  .record-image {
+    object-fit: contain; // Scale image to fit inside, add whitespace
+  }
+}
+
 .record-details {
   display: flex;
   flex-direction: column;
