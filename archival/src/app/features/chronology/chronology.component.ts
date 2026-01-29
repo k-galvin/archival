@@ -22,11 +22,29 @@ export class ChronologyComponent {
   // Local UI State for scaling the temporal rail
   zoom = signal(1);
 
-  // Reference the global collection and sort it chronologically
-  collection = this.archive.collection;
+  private collection = this.archive.collection;
 
-  sortedCollection = computed(() => {
+  private sortedCollection = computed(() => {
     return [...this.collection()].sort((a, b) => (a.year || 0) - (b.year || 0));
+  });
+
+  // Group items by year to handle multiple items in the same year
+  groupedByYear = computed(() => {
+    const groups: { year: number; items: any[] }[] = [];
+    const yearMap = new Map<number, any[]>();
+
+    for (const item of this.sortedCollection()) {
+      if (!yearMap.has(item.year)) {
+        yearMap.set(item.year, []);
+      }
+      yearMap.get(item.year)!.push(item);
+    }
+
+    yearMap.forEach((items, year) => {
+      groups.push({ year, items });
+    });
+
+    return groups;
   });
 
   // Define the temporal bounds of the archive

@@ -63,7 +63,7 @@
           <label class="archival-overline">Object Nomenclature</label>
           <input
             type="text"
-            [(ngModel)]="newItem.name"
+            [(ngModel)]="newItem().name"
             name="name"
             placeholder="e.g. Wassily Chair, Model B3"
             required
@@ -72,7 +72,11 @@
 
         <div class="field-group">
           <label class="archival-overline">Category</label>
-          <select [(ngModel)]="newItem.category" name="category">
+          <select
+            [ngModel]="newItem().category"
+            (ngModelChange)="onCategoryChange($event)"
+            name="category"
+          >
             <option value="decor">Decor</option>
             <option value="music">Music</option>
             <option value="books">Books</option>
@@ -84,7 +88,7 @@
           <label class="archival-overline">Archival Year</label>
           <input
             type="number"
-            [(ngModel)]="newItem.year"
+            [(ngModel)]="newItem().year"
             name="year"
             placeholder="1925"
           />
@@ -94,7 +98,7 @@
           <label class="archival-overline">Designer / Author</label>
           <input
             type="text"
-            [(ngModel)]="newItem.designer"
+            [(ngModel)]="newItem().designer"
             name="designer"
             placeholder="Marcel Breuer"
           />
@@ -104,7 +108,7 @@
           <label class="archival-overline">Provenance / Origin</label>
           <input
             type="text"
-            [(ngModel)]="newItem.origin"
+            [(ngModel)]="newItem().origin"
             name="origin"
             placeholder="Dessau, Germany"
           />
@@ -113,7 +117,7 @@
         <!-- New: Room Selection -->
         <div class="field-group">
           <label class="archival-overline">Assign Room</label>
-          <select [(ngModel)]="newItem.room" name="room">
+          <select [(ngModel)]="newItem().room" name="room">
             <option value="">Select Room</option>
             @for (room of rooms(); track room.id) {
               <option [value]="room.id">{{ room.name }}</option>
@@ -124,7 +128,7 @@
         <!-- New: Movement Selection -->
         <div class="field-group">
           <label class="archival-overline">Associated Movement</label>
-          <select [(ngModel)]="newItem.movementId" name="movement">
+          <select [(ngModel)]="newItem().movementId" name="movement">
             <option value="">Select Movement</option>
             @for (movement of filteredMovements(); track movement.id) {
               <option [value]="movement.id">{{ movement.name }}</option>
@@ -135,7 +139,7 @@
         <div class="field-group full-width">
           <label class="archival-overline">Archivist Notes</label>
           <textarea
-            [(ngModel)]="newItem.note"
+            [(ngModel)]="newItem().note"
             name="note"
             rows="3"
             placeholder="Condition details, historical context..."
@@ -152,7 +156,7 @@
         <button
           type="submit"
           class="submit-btn bg-accent"
-          [disabled]="isSubmitting() || !newItem.name"
+          [disabled]="isSubmitting() || !newItem().name"
         >
           {{ isSubmitting() ? "Integrating..." : "Register Record" }}
         </button>

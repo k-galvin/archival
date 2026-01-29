@@ -26,24 +26,42 @@ export class AcquisitionComponent {
   rooms = this.archive.rooms;
   movements = this.archive.movements; // Make movements signal available
 
-  newItem: Partial<CollectionItem> = {
-    category: 'decor',
+  // Form data as a signal
+  newItem = signal<Partial<CollectionItem>>({
+    category: 'decor', // Explicitly set to a valid category type
     name: '',
     designer: '',
     year: 2024,
     origin: '',
     note: '',
-    room: '', // Initialize room property
-    movementId: '', // Initialize movementId property
-  };
+    room: '',
+    movementId: '',
+  });
 
-  // Filter movements based on the selected category
+  // Filter movements based on the selected category from the signal
   filteredMovements = computed(() => {
-    const selectedCategory = this.newItem.category;
+    const selectedCategory = this.newItem().category;
+    if (!selectedCategory) {
+      return this.movements();
+    }
     return this.movements().filter(
       (m) => m.category === selectedCategory,
     );
   });
+
+  /**
+   * Handles category changes to reset dependent selections
+   * @param newCategory The new category value, typed according to CollectionItem
+   */
+  onCategoryChange(
+    newCategory: 'decor' | 'music' | 'books' | 'fashion',
+  ): void {
+    this.newItem.update((item) => ({
+      ...item,
+      category: newCategory,
+      movementId: '', // Reset movement selection
+    }));
+  }
 
   /**
    * Handles local file selection and generates a preview
@@ -66,7 +84,8 @@ export class AcquisitionComponent {
    * Orchestrates the upload and registration protocol
    */
   async handleSubmit(): Promise<void> {
-    if (!this.newItem.name) return;
+    const currentItem = this.newItem();
+    if (!currentItem.name) return;
 
     this.isSubmitting.set(true);
     this.successMessage.set(null);
@@ -83,7 +102,7 @@ export class AcquisitionComponent {
 
       // 2. Register the full record with the image URL
       const newItemData = await this.archive.addItem({
-        ...this.newItem,
+        ...currentItem,
         image:
           imageUrl ||
           'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Fallback
@@ -93,8 +112,6 @@ export class AcquisitionComponent {
         this.successMessage.set('Record successfully integrated into archive.');
         this.resetForm();
       } else {
-        // Optionally, set an error message here if needed.
-        // For now, just ensuring success message isn't shown on failure.
       }
     } catch (err) {
       console.error('Acquisition failed:', err);
@@ -104,14 +121,16 @@ export class AcquisitionComponent {
   }
 
   private resetForm(): void {
-    this.newItem = {
+    this.newItem.set({
       category: 'decor',
       name: '',
       designer: '',
       year: 2024,
       origin: '',
       note: '',
-    };
+      room: '',
+      movementId: '',
+    });
     this.selectedFile.set(null);
     this.imagePreview.set(null);
   }

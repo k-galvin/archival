@@ -64,23 +64,36 @@
       }
 
       <!-- Item Data Points -->
-      @for (item of sortedCollection(); track item.id) {
-        <div class="timeline-node" [style.left.%]="getTimelinePos(item.year)">
+      @for (group of groupedByYear(); track group.year) {
+        <div class="timeline-node" [style.left.%]="getTimelinePos(group.year)">
           <!-- Hover Detail Card -->
           <div class="node-hover-card">
-            <div class="card-img-wrapper">
-              <img [src]="item.image" [alt]="item.name" class="card-img" />
-            </div>
-            <div class="card-meta">
-              <p class="card-name">{{ item.name }}</p>
-              <span class="card-year archival-overline text-accent">{{
-                item.year
-              }}</span>
-            </div>
+            @for (item of group.items; track item.id) {
+              <div class="card-item">
+                <div class="card-img-wrapper">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.name"
+                    class="card-img"
+                  />
+                </div>
+                <div class="card-meta">
+                  <p class="card-name">{{ item.name }}</p>
+                  <span class="card-year archival-overline text-accent">{{
+                    item.year
+                  }}</span>
+                </div>
+              </div>
+            }
           </div>
 
           <!-- The visible dot on the rail -->
-          <div class="node-dot bg-accent"></div>
+          <div class="node-dot bg-accent">
+            @if (group.items.length > 1) {
+              <div class="node-stack"></div>
+              <span class="item-count">{{ group.items.length }}</span>
+            }
+          </div>
         </div>
       }
 
