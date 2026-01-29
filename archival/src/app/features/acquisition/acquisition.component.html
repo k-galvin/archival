@@ -175,12 +175,14 @@
 
         <div class="field-group">
           <label class="archival-overline">Provenance / Origin</label>
-          <input
-            type="text"
-            [(ngModel)]="newItem().origin"
-            name="origin"
-            placeholder="Dessau, Germany"
-          />
+          <select [(ngModel)]="newItem().origin" name="origin">
+            <option value="">Select a city</option>
+            @for (city of cities(); track city.id) {
+              <option [value]="city.name.toLowerCase()">
+                {{ city.name }}, {{ city.country }}
+              </option>
+            }
+          </select>
         </div>
 
         <!-- New: Room Selection -->

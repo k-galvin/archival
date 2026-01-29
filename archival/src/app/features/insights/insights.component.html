@@ -1,21 +1,46 @@
 <div class="insights-container fade-in">
-  <!-- Top Level Stats -->
   <header class="insights-header">
-    <div class="stats-ribbon">
-      <div class="stat-card">
-        <span class="archival-overline">items archived</span>
-        <p class="stat-value">{{ collection().length }}</p>
-      </div>
-      <div class="stat-card">
-        <span class="archival-overline">geographies</span>
-        <p class="stat-value">{{ uniqueOriginsCount() }}</p>
-      </div>
-      <div class="stat-card">
-        <span class="archival-overline">status</span>
-        <p class="stat-value font-editorial">verified</p>
-      </div>
+    <div>
+      <span class="archival-overline text-accent">Archival Overview</span>
+      <h2 class="view-title">Data Insights</h2>
+    </div>
+    <div class="header-note">
+      <span class="archival-overline">Visual Status</span>
     </div>
   </header>
+
+  <div class="insights-grid">
+    <!-- Left Column: Stats & Lists -->
+    <aside class="left-column">
+      <div class="stat-box">
+        <span class="archival-overline">Unique Mapped Locations</span>
+        <p class="stat-value text-accent">{{ mappedOrigins().length }}</p>
+      </div>
+      <div class="list-box">
+        <span class="archival-overline">Distribution Density</span>
+        <div class="density-list">
+          @for (origin of originCounts(); track origin.name) {
+            <div class="density-row">
+              <span class="origin-name">{{ origin.name }}</span>
+              <span class="origin-count text-accent">{{ origin.count }}</span>
+            </div>
+          } @empty {
+            <p class="empty-hint">No origin data to display.</p>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Map -->
+    <div class="right-column">
+      <div class="map-wrapper">
+        <!-- Map will be rendered here by Leaflet -->
+        <div #mapContainer class="map-container"></div>
+        <!-- Grid Overlay -->
+        <div class="blueprint-overlay"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Temporal Analysis -->
   <section class="analysis-section">
@@ -58,12 +83,12 @@
   </section>
 
   <!-- Taxonomy / Movement Grid -->
-  <section class="taxonomy-section">
+  <section class="movements-section">
     <div class="distribution-grid">
       @for (cat of ["decor", "music", "books", "fashion"]; track cat) {
         <div class="dist-col">
           <span class="dist-label text-accent archival-overline"
-            >{{ cat }} taxonomy</span
+            >{{ cat }} movements</span
           >
           <div class="dist-rows">
             @for (row of getTaxonomyCounts(cat); track row.label) {

@@ -11,14 +11,14 @@ import { ArchiveService } from '../../core/services/archive.service';
 import { Room } from '../../shared/models/archive.models';
 
 @Component({
-  selector: 'app-map',
+  selector: 'app-layout',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './map.component.html',
-  styleUrl: './map.component.scss',
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent {
+export class LayoutComponent {
   private archive = inject(ArchiveService);
 
   // Local UI State for form inputs and hover interactions

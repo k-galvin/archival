@@ -28,6 +28,7 @@ export class ArchiveService {
   rooms = signal<Room[]>([]);
   userCollections = signal<UserCollection[]>([]);
   movements = signal<Movement[]>([]);
+  cities = signal<any[]>([]); // New signal for cities
 
   // Auth state signals
   user = signal<any>(null);
@@ -121,12 +122,20 @@ export class ArchiveService {
       .select('*, collection_items(item_id)')
       .eq('user_id', userId);
     const movementsReq = this.supabase.from('movements').select('*');
+    const citiesReq = this.supabase.from('cities').select('*'); // New cities request
 
-    const [itemsRes, roomsRes, collectionsRes, movementsRes] =
-      await Promise.all([itemsReq, roomsReq, colReq, movementsReq]);
+    const [itemsRes, roomsRes, collectionsRes, movementsRes, citiesRes] =
+      await Promise.all([
+        itemsReq,
+        roomsReq,
+        colReq,
+        movementsReq,
+        citiesReq, // Add citiesReq to Promise.all
+      ]);
 
     if (roomsRes.data) this.rooms.set(roomsRes.data);
     if (movementsRes.data) this.movements.set(movementsRes.data);
+    if (citiesRes.data) this.cities.set(citiesRes.data); // Populate cities signal
 
     if (itemsRes.data) {
       const roomMap = new Map<string, string>();
@@ -169,6 +178,7 @@ export class ArchiveService {
     this.collection.set([]);
     this.rooms.set([]);
     this.userCollections.set([]);
+    this.cities.set([]); // Clear cities signal
   }
 
   // --- Write Operations ---

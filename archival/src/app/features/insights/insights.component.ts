@@ -4,9 +4,17 @@ import {
   signal,
   computed,
   ChangeDetectionStrategy,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
+import { CollectionItem } from '../../shared/models/archive.models';
+
+// Global declaration for Leaflet
+declare const L: any;
 
 @Component({
   selector: 'app-insights',
@@ -16,16 +24,21 @@ import { ArchiveService } from '../../core/services/archive.service';
   styleUrl: './insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InsightsComponent {
+export class InsightsComponent implements OnInit, AfterViewInit {
   private archive = inject(ArchiveService);
 
-  // Local UI State
+  @ViewChild('mapContainer') mapElement!: ElementRef;
+  private map: any;
+  private leafletReady = false;
+
+  // --- Local UI State ---
   hoveredMovement = signal<string | null>(null);
 
-  // Reference signals from central service
+  // --- Reference signals from central service ---
   collection = this.archive.collection;
+  cities = this.archive.cities;
 
-  // Static Metadata (Movements)
+  // --- Static Metadata ---
   MOVEMENT_DESCRIPTIONS: Record<string, string> = {
     bauhaus:
       'Rational, functional design from Germany (1919-1933) emphasizing geometric forms and the union of art and industry.',
@@ -42,21 +55,40 @@ export class InsightsComponent {
 
   // --- Analytical Computeds ---
 
-  uniqueOriginsCount = computed(
-    () => [...new Set(this.collection().map((i) => i.origin))].length,
-  );
+  mappedOrigins = computed(() => {
+    const grouped: Record<string, { lat: number; lng: number; items: CollectionItem[] }> = {};
+    const cityMap = new Map(this.cities().map(c => [c.name.toLowerCase(), c]));
+
+    this.collection().forEach(item => {
+      if (item.origin) {
+        const originKey = item.origin.toLowerCase();
+        const city = cityMap.get(originKey);
+        if (city) {
+          if (!grouped[originKey]) {
+            grouped[originKey] = { lat: city.lat, lng: city.lng, items: [] };
+          }
+          grouped[originKey].items.push(item);
+        }
+      }
+    });
+    return Object.entries(grouped).map(([name, data]) => ({ name, ...data }));
+  });
 
   /**
-   * Aggregates item counts by decade for the temporal chart.
+   * Returns all mapped origins sorted by item count.
    */
-  temporalData = computed(() => {
-    const decades = [
-      1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020,
-    ];
-    const counts: Record<number, number> = {};
-    decades.forEach((d) => (counts[d] = 0));
+  originCounts = computed(() => {
+    return this.mappedOrigins()
+      .map(o => ({ name: o.name, count: o.items.length }))
+      .sort((a, b) => b.count - a.count);
+  });
 
-    this.collection().forEach((item) => {
+  temporalData = computed(() => {
+    const decades = [1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020];
+    const counts: Record<number, number> = {};
+    decades.forEach(d => (counts[d] = 0));
+
+    this.collection().forEach(item => {
       const year = item.year;
       if (!isNaN(year)) {
         const d = Math.floor(year / 10) * 10;
@@ -69,14 +101,11 @@ export class InsightsComponent {
       .map(([decade, count]) => ({ decade: Number(decade), count }));
   });
 
-  /**
-   * Generates an SVG path string for the temporal line chart.
-   */
   temporalLinePath = computed(() => {
     const data = this.temporalData();
     const width = 1000;
     const height = 100;
-    const max = Math.max(...data.map((d) => d.count), 1);
+    const max = Math.max(...data.map(d => d.count), 1);
 
     return data
       .map((d, i) => {
@@ -87,15 +116,107 @@ export class InsightsComponent {
       .join(' ');
   });
 
-  /**
-   * Returns top 5 design movements for a specific category.
-   */
+  // --- Lifecycle Hooks ---
+
+  ngOnInit() {
+    this.loadLeafletAssets();
+  }
+
+  ngAfterViewInit() {
+    this.checkLeafletReady();
+  }
+
+  // --- Map Initialization ---
+
+  private loadLeafletAssets() {
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+    if (!document.getElementById('leaflet-js')) {
+      const script = document.createElement('script');
+      script.id = 'leaflet-js';
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.async = true;
+      script.onload = () => {
+        this.leafletReady = true;
+        this.checkLeafletReady();
+      };
+      document.head.appendChild(script);
+    } else {
+      this.leafletReady = true;
+    }
+  }
+
+  private checkLeafletReady() {
+    if (this.leafletReady && this.mapElement) {
+      this.initMap();
+    } else {
+      setTimeout(() => this.checkLeafletReady(), 100);
+    }
+  }
+
+  private async initMap() {
+    if (!this.mapElement || this.map) return;
+
+    this.map = L.map(this.mapElement.nativeElement, {
+      center: [30, 10],
+      zoom: 2,
+      zoomControl: false,
+      attributionControl: false,
+    });
+
+    const geoUrl = 'https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson';
+
+    try {
+      const response = await fetch(geoUrl);
+      const data = await response.json();
+      L.geoJSON(data, {
+        style: {
+          fillColor: '#ffffff',
+          fillOpacity: 1,
+          color: '#0047AB',
+          weight: 0.5,
+        },
+      }).addTo(this.map);
+    } catch (e) {
+      console.warn('GeoJSON load failed. Map will be empty.');
+    }
+
+    this.mappedOrigins().forEach(origin => {
+      const marker = L.circleMarker([origin.lat, origin.lng], {
+        radius: 5,
+        fillColor: '#0047AB',
+        color: '#ffffff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 1,
+      }).addTo(this.map);
+
+      const content = `
+        <div style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; color: #0047AB; margin-bottom: 6px; font-weight: bold;">${origin.name}</div>
+        <ul style="margin: 0; padding: 0; list-style: none; font-size: 11px; color: #1A1A1A;">
+          ${origin.items.map(i => `<li style="border-bottom: 1px solid #f0f0f0; padding: 4px 0;">${i.name}</li>`).join('')}
+        </ul>
+      `;
+
+      marker.bindPopup(content, { className: 'archival-popup', closeButton: false });
+      marker.on('mouseover', () => marker.openPopup());
+      marker.on('mouseout', () => marker.closePopup());
+    });
+  }
+
+  // --- Helper Methods ---
+
   getTaxonomyCounts(category: string) {
     const items = this.collection().filter((i) => i.category === category);
     const counts: Record<string, number> = {};
 
     items.forEach((i) => {
-      if (i.movementName) { // Only count if a movement name exists
+      if (i.movementName) {
         counts[i.movementName] = (counts[i.movementName] || 0) + 1;
       }
     });

@@ -10,9 +10,12 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'map',
+    path: 'layout',
+    title: 'Layout',
     loadComponent: () =>
-      import('./features/map/map.component').then((m) => m.MapComponent),
+      import('./features/layout/layout.component').then(
+        (m) => m.LayoutComponent,
+      ),
   },
   {
     path: 'chronology',

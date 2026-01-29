@@ -53,6 +53,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   // Archive signals for dropdowns
   rooms = this.archive.rooms;
   movements = this.archive.movements;
+  cities = this.archive.cities;
 
   // Form data as a signal
   newItem = signal<Partial<CollectionItem>>({
