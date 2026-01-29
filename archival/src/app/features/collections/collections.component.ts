@@ -26,13 +26,7 @@ export class CollectionsComponent {
     const title = this.newCollectionTitle().trim();
     if (!title) return;
 
-    const newCol = {
-      id: Math.random().toString(36).substring(2, 11),
-      title: title.toLowerCase(),
-      itemIds: [],
-    };
-
-    this.archive.userCollections.update((prev) => [newCol, ...prev]);
+    this.archive.addCollection(title); // Call the service to persist the new collection
     this.newCollectionTitle.set('');
   }
 
@@ -40,23 +34,17 @@ export class CollectionsComponent {
    * Removes an entire collection record from the state
    */
   deleteCollection(id: string): void {
-    this.archive.userCollections.update((prev) =>
-      prev.filter((c) => c.id !== id),
-    );
+    // Confirmation before deleting
+    if (confirm('Are you sure you want to delete this entire collection?')) {
+      this.archive.deleteCollection(id);
+    }
   }
 
   /**
    * Removes a specific item reference from a collection
    */
   removeFromCollection(colId: string, itemId: string): void {
-    this.archive.userCollections.update((cols) =>
-      cols.map((c) => {
-        if (c.id === colId) {
-          return { ...c, itemIds: c.itemIds.filter((id) => id !== itemId) };
-        }
-        return c;
-      }),
-    );
+    this.archive.removeFromCollection(colId, itemId);
   }
 
   /**

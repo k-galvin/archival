@@ -72,7 +72,10 @@
               <div class="card-item">
                 <div
                   class="card-img-wrapper"
-                  [class.is-book-cover]="item.image.includes('books.google.com')"
+                  [class.is-formatted-cover]="
+                    item.image.includes('books.google.com') ||
+                    item.image.includes('discogs.com')
+                  "
                 >
                   <img
                     [src]="item.image"

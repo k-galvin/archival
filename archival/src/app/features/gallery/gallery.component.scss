@@ -134,7 +134,7 @@
 
 .image-wrapper {
   aspect-ratio: 1;
-  background: #fafafa;
+  background: white; // Changed from #fafafa to white
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
   position: relative;
@@ -185,9 +185,9 @@
   }
 }
 
-// Styling for Google Book Covers
-.image-wrapper.is-book-cover {
-  background-color: white; // White background for book covers
+// Styling for Google Book/Album Covers
+.image-wrapper.is-formatted-cover {
+  background-color: white; // White background for covers
   padding: 1rem; // Add whitespace around the image
   .record-image {
     object-fit: contain; // Scale image to fit inside, add whitespace

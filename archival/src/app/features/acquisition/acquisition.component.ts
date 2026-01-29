@@ -18,6 +18,7 @@ import {
   switchMap,
   catchError,
   of,
+  map,
 } from 'rxjs';
 
 @Component({
@@ -41,8 +42,13 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   // Book Search State
   bookSearchResults = signal<any[]>([]);
   isSearchingBooks = signal(false);
-  private bookSearch$ = new Subject<string>();
-  private bookSearchSubscription!: Subscription;
+
+  // Album Search State
+  albumSearchResults = signal<any[]>([]);
+  isSearchingMusic = signal(false);
+
+  private search$ = new Subject<string>();
+  private searchSubscription!: Subscription;
 
   // Archive signals for dropdowns
   rooms = this.archive.rooms;
@@ -58,7 +64,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     note: '',
     room: '',
     movementId: '',
-    image: '', // For book cover URL
+    image: '', // For book/album cover URL
   });
 
   // Filter movements based on the selected category from the signal
@@ -71,38 +77,70 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.bookSearchSubscription = this.bookSearch$
+    this.searchSubscription = this.search$
       .pipe(
-        debounceTime(300),
+        debounceTime(600),
         distinctUntilChanged(),
         switchMap((query) => {
-          if (!query || this.newItem().category !== 'books') {
+          const category = this.newItem().category;
+
+          this.isSearchingBooks.set(false);
+          this.isSearchingMusic.set(false);
+
+          if (!query) {
             this.bookSearchResults.set([]);
-            return of({ items: [] });
+            this.albumSearchResults.set([]);
+            return of(null);
           }
-          this.isSearchingBooks.set(true);
-          return this.archive.searchBooks(query).pipe(
-            catchError(() => {
-              this.isSearchingBooks.set(false);
-              return of({ items: [] });
-            }),
-          );
+
+          if (category === 'books') {
+            this.isSearchingBooks.set(true);
+            return this.archive.searchBooks(query).pipe(
+              map((results) => ({
+                data: results?.items || [],
+                category: 'books',
+              })),
+              catchError(() => of({ data: [], category: 'books' })),
+            );
+          } else if (category === 'music') {
+            this.isSearchingMusic.set(true);
+            return this.archive.searchDiscogs(query).pipe(
+              map((results) => ({
+                data: results?.results || [],
+                category: 'music',
+              })),
+              catchError(() => of({ data: [], category: 'music' })),
+            );
+          }
+
+          return of(null);
         }),
       )
-      .subscribe((results) => {
+      .subscribe((result) => {
         this.isSearchingBooks.set(false);
-        this.bookSearchResults.set(results.items || []);
+        this.isSearchingMusic.set(false);
+
+        if (result) {
+          if (result.category === 'books') {
+            this.bookSearchResults.set(result.data);
+          } else if (result.category === 'music') {
+            this.albumSearchResults.set(result.data);
+          }
+        } else {
+          this.bookSearchResults.set([]);
+          this.albumSearchResults.set([]);
+        }
       });
   }
 
   ngOnDestroy(): void {
-    this.bookSearchSubscription.unsubscribe();
+    this.searchSubscription.unsubscribe();
   }
 
   onNomenclatureChange(event: Event): void {
     const query = (event.target as HTMLInputElement).value;
     this.newItem.update((item) => ({ ...item, name: query }));
-    this.bookSearch$.next(query);
+    this.search$.next(query);
   }
 
   selectBook(book: any): void {
@@ -112,7 +150,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       : this.newItem().year;
 
     const imageUrl = volumeInfo.imageLinks?.thumbnail?.replace(
-      /^http:\/\//i,
+      /^http:\/\//i, // Corrected regex literal
       'https://',
     );
 
@@ -122,7 +160,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       designer: volumeInfo.authors ? volumeInfo.authors.join(', ') : '',
       year: year,
       image: imageUrl || '',
-      note: volumeInfo.description || '', // Auto-populate description
+      note: volumeInfo.description || '',
     }));
 
     this.imagePreview.set(imageUrl || null);
@@ -130,37 +168,56 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.selectedFile.set(null);
   }
 
-  /**
-   * Handles category changes to reset dependent selections
-   */
+  selectDiscogsRelease(release: any): void {
+    const imageUrl = release.cover_image;
+    const parts = release.title.split(' - ');
+    const artist = parts.length > 1 ? parts[0] : 'Unknown Artist';
+    const albumName =
+      parts.length > 1 ? parts.slice(1).join(' - ') : release.title;
+
+    this.newItem.update((item) => ({
+      ...item,
+      name: albumName,
+      designer: artist,
+      year: release.year,
+      image: imageUrl || '',
+      note: `Format: ${release.format?.join(', ') || 'N/A'}\nLabel: ${
+        release.label?.join(', ') || 'N/A'
+      }`,
+    }));
+
+    this.imagePreview.set(imageUrl || null);
+    this.albumSearchResults.set([]);
+    this.selectedFile.set(null);
+  }
+
   onCategoryChange(newCategory: 'decor' | 'music' | 'books' | 'fashion'): void {
     this.newItem.update((item) => ({
       ...item,
       category: newCategory,
       movementId: '',
     }));
-    // If category is not books, clear search results
-    if (newCategory !== 'books') {
-      this.bookSearchResults.set([]);
-    }
+    this.bookSearchResults.set([]);
+    this.albumSearchResults.set([]);
   }
 
-  /**
-   * Handles local file selection and generates a preview
-   */
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile.set(file);
-      this.imagePreview.set(URL.createObjectURL(file));
-      // Clear book image if a local file is chosen
+
+      // Generate a local preview for immediate visual feedback
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      
+      // Clear any external image URL
       this.newItem.update((item) => ({ ...item, image: '' }));
     }
   }
 
-  /**
-   * Orchestrates the upload and registration protocol
-   */
   async handleSubmit(): Promise<void> {
     const currentItem = this.newItem();
     if (!currentItem.name) return;
@@ -169,16 +226,14 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.successMessage.set(null);
 
     try {
-      let imageUrl = currentItem.image || ''; // Use book cover URL if available
+      let imageUrl = currentItem.image || '';
 
-      // 1. Upload to Supabase Storage if a local file was selected
       const file = this.selectedFile();
       if (file && !imageUrl) {
         const uploadedUrl = await this.archive.uploadImage(file);
         if (uploadedUrl) imageUrl = uploadedUrl;
       }
 
-      // 2. Register the full record with the image URL
       const newItemData = await this.archive.addItem({
         ...currentItem,
         image:
@@ -213,5 +268,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.imagePreview.set(null);
     this.bookSearchResults.set([]);
     this.isSearchingBooks.set(false);
+    this.albumSearchResults.set([]);
+    this.isSearchingMusic.set(false);
   }
 }

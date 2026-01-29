@@ -1,7 +1,7 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import {
   CollectionItem,
   Room,
@@ -108,20 +108,22 @@ export class ArchiveService {
   private async fetchUserData(userId: string) {
     this.loading.set(true);
 
-    const itemsReq = this.supabase.from('items').select('*').eq('user_id', userId);
-    const roomsReq = this.supabase.from('rooms').select('*').eq('user_id', userId);
+    const itemsReq = this.supabase
+      .from('items')
+      .select('*')
+      .eq('user_id', userId);
+    const roomsReq = this.supabase
+      .from('rooms')
+      .select('*')
+      .eq('user_id', userId);
     const colReq = this.supabase
       .from('collections')
       .select('*, collection_items(item_id)')
       .eq('user_id', userId);
     const movementsReq = this.supabase.from('movements').select('*');
 
-    const [itemsRes, roomsRes, collectionsRes, movementsRes] = await Promise.all([
-      itemsReq,
-      roomsReq,
-      colReq,
-      movementsReq,
-    ]);
+    const [itemsRes, roomsRes, collectionsRes, movementsRes] =
+      await Promise.all([itemsReq, roomsReq, colReq, movementsReq]);
 
     if (roomsRes.data) this.rooms.set(roomsRes.data);
     if (movementsRes.data) this.movements.set(movementsRes.data);
@@ -184,6 +186,30 @@ export class ArchiveService {
       url += `&key=${environment.googleBooksApiKey}`;
     }
     return this.http.get(url);
+  }
+
+  /**
+   * Searches the Discogs API for a given release (album) query.
+   * @param query The search term, e.g., an album title.
+   * @returns An Observable of the API response.
+   */
+  searchDiscogs(query: string): Observable<any> {
+    if (!environment.discogsToken) {
+      console.warn('Discogs token not set. Skipping search.');
+      return of({ results: [] }); // Return empty if no token is provided
+    }
+
+    const url = 'https://api.discogs.com/database/search';
+    const headers = new HttpHeaders({
+      Authorization: `Discogs token=${environment.discogsToken}`,
+    });
+    const params = {
+      q: query,
+      type: 'release', // To search for albums/releases
+      per_page: '10',
+    };
+
+    return this.http.get(url, { headers, params });
   }
 
   /**
@@ -265,12 +291,93 @@ export class ArchiveService {
     }
   }
 
+  async addCollection(title: string) {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    const { data, error } = await this.supabase
+      .from('collections')
+      .insert({
+        user_id: currentUser.id,
+        title: title,
+      })
+      .select()
+      .single();
+
+    if (data) {
+      // Optimistically update the local signal state
+      this.userCollections.update((cols) => [
+        ...cols,
+        { id: data.id, title: data.title, itemIds: [] },
+      ]);
+    } else if (error) {
+      console.error('Error adding collection:', error.message);
+    }
+  }
+
+  async deleteCollection(id: string) {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    // First, delete all items in the junction table associated with this collection
+    const { error: junctionError } = await this.supabase
+      .from('collection_items')
+      .delete()
+      .eq('collection_id', id);
+
+    if (junctionError) {
+      console.error('Error deleting collection items:', junctionError.message);
+      return; // Stop if we can't delete the children
+    }
+
+    // Then, delete the collection itself
+    const { error: collectionError } = await this.supabase
+      .from('collections')
+      .delete()
+      .eq('id', id);
+
+    if (collectionError) {
+      console.error('Error deleting collection:', collectionError.message);
+    } else {
+      // Optimistically update the local signal
+      this.userCollections.update((cols) => cols.filter((c) => c.id !== id));
+    }
+  }
+
+  async removeFromCollection(colId: string, itemId: string) {
+    const { error } = await this.supabase
+      .from('collection_items')
+      .delete()
+      .match({ collection_id: colId, item_id: itemId });
+
+    if (error) {
+      console.error('Error removing item from collection:', error.message);
+    } else {
+      // Optimistically update local state
+      this.userCollections.update((cols) =>
+        cols.map((c) => {
+          if (c.id === colId) {
+            return { ...c, itemIds: c.itemIds.filter((id) => id !== itemId) };
+          }
+          return c;
+        }),
+      );
+    }
+  }
+
   async addToUserCollection(colId: string, itemId: string) {
+    // Prevent adding duplicates
+    const collection = this.userCollections().find((c) => c.id === colId);
+    if (collection?.itemIds.includes(itemId)) {
+      console.log('Item already in collection.');
+      return;
+    }
+
     const { error } = await this.supabase
       .from('collection_items')
       .insert({ collection_id: colId, item_id: itemId });
 
-    if (!error) {
+    if (error === null) {
       this.userCollections.update((cols) =>
         cols.map((c) =>
           c.id === colId && !c.itemIds.includes(itemId)
@@ -313,7 +420,12 @@ export class ArchiveService {
         : '';
 
       this.collection.update((prev) => [
-        { ...data, image: data.image_url, room: roomName, movementName: movementName },
+        {
+          ...data,
+          image: data.image_url,
+          room: roomName,
+          movementName: movementName,
+        },
         ...prev,
       ]);
       return { ...data, room: roomName, movementName: movementName };

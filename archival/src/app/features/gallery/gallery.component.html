@@ -40,7 +40,10 @@
       <div class="record-card">
         <div
           class="image-wrapper"
-          [class.is-book-cover]="item.image.includes('books.google.com')"
+          [class.is-formatted-cover]="
+            item.image.includes('books.google.com') ||
+            item.image.includes('discogs.com')
+          "
         >
           <img [src]="item.image" [alt]="item.name" class="record-image" />
           <div class="image-overlay">

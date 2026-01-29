@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  googleBooksApiKey: '',
+  googleBooksApiKey: 'YOUR_GOOGLE_BOOKS_API_KEY_HERE',
+  discogsToken: 'YOUR_DISCOGS_PERSONAL_ACCESS_TOKEN_HERE',
 };

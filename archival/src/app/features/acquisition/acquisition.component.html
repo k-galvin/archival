@@ -75,7 +75,7 @@
             @if (isSearchingBooks() || bookSearchResults().length > 0) {
               <div class="search-results custom-scrollbar">
                 @if (isSearchingBooks()) {
-                  <div class="result-item">Searching...</div>
+                  <div class="result-item">Searching Books...</div>
                 } @else {
                   @for (book of bookSearchResults(); track $index) {
                     <div
@@ -99,6 +99,38 @@
                   } @empty {
                     @if (newItem().name && newItem().category === 'books') {
                       <div class="result-item">No books found.</div>
+                    }
+                  }
+                }
+              </div>
+            }
+            <!-- Album Search Results Dropdown -->
+            @if (isSearchingMusic() || albumSearchResults().length > 0) {
+              <div class="search-results custom-scrollbar">
+                @if (isSearchingMusic()) {
+                  <div class="result-item">Searching Music...</div>
+                } @else {
+                  @for (album of albumSearchResults(); track album.id) {
+                    <div
+                      class="result-item book-result"
+                      (click)="selectDiscogsRelease(album)"
+                    >
+                      <img
+                        [src]="album.cover_image"
+                        class="book-thumb"
+                        alt="Album Art"
+                      />
+                      <div class="book-meta">
+                        <span class="book-title">{{ album.title }}</span>
+                        <span class="book-author">{{ album.year }}</span>
+                      </div>
+                    </div>
+                  } @empty {
+                    @if (newItem().name && newItem().category === 'music') {
+                      <div class="result-item">
+                        No albums found. Please check your Discogs token in the
+                        environment file.
+                      </div>
                     }
                   }
                 }
