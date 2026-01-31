@@ -5,6 +5,14 @@
       <h2 class="view-title">acquisition</h2>
       <span class="archival-overline">New Record Entry</span>
     </div>
+    <div class="category-tabs">
+      <button 
+        *ngFor="let category of categories"
+        [class.active]="newItem().category === category"
+        (click)="onCategoryChange(category)">
+        {{ category }}
+      </button>
+    </div>
   </header>
 
   <div class="entry-layout">
@@ -137,20 +145,6 @@
               </div>
             }
           </div>
-        </div>
-
-        <div class="field-group">
-          <label class="archival-overline">Category</label>
-          <select
-            [ngModel]="newItem().category"
-            (ngModelChange)="onCategoryChange($event)"
-            name="category"
-          >
-            <option value="decor">Decor</option>
-            <option value="music">Music</option>
-            <option value="books">Books</option>
-            <option value="fashion">Fashion</option>
-          </select>
         </div>
 
         <div class="field-group">

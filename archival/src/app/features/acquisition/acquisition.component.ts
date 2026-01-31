@@ -35,6 +35,9 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   successMessage = signal<string | null>(null);
 
+  // Categories
+  categories: ('decor' | 'music' | 'books' | 'fashion')[] = ['decor', 'music', 'books', 'fashion'];
+
   // Image Upload State
   selectedFile = signal<File | null>(null);
   imagePreview = signal<string | null>(null);
