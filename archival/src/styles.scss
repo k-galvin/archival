@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // --- ARCHIVAL GLOBAL VARIABLES ---
 $primary-blue: #0047ab;
 $text-black: #1a1a1a;
@@ -84,7 +86,7 @@ body {
     transform 0.1s;
 
   &:hover {
-    background: darken($primary-blue, 10%);
+    background: color.adjust($primary-blue, $lightness: -10%);
   }
 
   &:active {
