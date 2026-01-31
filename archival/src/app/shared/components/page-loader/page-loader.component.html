@@ -1,0 +1,17 @@
+<div class="loader-container" *ngIf="isLoading">
+    <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- Left Static Page -->
+        <path class="mag-base" d="M 35,40 L 100,40 L 100,140 L 35,140 Z" />
+        
+        <!-- Right Static Page -->
+        <path class="mag-base" d="M 100,40 L 165,40 L 165,140 L 100,140 Z" />
+        
+        <!-- The Flipping Page (Animated) -->
+        <path class="flipping-page" d="M 100,40 L 165,40 L 165,140 L 100,140 Z" />
+
+        <!-- Spine (Drawn last to anchor the center) -->
+        <line class="mag-base" x1="100" y1="40" x2="100" y2="140" />
+    </svg>
+
+    <div class="loading-text">{{ loadingText }}</div>
+</div>
