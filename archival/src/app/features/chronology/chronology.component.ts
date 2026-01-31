@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
 
 @Component({
-  selector: 'app-timeline',
+  selector: 'app-chronology',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './chronology.component.html',
@@ -19,9 +19,6 @@ import { ArchiveService } from '../../core/services/archive.service';
 export class ChronologyComponent {
   private archive = inject(ArchiveService);
 
-  // Local UI State for scaling the temporal rail
-  zoom = signal(1);
-
   private collection = this.archive.collection;
 
   private sortedCollection = computed(() => {
@@ -30,10 +27,12 @@ export class ChronologyComponent {
 
   // Group items by year to handle multiple items in the same year
   groupedByYear = computed(() => {
-    const groups: { year: number; items: any[] }[] = [];
+    const groups: { year: number; items: any[]; gap: number }[] = [];
     const yearMap = new Map<number, any[]>();
+    let lastYear = 0;
 
     for (const item of this.sortedCollection()) {
+      if (!item.year) continue; // Skip items without a year
       if (!yearMap.has(item.year)) {
         yearMap.set(item.year, []);
       }
@@ -41,34 +40,29 @@ export class ChronologyComponent {
     }
 
     yearMap.forEach((items, year) => {
-      groups.push({ year, items });
+      const gap = lastYear ? year - lastYear : 0;
+      groups.push({ year, items, gap });
+      lastYear = year;
     });
 
     return groups;
   });
 
-  // Define the temporal bounds of the archive
-  readonly START_YEAR = 1920;
-  readonly END_YEAR = 2030;
-  readonly TOTAL_YEARS = this.END_YEAR - this.START_YEAR;
+  calculateGap(gap: number): number {
+    if (gap === 0) {
+      // Remove space above first year
+      return 0;
+    }
 
-  // Static markers for the rail background
-  decadeMarkers = [1920, 1940, 1960, 1980, 2000, 2020];
+    const typicalGap = 2; // 2rem for consecutive years
+    if (gap === 1) {
+      return typicalGap;
+    }
 
-  /**
-   * Calculates the horizontal percentage position of a year on the rail
-   */
-  getTimelinePos(year: string | number): number {
-    const yr = typeof year === 'string' ? parseInt(year) : year;
-    if (isNaN(yr)) return 0;
-    return ((yr - this.START_YEAR) / this.TOTAL_YEARS) * 100;
-  }
+    // For missed years
+    const baseMissedYearGap = 4; // A larger base gap for any missed years
+    const perYearGap = 0.5; // And a more noticeable per-year gap
 
-  zoomIn(): void {
-    this.zoom.update((v) => Math.min(4, v + 0.5));
-  }
-
-  zoomOut(): void {
-    this.zoom.update((v) => Math.max(1, v - 0.5));
+    return baseMissedYearGap + (gap - 2) * perYearGap;
   }
 }

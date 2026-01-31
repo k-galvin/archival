@@ -165,6 +165,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     this.map = L.map(this.mapElement.nativeElement, {
       center: [30, 10],
       zoom: 2,
+      minZoom: 2,
       zoomControl: false,
       attributionControl: false,
     });
