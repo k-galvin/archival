@@ -11,7 +11,6 @@ export const routes: Routes = [
   },
   {
     path: 'layout',
-    title: 'Layout',
     loadComponent: () =>
       import('./features/layout/layout.component').then(
         (m) => m.LayoutComponent,
