@@ -1,7 +1,7 @@
-.gallery-container {
-  display: flex;
-  flex-direction: column;
-}
+// .gallery-container {
+//   display: flex;
+//   flex-direction: column;
+// }
 
 // Header Layout
 .view-header {
@@ -115,7 +115,7 @@
 // Records Grid
 .records-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 4rem 2rem;
 
   @media (max-width: 1024px) {
@@ -134,7 +134,7 @@
 
 .image-wrapper {
   aspect-ratio: 1;
-  background: white; // Changed from #fafafa to white
+  background: white; 
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
   position: relative;
@@ -213,7 +213,6 @@
     font-weight: 700;
     text-transform: lowercase;
     margin: 0;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
