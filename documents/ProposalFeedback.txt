@@ -1,7 +1,7 @@
 
 CMSI 4072 Spring 2026
 Project Proposal Feedback
-Project: Schedulr
+Project: Archival
 =========================
 Proposal Document [2 points]:
    Verbal Description:
@@ -29,10 +29,24 @@ Proposal Presentation [Slides and video] [3 points]:
       the audience up.  Having the tech requirements in a table is a novel
       approach!  Nice work on this.
 
-   Video:
 
 
 Summary:
 --------
 
 Nice job overall!  Keep up the good work.  Will update after video is posted.
+
+
+VIDEO EVALUATION
+================
+Very good work on the presentation.  I like that you are talking from your
+own knowledge and not just reading from a script or the information on the
+slides.  You seem more 'live' when you do this.
+
+One thing I noted is the slides in the presentation don't seem to advance in
+the player in concert with your voice.  Looking at the PDF of your slides I
+can follow along, but the presentation itself is out of sync.
+
+I like the idea of the project, as a personal 'museum' application.
+
+Nice work on this.  Five out of Five points for this deliverable.
