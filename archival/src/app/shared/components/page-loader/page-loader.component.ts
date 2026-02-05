@@ -9,6 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './page-loader.component.scss'
 })
 export class PageLoaderComponent {
-  @Input() isLoading: boolean = false;
-  @Input() loadingText: string = 'Loading';
+  @Input() isLoading = false;
+  @Input() loadingText = 'Loading';
 }

@@ -1,5 +1,5 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {
@@ -7,6 +7,9 @@ import {
   Room,
   UserCollection,
   Movement,
+  City,
+  GoogleBooksResponse,
+  DiscogsResponse,
 } from '../../shared/models/archive.models';
 import { environment } from '../../../environments/environment';
 
@@ -28,10 +31,10 @@ export class ArchiveService {
   rooms = signal<Room[]>([]);
   userCollections = signal<UserCollection[]>([]);
   movements = signal<Movement[]>([]);
-  cities = signal<any[]>([]); // New signal for cities
+  cities = signal<City[]>([]); // New signal for cities
 
   // Auth state signals
-  user = signal<any>(null);
+  user = signal<User | null>(null);
   loading = signal(true);
   authError = signal<string | null>(null);
 
@@ -166,7 +169,7 @@ export class ArchiveService {
         collectionsRes.data.map((c) => ({
           id: c.id,
           title: c.title,
-          itemIds: c.collection_items.map((ci: any) => ci.item_id),
+          itemIds: c.collection_items.map((ci: { item_id: string }) => ci.item_id),
         })),
       );
     }
@@ -188,14 +191,14 @@ export class ArchiveService {
    * @param query The search term, e.g., a book title.
    * @returns An Observable of the API response.
    */
-  searchBooks(query: string): Observable<any> {
+  searchBooks(query: string): Observable<GoogleBooksResponse> {
     let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       query,
     )}&maxResults=5`;
     if (environment.googleBooksApiKey) {
       url += `&key=${environment.googleBooksApiKey}`;
     }
-    return this.http.get(url);
+    return this.http.get<GoogleBooksResponse>(url);
   }
 
   /**
@@ -203,7 +206,7 @@ export class ArchiveService {
    * @param query The search term, e.g., an album title.
    * @returns An Observable of the API response.
    */
-  searchDiscogs(query: string): Observable<any> {
+  searchDiscogs(query: string): Observable<DiscogsResponse> {
     if (!environment.discogsToken) {
       console.warn('Discogs token not set. Skipping search.');
       return of({ results: [] }); // Return empty if no token is provided
@@ -219,7 +222,7 @@ export class ArchiveService {
       per_page: '10',
     };
 
-    return this.http.get(url, { headers, params });
+    return this.http.get<DiscogsResponse>(url, { headers, params });
   }
 
   /**

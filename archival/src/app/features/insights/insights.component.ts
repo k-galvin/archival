@@ -13,8 +13,9 @@ import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
 
-// Global declaration for Leaflet
-declare const L: any;
+import * as L from 'leaflet';
+
+
 
 @Component({
   selector: 'app-insights',
@@ -28,7 +29,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   private archive = inject(ArchiveService);
 
   @ViewChild('mapContainer') mapElement!: ElementRef;
-  private map: any;
+  private map: L.Map | null = null;
   private leafletReady = false;
 
   // --- Local UI State ---
@@ -182,9 +183,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
           color: '#0047AB',
           weight: 0.5,
         },
-      }).addTo(this.map);
+      }).addTo(this.map!);
     } catch (e) {
-      console.warn('GeoJSON load failed. Map will be empty.');
+      console.warn('GeoJSON load failed. Map will be empty.', e);
     }
 
     this.mappedOrigins().forEach(origin => {
@@ -195,7 +196,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
         weight: 2,
         opacity: 1,
         fillOpacity: 1,
-      }).addTo(this.map);
+      }).addTo(this.map!);
 
       const content = `
         <div style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; color: #0047AB; margin-bottom: 6px; font-weight: bold;">${origin.name}</div>

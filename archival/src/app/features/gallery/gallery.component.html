@@ -120,7 +120,7 @@
         <div class="picker-list custom-scrollbar">
           @for (col of userCollections(); track col.id) {
             <button
-              (click)="addToCollection(col.id, collectionPickerItem()!.id)"
+              (click)="addToCollection(col.id)"
               class="picker-btn"
             >
               <span class="col-name">{{ col.title }}</span>

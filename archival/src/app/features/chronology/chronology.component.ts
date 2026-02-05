@@ -1,12 +1,12 @@
 import {
   Component,
   inject,
-  signal,
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
+import { CollectionItem } from '../../shared/models/archive.models';
 
 @Component({
   selector: 'app-chronology',
@@ -27,8 +27,8 @@ export class ChronologyComponent {
 
   // Group items by year to handle multiple items in the same year
   groupedByYear = computed(() => {
-    const groups: { year: number; items: any[]; gap: number }[] = [];
-    const yearMap = new Map<number, any[]>();
+    const groups: { year: number; items: CollectionItem[]; gap: number }[] = [];
+    const yearMap = new Map<number, CollectionItem[]>();
     let lastYear = 0;
 
     for (const item of this.sortedCollection()) {
@@ -36,7 +36,7 @@ export class ChronologyComponent {
       if (!yearMap.has(item.year)) {
         yearMap.set(item.year, []);
       }
-      yearMap.get(item.year)!.push(item);
+      yearMap.get(item.year)?.push(item);
     }
 
     yearMap.forEach((items, year) => {

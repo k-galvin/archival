@@ -9,7 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem } from '../../shared/models/archive.models';
+import { CollectionItem, Volume, DiscogsRelease } from '../../shared/models/archive.models';
 import {
   Subject,
   Subscription,
@@ -43,15 +43,15 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   imagePreview = signal<string | null>(null);
 
   // Book Search State
-  bookSearchResults = signal<any[]>([]);
+  bookSearchResults = signal<Volume[]>([]);
   isSearchingBooks = signal(false);
 
   // Album Search State
-  albumSearchResults = signal<any[]>([]);
+  albumSearchResults = signal<DiscogsRelease[]>([]);
   isSearchingMusic = signal(false);
 
   private search$ = new Subject<string>();
-  private searchSubscription!: Subscription;
+  private searchSubscription?: Subscription;
 
   // Archive signals for dropdowns
   rooms = this.archive.rooms;
@@ -126,9 +126,9 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
 
         if (result) {
           if (result.category === 'books') {
-            this.bookSearchResults.set(result.data);
+            this.bookSearchResults.set(result.data as Volume[]);
           } else if (result.category === 'music') {
-            this.albumSearchResults.set(result.data);
+            this.albumSearchResults.set(result.data as DiscogsRelease[]);
           }
         } else {
           this.bookSearchResults.set([]);
@@ -138,7 +138,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.searchSubscription.unsubscribe();
+    this.searchSubscription?.unsubscribe();
   }
 
   onNomenclatureChange(event: Event): void {
@@ -147,7 +147,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.search$.next(query);
   }
 
-  selectBook(book: any): void {
+  selectBook(book: Volume): void {
     const volumeInfo = book.volumeInfo;
     const year = volumeInfo.publishedDate
       ? parseInt(volumeInfo.publishedDate.substring(0, 4))
@@ -172,7 +172,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.selectedFile.set(null);
   }
 
-  selectDiscogsRelease(release: any): void {
+  selectDiscogsRelease(release: DiscogsRelease): void {
     const imageUrl = release.cover_image;
     const parts = release.title.split(' - ');
     const artist = parts.length > 1 ? parts[0] : 'Unknown Artist';
@@ -183,7 +183,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       ...item,
       name: albumName,
       designer: artist,
-      year: release.year,
+      year: release.year ? parseInt(release.year, 10) : undefined,
       image: imageUrl || '',
       note: `Format: ${release.format?.join(', ') || 'N/A'}\nLabel: ${
         release.label?.join(', ') || 'N/A'
@@ -205,8 +205,9 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.albumSearchResults.set([]);
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
     if (file) {
       this.selectedFile.set(file);
 

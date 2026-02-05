@@ -1,4 +1,5 @@
-<div class="loader-container" *ngIf="isLoading">
+@if (isLoading) {
+  <div class="loader-container">
     <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
         <!-- Left Static Page -->
         <path class="mag-base" d="M 35,40 L 100,40 L 100,140 L 35,140 Z" />
@@ -14,4 +15,5 @@
     </svg>
 
     <div class="loading-text">{{ loadingText }}</div>
-</div>
+  </div>
+}

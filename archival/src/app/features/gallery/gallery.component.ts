@@ -99,9 +99,12 @@ export class GalleryComponent {
   /**
    * Triggers the Supabase junction table insertion via the ArchiveService.
    */
-  addToCollection(colId: string, itemId: string): void {
-    this.archive.addToUserCollection(colId, itemId);
-    this.collectionPickerItem.set(null);
+  addToCollection(colId: string): void {
+    const item = this.collectionPickerItem();
+    if (item) {
+      this.archive.addToUserCollection(colId, item.id);
+      this.collectionPickerItem.set(null);
+    }
   }
 
   deleteItem(id: string): void {

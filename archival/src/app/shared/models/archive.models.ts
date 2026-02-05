@@ -5,6 +5,15 @@ export interface Movement {
   era: string;
 }
 
+export interface City {
+  id: number;
+  name: string;
+  country: string;
+  lat: number;
+  lng: number;
+}
+
+
 export interface CollectionItem {
   id: string;
   category: 'decor' | 'music' | 'books' | 'fashion';
@@ -30,4 +39,37 @@ export interface Room {
   name: string;
   x: number;
   y: number;
+}
+
+export interface GoogleBooksResponse {
+  items: Volume[];
+  kind: string;
+  totalItems: number;
+}
+
+export interface Volume {
+  id: string;
+  volumeInfo: {
+    title: string;
+    authors: string[];
+    publishedDate: string;
+    description: string;
+    imageLinks?: {
+      thumbnail: string;
+      smallThumbnail: string;
+    };
+  };
+}
+
+export interface DiscogsResponse {
+  results: DiscogsRelease[];
+}
+
+export interface DiscogsRelease {
+  id: number;
+  cover_image: string;
+  title: string;
+  year?: string;
+  format?: string[];
+  label?: string[];
 }

@@ -19,8 +19,9 @@
     <form (ngSubmit)="handleSubmit()" class="auth-form">
       @if (!isLogin()) {
         <div class="field-group slide-down">
-          <label class="archival-overline">Identity</label>
+          <label class="archival-overline" for="name">Identity</label>
           <input
+            id="name"
             type="text"
             [(ngModel)]="authData.name"
             name="name"
@@ -31,8 +32,9 @@
       }
 
       <div class="field-group">
-        <label class="archival-overline">Credentials</label>
+        <label class="archival-overline" for="email">Credentials</label>
         <input
+          id="email"
           type="email"
           [(ngModel)]="authData.email"
           name="email"

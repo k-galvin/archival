@@ -6,12 +6,14 @@
       <span class="archival-overline">New Record Entry</span>
     </div>
     <div class="category-tabs">
-      <button 
-        *ngFor="let category of categories"
-        [class.active]="newItem().category === category"
-        (click)="onCategoryChange(category)">
-        {{ category }}
-      </button>
+      @for (category of categories; track category) {
+        <button
+          [class.active]="newItem().category === category"
+          (click)="onCategoryChange(category)"
+        >
+          {{ category }}
+        </button>
+      }
     </div>
   </header>
 
@@ -22,6 +24,9 @@
         class="preview-container"
         [class.has-image]="imagePreview()"
         (click)="fileInput.click()"
+        (keyup.enter)="fileInput.click()"
+        tabindex="0"
+        role="button"
       >
         @if (imagePreview()) {
           <img
@@ -68,9 +73,10 @@
       <div class="form-grid">
         <!-- Identification Group -->
         <div class="field-group full-width">
-          <label class="archival-overline">Object Nomenclature</label>
+          <label class="archival-overline" for="name">Object Nomenclature</label>
           <div class="search-wrapper">
             <input
+              id="name"
               type="text"
               [value]="newItem().name"
               (input)="onNomenclatureChange($event)"
@@ -89,6 +95,9 @@
                     <div
                       class="result-item book-result"
                       (click)="selectBook(book)"
+                      (keyup.enter)="selectBook(book)"
+                      tabindex="0"
+                      role="button"
                     >
                       <img
                         [src]="book.volumeInfo.imageLinks?.thumbnail"
@@ -100,7 +109,7 @@
                           book.volumeInfo.title
                         }}</span>
                         <span class="book-author">{{
-                          book.volumeInfo.authors?.join(', ')
+                          book.volumeInfo.authors.join(', ')
                         }}</span>
                       </div>
                     </div>
@@ -122,6 +131,9 @@
                     <div
                       class="result-item book-result"
                       (click)="selectDiscogsRelease(album)"
+                      (keyup.enter)="selectDiscogsRelease(album)"
+                      tabindex="0"
+                      role="button"
                     >
                       <img
                         [src]="album.cover_image"
@@ -148,8 +160,9 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline">Archival Year</label>
+          <label class="archival-overline" for="year">Archival Year</label>
           <input
+            id="year"
             type="number"
             [(ngModel)]="newItem().year"
             name="year"
@@ -158,8 +171,9 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline">Designer / Author</label>
+          <label class="archival-overline" for="designer">Designer / Author</label>
           <input
+            id="designer"
             type="text"
             [(ngModel)]="newItem().designer"
             name="designer"
@@ -168,8 +182,8 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline">Provenance / Origin</label>
-          <select [(ngModel)]="newItem().origin" name="origin">
+          <label class="archival-overline" for="origin">Provenance / Origin</label>
+          <select id="origin" [(ngModel)]="newItem().origin" name="origin">
             <option value="">Select a city</option>
             @for (city of cities(); track city.id) {
               <option [value]="city.name.toLowerCase()">
@@ -181,8 +195,8 @@
 
         <!-- New: Room Selection -->
         <div class="field-group">
-          <label class="archival-overline">Assign Room</label>
-          <select [(ngModel)]="newItem().room" name="room">
+          <label class="archival-overline" for="room">Assign Room</label>
+          <select id="room" [(ngModel)]="newItem().room" name="room">
             <option value="">Select Room</option>
             @for (room of rooms(); track room.id) {
               <option [value]="room.id">{{ room.name }}</option>
@@ -192,8 +206,8 @@
 
         <!-- New: Movement Selection -->
         <div class="field-group">
-          <label class="archival-overline">Associated Movement</label>
-          <select [(ngModel)]="newItem().movementId" name="movement">
+          <label class="archival-overline" for="movement">Associated Movement</label>
+          <select id="movement" [(ngModel)]="newItem().movementId" name="movement">
             <option value="">Select Movement</option>
             @for (movement of filteredMovements(); track movement.id) {
               <option [value]="movement.id">{{ movement.name }}</option>
@@ -202,8 +216,9 @@
         </div>
 
         <div class="field-group full-width">
-          <label class="archival-overline">Archivist Notes</label>
+          <label class="archival-overline" for="note">Archivist Notes</label>
           <textarea
+            id="note"
             [(ngModel)]="newItem().note"
             name="note"
             rows="3"

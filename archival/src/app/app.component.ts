@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { MagazineSpineComponent } from './core/layout/magazine-spine/magazine-spine.component';
 import { MainNavComponent } from './core/layout/main-nav/main-nav.component';
@@ -20,10 +20,14 @@ import { filter } from 'rxjs/operators';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  isLoading: boolean = false;
-  private timer: any = null;
+  private router = inject(Router);
 
-  constructor(private router: Router) {
+  isLoading = false;
+  private timer: ReturnType<typeof setTimeout> | undefined = undefined;
+
+
+
+  constructor() {
     this.router.events.pipe(
       filter(event => 
         event instanceof NavigationStart ||
@@ -39,7 +43,9 @@ export class AppComponent {
         }, 300); // 300ms delay
       } else {
         // Navigation has ended (or was cancelled/errored)
-        clearTimeout(this.timer); // Clear the timer so the loader doesn't appear
+        if (this.timer) {
+          clearTimeout(this.timer); // Clear the timer so the loader doesn't appear
+        }
         this.isLoading = false; // Hide the loader if it was already visible
       }
     });
