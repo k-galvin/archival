@@ -10,10 +10,10 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'layout',
+    path: 'blueprint',
     loadComponent: () =>
-      import('./features/layout/layout.component').then(
-        (m) => m.LayoutComponent,
+      import('./features/blueprint/blueprint.component').then(
+        (m) => m.BlueprintComponent,
       ),
   },
   {

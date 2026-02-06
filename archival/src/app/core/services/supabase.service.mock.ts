@@ -1,7 +1,7 @@
 export class MockSupabaseClient {
   auth = {
     getSession: () => Promise.resolve({ data: { session: null } }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { /* no-op */ } } } }),
     signUp: () => Promise.resolve({}),
     signInWithPassword: () => Promise.resolve({}),
     signOut: () => Promise.resolve(),

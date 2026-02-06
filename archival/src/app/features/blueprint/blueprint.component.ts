@@ -11,14 +11,14 @@ import { ArchiveService } from '../../core/services/archive.service';
 import { Room } from '../../shared/models/archive.models';
 
 @Component({
-  selector: 'app-layout',
+  selector: 'app-blueprint',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss',
+  templateUrl: './blueprint.component.html',
+  styleUrl: './blueprint.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent {
+export class BlueprintComponent {
   private archive = inject(ArchiveService);
 
   // Local UI State for form inputs and hover interactions

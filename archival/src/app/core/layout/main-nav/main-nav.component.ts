@@ -20,7 +20,7 @@ export class MainNavComponent {
   navLinks = [
     { path: '/gallery', label: 'gallery' },
     { path: '/collections', label: 'collections' },
-    { path: '/layout', label: 'layout' },
+    { path: '/blueprint', label: 'blueprint' },
     { path: '/insights', label: 'insights' },
     { path: '/chronology', label: 'chronology' },
   ];

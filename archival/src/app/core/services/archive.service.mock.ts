@@ -12,11 +12,11 @@ export class MockArchiveService {
   authError = signal(null);
 
   signUp() {
-    return Promise.resolve({} as any);
+    return Promise.resolve({} as object);
   }
 
   signIn() {
-    return Promise.resolve({} as any);
+    return Promise.resolve({} as object);
   }
 
   signOut() {
@@ -24,11 +24,11 @@ export class MockArchiveService {
   }
 
   searchBooks() {
-    return of({} as any);
+    return of({} as object);
   }
 
   searchDiscogs() {
-    return of({} as any);
+    return of({} as object);
   }
 
   uploadImage() {

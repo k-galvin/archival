@@ -1,5 +1,10 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import {
+  createClient,
+  User,
+  AuthChangeEvent,
+  Session,
+} from '@supabase/supabase-js';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {
@@ -23,7 +28,7 @@ const SUPABASE_KEY = 'sb_publishable_Y8hY9if-e5PdwcmCKALzsQ_bzUpYVHp';
   providedIn: 'root',
 })
 export class ArchiveService {
-  supabase: any = createClient(SUPABASE_URL, SUPABASE_KEY);
+  supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
   private http = inject(HttpClient);
 
   // Global Signals for Application State
@@ -67,10 +72,12 @@ export class ArchiveService {
       this.loading.set(false);
     }
 
-    this.supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      this.user.set(session?.user ?? null);
-      if (!session) this.clearState();
-    });
+    this.supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        this.user.set(session?.user ?? null);
+        if (!session) this.clearState();
+      },
+    );
   }
 
   // --- Authentication Flow ---
@@ -152,7 +159,7 @@ export class ArchiveService {
       });
 
       this.collection.set(
-        itemsRes.data.map((i: any) => ({
+        itemsRes.data.map((i: CollectionItem) => ({
           ...i,
           image: i.image_url,
           year: i.year,
@@ -166,7 +173,7 @@ export class ArchiveService {
 
     if (collectionsRes.data) {
       this.userCollections.set(
-        collectionsRes.data.map((c: any) => ({
+        collectionsRes.data.map((c: UserCollection) => ({
           id: c.id,
           title: c.title,
           itemIds: c.collection_items.map((ci: { item_id: string }) => ci.item_id),
