@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { GalleryComponent } from './gallery.component';
+import { ArchiveService } from '../../core/services/archive.service';
+import { MockArchiveService } from '../../core/services/archive.service.mock';
 
 describe('GalleryComponent', () => {
   let component: GalleryComponent;
@@ -8,7 +10,8 @@ describe('GalleryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GalleryComponent]
+      imports: [GalleryComponent, HttpClientTestingModule],
+      providers: [{ provide: ArchiveService, useClass: MockArchiveService }]
     })
     .compileComponents();
 

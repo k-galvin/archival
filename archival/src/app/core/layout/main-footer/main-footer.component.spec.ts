@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MainFooterComponent } from './main-footer.component';
+import { ArchiveService } from '../../services/archive.service';
+import { MockArchiveService } from '../../services/archive.service.mock';
 
 describe('MainFooterComponent', () => {
   let component: MainFooterComponent;
@@ -8,7 +10,8 @@ describe('MainFooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainFooterComponent]
+      imports: [MainFooterComponent, HttpClientTestingModule],
+      providers: [{ provide: ArchiveService, useClass: MockArchiveService }]
     })
     .compileComponents();
 

@@ -23,7 +23,7 @@ const SUPABASE_KEY = 'sb_publishable_Y8hY9if-e5PdwcmCKALzsQ_bzUpYVHp';
   providedIn: 'root',
 })
 export class ArchiveService {
-  private supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+  supabase: any = createClient(SUPABASE_URL, SUPABASE_KEY);
   private http = inject(HttpClient);
 
   // Global Signals for Application State
@@ -67,7 +67,7 @@ export class ArchiveService {
       this.loading.set(false);
     }
 
-    this.supabase.auth.onAuthStateChange((_event, session) => {
+    this.supabase.auth.onAuthStateChange((_event: any, session: any) => {
       this.user.set(session?.user ?? null);
       if (!session) this.clearState();
     });
@@ -152,7 +152,7 @@ export class ArchiveService {
       });
 
       this.collection.set(
-        itemsRes.data.map((i) => ({
+        itemsRes.data.map((i: any) => ({
           ...i,
           image: i.image_url,
           year: i.year,
@@ -166,7 +166,7 @@ export class ArchiveService {
 
     if (collectionsRes.data) {
       this.userCollections.set(
-        collectionsRes.data.map((c) => ({
+        collectionsRes.data.map((c: any) => ({
           id: c.id,
           title: c.title,
           itemIds: c.collection_items.map((ci: { item_id: string }) => ci.item_id),
