@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
-import { of } from 'rxjs';
-import { CollectionItem, Room, UserCollection, Movement, City } from '../../shared/models/archive.models';
+import { Observable, of } from 'rxjs';
+import { CollectionItem, Room, UserCollection, Movement, City, GoogleBooksResponse, DiscogsResponse } from '../../shared/models/archive.models';
+import { User, Session } from '@supabase/supabase-js';
 
 export class MockArchiveService {
   collection = signal<CollectionItem[]>([]);
@@ -12,59 +13,59 @@ export class MockArchiveService {
   loading = signal(false);
   authError = signal(null);
 
-  signUp() {
-    return Promise.resolve({} as object);
+  signUp(email: string, password: string, name: string) {
+    return Promise.resolve({ user: {} as User, session: {} as Session });
   }
 
-  signIn() {
-    return Promise.resolve({} as object);
+  signIn(email: string, password: string) {
+    return Promise.resolve({ user: {} as User, session: {} as Session });
   }
 
   signOut() {
     return Promise.resolve();
   }
 
-  searchBooks() {
-    return of({} as object);
+  searchBooks(query: string): Observable<GoogleBooksResponse> {
+    return of({} as GoogleBooksResponse);
   }
 
-  searchDiscogs() {
-    return of({} as object);
+  searchDiscogs(query: string): Observable<DiscogsResponse> {
+    return of({} as DiscogsResponse);
   }
 
-  uploadImage() {
+  uploadImage(file: File): Promise<string | null> {
     return Promise.resolve(null);
   }
 
-  deleteItem() {
+  deleteItem(id: string) {
     return Promise.resolve();
   }
 
-  addRoom() {
+  addRoom(name: string) {
     return Promise.resolve();
   }
 
-  deleteRoom() {
+  deleteRoom(id: string | number) {
     return Promise.resolve();
   }
 
-  addCollection() {
+  addCollection(title: string) {
     return Promise.resolve();
   }
 
-  deleteCollection() {
+  deleteCollection(id: string) {
     return Promise.resolve();
   }
 
-  removeFromCollection() {
+  removeFromCollection(colId: string, itemId: string) {
     return Promise.resolve();
   }
 
-  addToUserCollection() {
+  addToUserCollection(colId: string, itemId: string) {
     return Promise.resolve();
   }
 
-  addItem() {
+  addItem(item: CollectionItem): Promise<CollectionItem | null> {
     return Promise.resolve(null);
   }
 }
