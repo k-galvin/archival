@@ -163,15 +163,22 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   private async initMap() {
     if (!this.mapElement || this.map) return;
 
+    // Define the boundaries of the world
+    const bounds = L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180));
+
     this.map = L.map(this.mapElement.nativeElement, {
       center: [30, 10],
       zoom: 2,
       minZoom: 2,
       zoomControl: false,
       attributionControl: false,
+      maxBounds: bounds,
+      maxBoundsViscosity: 1.0,
     });
 
-    const geoUrl = 'https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson';
+    const geoUrl =
+      'https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson';
+
 
     try {
       const response = await fetch(geoUrl);

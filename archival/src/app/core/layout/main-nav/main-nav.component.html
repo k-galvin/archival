@@ -1,6 +1,6 @@
 <nav class="nav-wrapper">
   <!-- Mobile Menu Toggle -->
-  <button class="mobile-toggle">
+  <button class="mobile-toggle" (click)="toggleMenu()">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="20"
@@ -19,7 +19,7 @@
   </button>
 
   <!-- Desktop Navigation Links -->
-  <div class="nav-links">
+  <div class="nav-links" [class.open]="isMenuOpen">
     @for (link of navLinks; track link.path) {
       <a [routerLink]="link.path" routerLinkActive="active" class="nav-link">
         {{ link.label }}
