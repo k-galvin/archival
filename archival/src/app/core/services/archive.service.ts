@@ -4,6 +4,7 @@ import {
   User,
   AuthChangeEvent,
   Session,
+  SupabaseClient,
 } from '@supabase/supabase-js';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -161,7 +162,7 @@ export class ArchiveService {
       this.collection.set(
         itemsRes.data.map((i: CollectionItem) => ({
           ...i,
-          image: i.image_url,
+          image: i.image_url || '',
           year: i.year,
           room: i.room_id ? roomMap.get(i.room_id) || '' : '',
           movementName: i.movement_id
@@ -176,7 +177,7 @@ export class ArchiveService {
         collectionsRes.data.map((c: UserCollection) => ({
           id: c.id,
           title: c.title,
-          itemIds: c.collection_items.map((ci: { item_id: string }) => ci.item_id),
+          itemIds: (c.collection_items || []).map((ci: { item_id: string }) => ci.item_id),
         })),
       );
     }

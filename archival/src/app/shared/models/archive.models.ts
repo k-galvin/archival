@@ -26,12 +26,16 @@ export interface CollectionItem {
   note: string;
   movementId: string;
   movementName: string; // New property to store the movement name
+  image_url?: string;
+  room_id?: string;
+  movement_id?: string;
 }
 
 export interface UserCollection {
   id: string;
   title: string;
   itemIds: string[];
+  collection_items?: { item_id: string }[];
 }
 
 export interface Room {

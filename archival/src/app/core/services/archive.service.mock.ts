@@ -1,12 +1,13 @@
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
+import { CollectionItem, Room, UserCollection, Movement, City } from '../../shared/models/archive.models';
 
 export class MockArchiveService {
-  collection = signal([]);
-  rooms = signal([]);
-  userCollections = signal([]);
-  movements = signal([]);
-  cities = signal([]);
+  collection = signal<CollectionItem[]>([]);
+  rooms = signal<Room[]>([]);
+  userCollections = signal<UserCollection[]>([]);
+  movements = signal<Movement[]>([]);
+  cities = signal<City[]>([]);
   user = signal(null);
   loading = signal(false);
   authError = signal(null);
