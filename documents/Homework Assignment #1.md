@@ -1,4 +1,4 @@
-# Written Homework Assignment #1
+# Homework Assignment #1
 
 ### Problem 1.1, Stephens page 13
 
@@ -47,7 +47,7 @@
 
 ### Problem 4.4, Stephens page 78
 
-[Homework-1-Gantt-Chart.png]
+[Homework-1-Gantt-Chart.jpg]
 
 ### Problem 4.6, Stephens page 79
 
