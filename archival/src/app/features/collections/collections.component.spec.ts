@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CollectionsComponent } from './collections.component';
 import { ArchiveService } from '../../core/services/archive.service';
-import { MockArchiveService } from '../../core/services/archive.service.mock';
 import { CollectionItem, UserCollection } from '../../shared/models/archive.models';
 import { FormsModule } from '@angular/forms';
+import { signal } from '@angular/core';
 
 describe('CollectionsComponent', () => {
   let component: CollectionsComponent;
   let fixture: ComponentFixture<CollectionsComponent>;
-  let service: MockArchiveService;
+  let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   const mockItems: CollectionItem[] = [
     { id: '1', name: 'Item 1', category: 'decor', origin: 'orig1', year: 2020, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
@@ -22,9 +22,14 @@ describe('CollectionsComponent', () => {
   ];
 
   beforeEach(async () => {
-    const mockArchiveService = new MockArchiveService();
-    mockArchiveService.collection.set(mockItems);
-    mockArchiveService.userCollections.set(mockUserCollections);
+    mockArchiveService = jasmine.createSpyObj(
+      'ArchiveService',
+      ['addCollection', 'deleteCollection', 'removeFromCollection'],
+      {
+        collection: signal(mockItems),
+        userCollections: signal(mockUserCollections),
+      }
+    );
 
     await TestBed.configureTestingModule({
       imports: [CollectionsComponent, HttpClientTestingModule, FormsModule],
@@ -34,7 +39,6 @@ describe('CollectionsComponent', () => {
 
     fixture = TestBed.createComponent(CollectionsComponent);
     component = fixture.componentInstance;
-    service = TestBed.inject(ArchiveService) as MockArchiveService;
     fixture.detectChanges();
   });
 
@@ -57,32 +61,28 @@ describe('CollectionsComponent', () => {
   });
 
   it('should add a new collection', () => {
-    spyOn(service, 'addCollection');
     component.newCollectionTitle.set('New Collection');
     component.createCollection();
-    expect(service.addCollection).toHaveBeenCalledWith('New Collection');
+    expect(mockArchiveService.addCollection).toHaveBeenCalledWith('New Collection');
     expect(component.newCollectionTitle()).toBe('');
   });
 
   it('should delete a collection', () => {
     spyOn(window, 'confirm').and.returnValue(true);
-    spyOn(service, 'deleteCollection');
     component.deleteCollection('1');
     expect(window.confirm).toHaveBeenCalled();
-    expect(service.deleteCollection).toHaveBeenCalledWith('1');
+    expect(mockArchiveService.deleteCollection).toHaveBeenCalledWith('1');
   });
 
   it('should not delete a collection if confirm is false', () => {
     spyOn(window, 'confirm').and.returnValue(false);
-    spyOn(service, 'deleteCollection');
     component.deleteCollection('1');
     expect(window.confirm).toHaveBeenCalled();
-    expect(service.deleteCollection).not.toHaveBeenCalled();
+    expect(mockArchiveService.deleteCollection).not.toHaveBeenCalled();
   });
 
   it('should remove an item from a collection', () => {
-    spyOn(service, 'removeFromCollection');
     component.removeFromCollection('1', '1');
-    expect(service.removeFromCollection).toHaveBeenCalledWith('1', '1');
+    expect(mockArchiveService.removeFromCollection).toHaveBeenCalledWith('1', '1');
   });
 });

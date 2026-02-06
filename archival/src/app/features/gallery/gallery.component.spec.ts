@@ -2,12 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { GalleryComponent } from './gallery.component';
 import { ArchiveService } from '../../core/services/archive.service';
-import { MockArchiveService } from '../../core/services/archive.service.mock';
 import { CollectionItem } from '../../shared/models/archive.models';
+import { signal } from '@angular/core';
 
 describe('GalleryComponent', () => {
   let component: GalleryComponent;
   let fixture: ComponentFixture<GalleryComponent>;
+  let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   const mockItems: CollectionItem[] = [
     { id: '1', name: 'Item 1', category: 'decor', origin: 'orig1', year: 2020, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
@@ -16,8 +17,14 @@ describe('GalleryComponent', () => {
   ];
 
   beforeEach(async () => {
-    const mockArchiveService = new MockArchiveService();
-    mockArchiveService.collection.set(mockItems);
+    mockArchiveService = jasmine.createSpyObj(
+      'ArchiveService',
+      ['setFilter', 'addToUserCollection', 'deleteItem'],
+      {
+        collection: signal(mockItems),
+        userCollections: signal([]), // Or provide mock data if needed
+      }
+    );
 
     await TestBed.configureTestingModule({
       imports: [GalleryComponent, HttpClientTestingModule],

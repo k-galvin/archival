@@ -3,13 +3,24 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { ArchiveService } from './core/services/archive.service';
-import { MockArchiveService } from './core/services/archive.service.mock';
+import { signal } from '@angular/core';
 
 describe('AppComponent', () => {
+  let mockArchiveService: jasmine.SpyObj<ArchiveService>;
+
   beforeEach(async () => {
+    mockArchiveService = jasmine.createSpyObj(
+      'ArchiveService',
+      [], // No methods are called directly in AppComponent's spec that need spying
+      {
+        loading: signal(false), // Default to false for isLoading test
+        user: signal(null), // Default to null if not logged in
+      }
+    );
+
     await TestBed.configureTestingModule({
       imports: [AppComponent, HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: ArchiveService, useClass: MockArchiveService }]
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
     }).compileComponents();
   });
 
