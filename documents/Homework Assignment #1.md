@@ -47,7 +47,7 @@
 
 ### Problem 4.4, Stephens page 78
 
-[Homework-1-Gantt-Chart.jpg]
+![Gantt Chart](Homework-1-Gantt-Chart.png)
 
 ### Problem 4.6, Stephens page 79
 
