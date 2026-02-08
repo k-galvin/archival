@@ -6,8 +6,8 @@ import {
   Session,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, from } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, from } from 'rxjs';
 import {
   CollectionItem,
   Room,
@@ -15,7 +15,6 @@ import {
   Movement,
   City,
   GoogleBooksResponse,
-  DiscogsResponse,
 } from '../../shared/models/archive.models';
 import { environment } from '../../../environments/environment';
 

@@ -73,7 +73,9 @@
       <div class="form-grid">
         <!-- Identification Group -->
         <div class="field-group full-width">
-          <label class="archival-overline" for="name">Object Nomenclature</label>
+          <label class="archival-overline" for="name"
+            >Object Nomenclature</label
+          >
           <div class="search-wrapper">
             <input
               id="name"
@@ -109,12 +111,13 @@
                           book.volumeInfo.title
                         }}</span>
                         <span class="book-author">{{
-                          book.volumeInfo.authors.join(', ')
+                          book.volumeInfo.authors?.join(", ") ||
+                            "Unknown Author"
                         }}</span>
                       </div>
                     </div>
                   } @empty {
-                    @if (newItem().name && newItem().category === 'books') {
+                    @if (newItem().name && newItem().category === "books") {
                       <div class="result-item">No books found.</div>
                     }
                   }
@@ -146,7 +149,7 @@
                       </div>
                     </div>
                   } @empty {
-                    @if (newItem().name && newItem().category === 'music') {
+                    @if (newItem().name && newItem().category === "music") {
                       <div class="result-item">
                         No albums found. Please check your Discogs token in the
                         environment file.
@@ -171,7 +174,9 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline" for="designer">Designer / Author</label>
+          <label class="archival-overline" for="designer"
+            >Designer / Author</label
+          >
           <input
             id="designer"
             type="text"
@@ -182,7 +187,9 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline" for="origin">Provenance / Origin</label>
+          <label class="archival-overline" for="origin"
+            >Provenance / Origin</label
+          >
           <select id="origin" [(ngModel)]="newItem().origin" name="origin">
             <option value="">Select a city</option>
             @for (city of cities(); track city.id) {
@@ -206,8 +213,14 @@
 
         <!-- New: Movement Selection -->
         <div class="field-group">
-          <label class="archival-overline" for="movement">Associated Movement</label>
-          <select id="movement" [(ngModel)]="newItem().movementId" name="movement">
+          <label class="archival-overline" for="movement"
+            >Associated Movement</label
+          >
+          <select
+            id="movement"
+            [(ngModel)]="newItem().movementId"
+            name="movement"
+          >
             <option value="">Select Movement</option>
             @for (movement of filteredMovements(); track movement.id) {
               <option [value]="movement.id">{{ movement.name }}</option>

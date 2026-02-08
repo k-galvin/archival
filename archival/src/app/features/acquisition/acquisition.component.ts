@@ -119,7 +119,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
           } else if (category === 'music') {
             this.isSearchingMusic.set(true);
             return this.archive.searchDiscogs(query).pipe(
-              map((response: any) => {
+              map((response: { data: DiscogsResponse | null; error: unknown | null }) => {
                 // response.data is the body returned by your Edge Function
                 const items = response.data?.results || [];
                 return {
@@ -293,5 +293,6 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.isSearchingBooks.set(false);
     this.albumSearchResults.set([]);
     this.isSearchingMusic.set(false);
+    this.successMessage.set(null);
   }
 }

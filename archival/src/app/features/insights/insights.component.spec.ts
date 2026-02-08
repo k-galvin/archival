@@ -82,14 +82,14 @@ describe('InsightsComponent', () => {
   });
 
   it('should correctly calculate taxonomy counts for a given category', () => {
-    const decorTaxonomy = component.getTaxonomyCounts('decor');
+    const decorTaxonomy: { label: string; count: number }[] = component.getTaxonomyCounts('decor');
     expect(decorTaxonomy.length).toBe(1);
     expect(decorTaxonomy[0].label).toBe('Bauhaus');
     expect(decorTaxonomy[0].count).toBe(3); // Item A, C, D
   });
 
   it('should not include movements without items in taxonomy counts', () => {
-    const musicTaxonomy = component.getTaxonomyCounts('music');
+    const musicTaxonomy: { label: string; count: number }[] = component.getTaxonomyCounts('music');
     expect(musicTaxonomy.length).toBe(1);
     expect(musicTaxonomy[0].label).toBe('IDM');
     expect(musicTaxonomy[0].count).toBe(1); // Item B

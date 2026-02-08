@@ -230,10 +230,10 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       }
     });
 
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
+    return (Object.entries(counts) as [string, number][])
+      .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 5)
-      .map(([label, count]) => ({ label, count }));
+      .map(([label, count]: [string, number]) => ({ label, count }));
   }
 
   getMovementDescription(name: string): string {

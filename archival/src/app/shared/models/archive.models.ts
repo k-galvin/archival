@@ -55,7 +55,7 @@ export interface Volume {
   id: string;
   volumeInfo: {
     title: string;
-    authors: string[];
+    authors?: string[];
     publishedDate: string;
     description: string;
     imageLinks?: {
@@ -76,4 +76,9 @@ export interface DiscogsRelease {
   year?: string;
   format?: string[];
   label?: string[];
+}
+
+export interface FunctionsResponse<T> {
+  data: T | null;
+  error: any | null;
 }
