@@ -1,0 +1,14 @@
+{
+  "deno.enablePaths": ["supabase/functions"],
+  "deno.lint": true,
+  "deno.unstable": ["bare-node-builtins", "byonm"],
+  "deno.importMap": "./supabase/functions/import_map.json",
+  "deno.suggest.imports.hosts": {
+    "https://deno.land": true,
+    "https://esm.sh": true,
+    "jsr:": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
+}

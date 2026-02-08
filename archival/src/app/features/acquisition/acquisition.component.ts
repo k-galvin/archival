@@ -9,7 +9,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem, Volume, DiscogsRelease } from '../../shared/models/archive.models';
+import {
+  CollectionItem,
+  Volume,
+  DiscogsRelease,
+  DiscogsResponse,
+} from '../../shared/models/archive.models';
 import {
   Subject,
   Subscription,
@@ -36,7 +41,12 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   successMessage = signal<string | null>(null);
 
   // Categories
-  categories: ('decor' | 'music' | 'books' | 'fashion')[] = ['decor', 'music', 'books', 'fashion'];
+  categories: ('decor' | 'music' | 'books' | 'fashion')[] = [
+    'decor',
+    'music',
+    'books',
+    'fashion',
+  ];
 
   // Image Upload State
   selectedFile = signal<File | null>(null);
@@ -109,11 +119,18 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
           } else if (category === 'music') {
             this.isSearchingMusic.set(true);
             return this.archive.searchDiscogs(query).pipe(
-              map((results) => ({
-                data: results?.results || [],
-                category: 'music',
-              })),
-              catchError(() => of({ data: [], category: 'music' })),
+              map((response: any) => {
+                // response.data is the body returned by your Edge Function
+                const items = response.data?.results || [];
+                return {
+                  data: items,
+                  category: 'music',
+                };
+              }),
+              catchError((err) => {
+                console.error('Discogs search failed:', err);
+                return of({ data: [], category: 'music' });
+              }),
             );
           }
 
@@ -153,8 +170,9 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       ? parseInt(volumeInfo.publishedDate.substring(0, 4))
       : this.newItem().year;
 
+    // Safer and cleaner way to force HTTPS for Google Book thumbnails
     const imageUrl = volumeInfo.imageLinks?.thumbnail?.replace(
-      /^http:\/\//i, // Corrected regex literal
+      'http://',
       'https://',
     );
 
@@ -217,7 +235,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
         this.imagePreview.set(reader.result as string);
       };
       reader.readAsDataURL(file);
-      
+
       // Clear any external image URL
       this.newItem.update((item) => ({ ...item, image: '' }));
     }

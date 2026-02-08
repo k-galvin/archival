@@ -7,7 +7,7 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, from } from 'rxjs';
 import {
   CollectionItem,
   Room,
@@ -177,7 +177,9 @@ export class ArchiveService {
         collectionsRes.data.map((c: UserCollection) => ({
           id: c.id,
           title: c.title,
-          itemIds: (c.collection_items || []).map((ci: { item_id: string }) => ci.item_id),
+          itemIds: (c.collection_items || []).map(
+            (ci: { item_id: string }) => ci.item_id,
+          ),
         })),
       );
     }
@@ -214,23 +216,12 @@ export class ArchiveService {
    * @param query The search term, e.g., an album title.
    * @returns An Observable of the API response.
    */
-  searchDiscogs(query: string): Observable<DiscogsResponse> {
-    if (!environment.discogsToken) {
-      console.warn('Discogs token not set. Skipping search.');
-      return of({ results: [] }); // Return empty if no token is provided
-    }
-
-    const url = 'https://api.discogs.com/database/search';
-    const headers = new HttpHeaders({
-      Authorization: `Discogs token=${environment.discogsToken}`,
-    });
-    const params = {
-      q: query,
-      type: 'release', // To search for albums/releases
-      per_page: '10',
-    };
-
-    return this.http.get<DiscogsResponse>(url, { headers, params });
+  searchDiscogs(query: string) {
+    return from(
+      this.supabase.functions.invoke('discogs-search', {
+        body: { title: query },
+      }),
+    );
   }
 
   /**
