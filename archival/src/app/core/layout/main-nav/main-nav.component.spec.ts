@@ -33,4 +33,66 @@ describe('MainNavComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should display navigation links', () => {
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const navLinks = compiled.querySelectorAll('.nav-link');
+    expect(navLinks.length).toBe(component.navLinks.length);
+    expect(navLinks[0].textContent).toContain('gallery');
+    expect(navLinks[1].textContent).toContain('collections');
+  });
+
+  it('should have isMenuOpen set to false initially', () => {
+    expect(component.isMenuOpen).toBe(false);
+  });
+
+  it('should toggle isMenuOpen when toggleMenu() is called', () => {
+    component.toggleMenu();
+    expect(component.isMenuOpen).toBe(true);
+    component.toggleMenu();
+    expect(component.isMenuOpen).toBe(false);
+  });
+
+  it('should add "open" class to nav-links when menu is open', () => {
+    component.isMenuOpen = true;
+    fixture.detectChanges();
+    const navLinksDiv = fixture.nativeElement.querySelector('.nav-links');
+    expect(navLinksDiv.classList).toContain('open');
+  });
+
+  it('should remove "open" class from nav-links when menu is closed', () => {
+    component.isMenuOpen = false;
+    fixture.detectChanges();
+    const navLinksDiv = fixture.nativeElement.querySelector('.nav-links');
+    expect(navLinksDiv.classList).not.toContain('open');
+  });
+
+  it('should display sign-in link when user is null', () => {
+    mockArchiveService.user.set(null);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.auth-link')).not.toBeNull();
+    expect(compiled.querySelector('.logout')).toBeNull();
+    expect(compiled.querySelector('.avatar-circle')).toBeNull();
+  });
+
+  it('should display logout button and avatar when user is present', () => {
+    mockArchiveService.user.set({ id: '123', email: 'test@example.com' } as any);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.auth-link')).toBeNull();
+    expect(compiled.querySelector('.logout')).not.toBeNull();
+    expect(compiled.querySelector('.avatar-circle')).not.toBeNull();
+  });
+
+  it('should reset user to null on logout', () => {
+    mockArchiveService.user.set({ id: '123', email: 'test@example.com' } as any);
+    fixture.detectChanges();
+
+    component.logout();
+
+    expect(mockArchiveService.user()).toBeNull();
+  });
 });
+
