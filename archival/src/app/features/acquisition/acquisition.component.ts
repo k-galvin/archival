@@ -14,6 +14,7 @@ import {
   Volume,
   DiscogsRelease,
   DiscogsResponse,
+  CategoryType,
 } from '../../shared/models/archive.models';
 import {
   Subject,
@@ -41,12 +42,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   successMessage = signal<string | null>(null);
 
   // Categories
-  categories: ('decor' | 'music' | 'books' | 'fashion')[] = [
-    'decor',
-    'music',
-    'books',
-    'fashion',
-  ];
+  categories: CategoryType[] = ['decor', 'music', 'books', 'fashion'];
 
   // Image Upload State
   selectedFile = signal<File | null>(null);
@@ -108,6 +104,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
           }
 
           if (category === 'books') {
+            // If the category is books, search Google Books API
             this.isSearchingBooks.set(true);
             return this.archive.searchBooks(query).pipe(
               map((results) => ({
@@ -117,16 +114,21 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
               catchError(() => of({ data: [], category: 'books' })),
             );
           } else if (category === 'music') {
+            // If the category is music, search Discogs API
             this.isSearchingMusic.set(true);
             return this.archive.searchDiscogs(query).pipe(
-              map((response: { data: DiscogsResponse | null; error: unknown | null }) => {
-                // response.data is the body returned by your Edge Function
-                const items = response.data?.results || [];
-                return {
-                  data: items,
-                  category: 'music',
-                };
-              }),
+              map(
+                (response: {
+                  data: DiscogsResponse | null;
+                  error: unknown | null;
+                }) => {
+                  const items = response.data?.results || [];
+                  return {
+                    data: items,
+                    category: 'music',
+                  };
+                },
+              ),
               catchError((err) => {
                 console.error('Discogs search failed:', err);
                 return of({ data: [], category: 'music' });
@@ -170,7 +172,6 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       ? parseInt(volumeInfo.publishedDate.substring(0, 4))
       : this.newItem().year;
 
-    // Safer and cleaner way to force HTTPS for Google Book thumbnails
     const imageUrl = volumeInfo.imageLinks?.thumbnail?.replace(
       'http://',
       'https://',
@@ -213,7 +214,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.selectedFile.set(null);
   }
 
-  onCategoryChange(newCategory: 'decor' | 'music' | 'books' | 'fashion'): void {
+  onCategoryChange(newCategory: CategoryType): void {
     this.newItem.update((item) => ({
       ...item,
       category: newCategory,

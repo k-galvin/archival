@@ -1,19 +1,17 @@
-// The Shell SCSS now only manages the high-level layout and positioning.
-// Specific component styling has been moved to their respective .scss files.
+@use "colors";
 
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  background: white;
+  background: colors.$white;
 }
 
-// Global Framing - These stay in the shell as they wrap the entire viewport
 .frame-border-outer {
   position: fixed;
   inset: 0;
-  border: 40px solid white;
+  border: 40px solid colors.$white;
   pointer-events: none;
   z-index: 100;
 
@@ -25,8 +23,8 @@
 .frame-border-inner {
   position: fixed;
   inset: 0;
-  margin-left: 6rem; // Matches the width of the Magazine Spine
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-left: 6rem;
+  border: 1px solid rgba(colors.$primary-black, 0.1);
   pointer-events: none;
   z-index: 101;
 
@@ -35,11 +33,10 @@
   }
 }
 
-// Content Area Positioning
 .content-area {
   flex: 1;
-  margin-top: 12rem; // Space for the floating Nav
-  margin-left: 8rem; // Space for the Magazine Spine + Padding
+  margin-top: 12rem;
+  margin-left: 8rem;
   padding: 0 4rem;
   margin-bottom: 8rem;
 
@@ -49,4 +46,3 @@
     padding: 0 1rem;
   }
 }
-

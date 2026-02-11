@@ -1,4 +1,4 @@
-// NOTE: Core branding colors and fonts are inherited from global styles.
+@use "colors";
 
 .spine-container {
   position: fixed;
@@ -6,8 +6,8 @@
   top: 0;
   height: 100vh;
   width: 6rem;
-  background: white;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  background: colors.$white;
+  border-right: 1px solid rgba(colors.$primary-black, 0.1);
   z-index: 110;
   display: flex;
   flex-direction: column;
@@ -22,14 +22,13 @@
   }
 }
 
-// Visual depth textures
 .spine-texture-primary {
   position: absolute;
   right: 0.25rem;
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(colors.$primary-black, 0.05);
 }
 
 .spine-texture-secondary {
@@ -38,7 +37,7 @@
   top: 0;
   bottom: 0;
   width: 0.5px;
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(colors.$primary-black, 0.02);
 }
 
 .spine-top {
@@ -50,7 +49,7 @@
   .accent-dot {
     width: 6px;
     height: 6px;
-    background: #0047ab; // Accent blue
+    background: colors.$accent-blue;
     border-radius: 50%;
 
     @media (max-width: 768px) {
@@ -63,7 +62,7 @@
 .spine-logo {
   font-weight: 900;
   font-size: 1.5rem;
-  color: #0047ab;
+  color: colors.$accent-blue;
   letter-spacing: -0.05em;
   writing-mode: vertical-lr;
   transform: rotate(180deg);

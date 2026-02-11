@@ -3,7 +3,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { InsightsComponent } from './insights.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal } from '@angular/core';
-import { CollectionItem, City, Movement } from '../../shared/models/archive.models';
+import {
+  CollectionItem,
+  City,
+  Movement,
+} from '../../shared/models/archive.models';
 
 describe('InsightsComponent', () => {
   let component: InsightsComponent;
@@ -21,28 +25,71 @@ describe('InsightsComponent', () => {
   ];
 
   const mockCollection: CollectionItem[] = [
-    { id: '1', name: 'Item A', category: 'decor', origin: 'Paris', year: 1925, image: '', designer: '', note: '', movementId: '1', movementName: 'Bauhaus', room: '' },
-    { id: '2', name: 'Item B', category: 'music', origin: 'London', year: 1998, image: '', designer: '', note: '', movementId: '2', movementName: 'IDM', room: '' },
-    { id: '3', name: 'Item C', category: 'decor', origin: 'Paris', year: 1930, image: '', designer: '', note: '', movementId: '1', movementName: 'Bauhaus', room: '' },
-    { id: '4', name: 'Item D', category: 'decor', origin: 'Berlin', year: 1928, image: '', designer: '', note: '', movementId: '1', movementName: 'Bauhaus', room: '' },
+    {
+      id: '1',
+      name: 'Item A',
+      category: 'decor',
+      origin: 'Paris',
+      year: 1925,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '1',
+      movementName: 'Bauhaus',
+      room: '',
+    },
+    {
+      id: '2',
+      name: 'Item B',
+      category: 'music',
+      origin: 'London',
+      year: 1998,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '2',
+      movementName: 'IDM',
+      room: '',
+    },
+    {
+      id: '3',
+      name: 'Item C',
+      category: 'decor',
+      origin: 'Paris',
+      year: 1930,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '1',
+      movementName: 'Bauhaus',
+      room: '',
+    },
+    {
+      id: '4',
+      name: 'Item D',
+      category: 'decor',
+      origin: 'Berlin',
+      year: 1928,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '1',
+      movementName: 'Bauhaus',
+      room: '',
+    },
   ];
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      [], // No methods are called directly from ArchiveService in InsightsComponent's spec that need spying
-      {
-        collection: signal(mockCollection),
-        movements: signal(mockMovements),
-        cities: signal(mockCities),
-      }
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', [], {
+      collection: signal(mockCollection),
+      movements: signal(mockMovements),
+      cities: signal(mockCities),
+    });
 
     await TestBed.configureTestingModule({
       imports: [InsightsComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
-    })
-    .compileComponents();
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InsightsComponent);
     component = fixture.componentInstance;
@@ -59,9 +106,11 @@ describe('InsightsComponent', () => {
 
   it('should correctly map origins with item counts', () => {
     const mappedOrigins = component.mappedOrigins();
-    expect(mappedOrigins.length).toBe(2); // Paris and London, Berlin is not in mockCities
-    expect(mappedOrigins.find(o => o.name === 'paris')?.items.length).toBe(2);
-    expect(mappedOrigins.find(o => o.name === 'london')?.items.length).toBe(1);
+    expect(mappedOrigins.length).toBe(2); // Paris and London
+    expect(mappedOrigins.find((o) => o.name === 'paris')?.items.length).toBe(2);
+    expect(mappedOrigins.find((o) => o.name === 'london')?.items.length).toBe(
+      1,
+    );
   });
 
   it('should correctly calculate origin counts', () => {
@@ -76,20 +125,22 @@ describe('InsightsComponent', () => {
   it('should correctly generate temporal distribution data', () => {
     const temporalData = component.temporalData();
     expect(temporalData.length).toBeGreaterThan(0);
-    expect(temporalData.find(d => d.decade === 1920)?.count).toBe(2);
-    expect(temporalData.find(d => d.decade === 1990)?.count).toBe(1);
-    expect(temporalData.find(d => d.decade === 1930)?.count).toBe(1); // Item C
+    expect(temporalData.find((d) => d.decade === 1920)?.count).toBe(2);
+    expect(temporalData.find((d) => d.decade === 1990)?.count).toBe(1);
+    expect(temporalData.find((d) => d.decade === 1930)?.count).toBe(1); // Item C
   });
 
   it('should correctly calculate taxonomy counts for a given category', () => {
-    const decorTaxonomy: { label: string; count: number }[] = component.getTaxonomyCounts('decor');
+    const decorTaxonomy: { label: string; count: number }[] =
+      component.getTaxonomyCounts('decor');
     expect(decorTaxonomy.length).toBe(1);
     expect(decorTaxonomy[0].label).toBe('Bauhaus');
     expect(decorTaxonomy[0].count).toBe(3); // Item A, C, D
   });
 
   it('should not include movements without items in taxonomy counts', () => {
-    const musicTaxonomy: { label: string; count: number }[] = component.getTaxonomyCounts('music');
+    const musicTaxonomy: { label: string; count: number }[] =
+      component.getTaxonomyCounts('music');
     expect(musicTaxonomy.length).toBe(1);
     expect(musicTaxonomy[0].label).toBe('IDM');
     expect(musicTaxonomy[0].count).toBe(1); // Item B

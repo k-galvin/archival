@@ -8,7 +8,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AcquisitionComponent } from './acquisition.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal } from '@angular/core';
-import { of, throwError, Subject, Subscription, delay } from 'rxjs';
+import { of, throwError, Subject, delay } from 'rxjs';
 import {
   CollectionItem,
   Volume,
@@ -60,8 +60,20 @@ describe('AcquisitionComponent', () => {
           { id: 'bedroom', name: 'Bedroom', x: 10, y: 10 },
         ]),
         cities: signal<City[]>([
-          { id: 1, name: 'New York', country: 'USA', lat: 40.7128, lng: -74.0060 },
-          { id: 2, name: 'Berlin', country: 'Germany', lat: 52.5200, lng: 13.4050 },
+          {
+            id: 1,
+            name: 'New York',
+            country: 'USA',
+            lat: 40.7128,
+            lng: -74.006,
+          },
+          {
+            id: 2,
+            name: 'Berlin',
+            country: 'Germany',
+            lat: 52.52,
+            lng: 13.405,
+          },
         ]),
       },
     );
@@ -92,21 +104,51 @@ describe('AcquisitionComponent', () => {
       { id: 'bedroom', name: 'Bedroom', x: 10, y: 10 },
     ]);
     expect(component.movements()).toEqual([
-      { id: '1', name: 'Bauhaus', category: 'decor', era: 'Early 20th Century' },
-      { id: '2', name: 'Minimalism', category: 'decor', era: 'Mid 20th Century' },
-      { id: '3', name: 'Impressionism', category: 'music', era: 'Late 19th Century' },
-      { id: '4', name: 'Modernism', category: 'books', era: 'Early 20th Century' },
+      {
+        id: '1',
+        name: 'Bauhaus',
+        category: 'decor',
+        era: 'Early 20th Century',
+      },
+      {
+        id: '2',
+        name: 'Minimalism',
+        category: 'decor',
+        era: 'Mid 20th Century',
+      },
+      {
+        id: '3',
+        name: 'Impressionism',
+        category: 'music',
+        era: 'Late 19th Century',
+      },
+      {
+        id: '4',
+        name: 'Modernism',
+        category: 'books',
+        era: 'Early 20th Century',
+      },
     ]);
     expect(component.cities()).toEqual([
-      { id: 1, name: 'New York', country: 'USA', lat: 40.7128, lng: -74.0060 },
-      { id: 2, name: 'Berlin', country: 'Germany', lat: 52.5200, lng: 13.4050 },
+      { id: 1, name: 'New York', country: 'USA', lat: 40.7128, lng: -74.006 },
+      { id: 2, name: 'Berlin', country: 'Germany', lat: 52.52, lng: 13.405 },
     ]);
   });
 
   it('should filter movements based on initial category "decor"', () => {
     expect(component.filteredMovements()).toEqual([
-      { id: '1', name: 'Bauhaus', category: 'decor', era: 'Early 20th Century' },
-      { id: '2', name: 'Minimalism', category: 'decor', era: 'Mid 20th Century' },
+      {
+        id: '1',
+        name: 'Bauhaus',
+        category: 'decor',
+        era: 'Early 20th Century',
+      },
+      {
+        id: '2',
+        name: 'Minimalism',
+        category: 'decor',
+        era: 'Mid 20th Century',
+      },
     ]);
   });
 
@@ -126,7 +168,9 @@ describe('AcquisitionComponent', () => {
       component.bookSearchResults.set([
         { volumeInfo: { title: 'Book 1' } } as Volume,
       ]);
-      component.albumSearchResults.set([{ title: 'Album 1' } as DiscogsRelease]);
+      component.albumSearchResults.set([
+        { title: 'Album 1' } as DiscogsRelease,
+      ]);
 
       component.onCategoryChange('fashion');
 
@@ -137,18 +181,38 @@ describe('AcquisitionComponent', () => {
     it('should update filteredMovements based on the new category', () => {
       component.onCategoryChange('music');
       expect(component.filteredMovements()).toEqual([
-        { id: '3', name: 'Impressionism', category: 'music', era: 'Late 19th Century' },
+        {
+          id: '3',
+          name: 'Impressionism',
+          category: 'music',
+          era: 'Late 19th Century',
+        },
       ]);
 
       component.onCategoryChange('books');
       expect(component.filteredMovements()).toEqual([
-        { id: '4', name: 'Modernism', category: 'books', era: 'Early 20th Century' },
+        {
+          id: '4',
+          name: 'Modernism',
+          category: 'books',
+          era: 'Early 20th Century',
+        },
       ]);
 
       component.onCategoryChange('decor');
       expect(component.filteredMovements()).toEqual([
-        { id: '1', name: 'Bauhaus', category: 'decor', era: 'Early 20th Century' },
-        { id: '2', name: 'Minimalism', category: 'decor', era: 'Mid 20th Century' },
+        {
+          id: '1',
+          name: 'Bauhaus',
+          category: 'decor',
+          era: 'Early 20th Century',
+        },
+        {
+          id: '2',
+          name: 'Minimalism',
+          category: 'decor',
+          era: 'Mid 20th Century',
+        },
       ]);
     });
   });
@@ -161,9 +225,15 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should call searchBooks and update signals on valid query', fakeAsync(() => {
-      const mockBookResults = [{ volumeInfo: { title: 'Book One' } }] as Volume[];
+      const mockBookResults = [
+        { volumeInfo: { title: 'Book One' } },
+      ] as Volume[];
       mockArchiveService.searchBooks.and.returnValue(
-        of({ kind: 'books#volumes', totalItems: mockBookResults.length, items: mockBookResults } as GoogleBooksResponse),
+        of({
+          kind: 'books#volumes',
+          totalItems: mockBookResults.length,
+          items: mockBookResults,
+        } as GoogleBooksResponse),
       );
 
       const event = { target: { value: 'Test Book' } } as unknown as Event;
@@ -177,7 +247,11 @@ describe('AcquisitionComponent', () => {
 
     it('should set isSearchingBooks to true during search', fakeAsync(() => {
       mockArchiveService.searchBooks.and.returnValue(
-        of({ kind: 'books#volumes', totalItems: 0, items: [] } as GoogleBooksResponse).pipe(delay(100)),
+        of({
+          kind: 'books#volumes',
+          totalItems: 0,
+          items: [],
+        } as GoogleBooksResponse).pipe(delay(100)),
       ); // Simulate async operation
 
       const event = { target: { value: 'Test Book' } } as unknown as Event;
@@ -227,9 +301,14 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should call searchDiscogs and update signals on valid query', fakeAsync(() => {
-      const mockAlbumResults = [{ id: 1, title: 'Artist - Album' }] as DiscogsRelease[];
+      const mockAlbumResults = [
+        { id: 1, title: 'Artist - Album' },
+      ] as DiscogsRelease[];
       mockArchiveService.searchDiscogs.and.returnValue(
-        of({ data: { results: mockAlbumResults }, error: null } as FunctionsResponse<any>),
+        of({
+          data: { results: mockAlbumResults },
+          error: null,
+        } as FunctionsResponse<any>),
       );
 
       const event = { target: { value: 'Test Album' } } as unknown as Event;
@@ -245,7 +324,10 @@ describe('AcquisitionComponent', () => {
 
     it('should set isSearchingMusic to true during search', fakeAsync(() => {
       mockArchiveService.searchDiscogs.and.returnValue(
-        of({ data: { results: [] }, error: null } as FunctionsResponse<any>).pipe(delay(100)),
+        of({
+          data: { results: [] },
+          error: null,
+        } as FunctionsResponse<any>).pipe(delay(100)),
       ); // Simulate async operation
 
       const event = { target: { value: 'Test Album' } } as unknown as Event;
@@ -344,7 +426,10 @@ describe('AcquisitionComponent', () => {
           title: 'No Date Book',
           authors: ['Author'],
           publishedDate: '2000-01-01', // Added missing required property
-          imageLinks: { thumbnail: 'http://noimage.jpg', smallThumbnail: 'http://noimage_small.jpg' },
+          imageLinks: {
+            thumbnail: 'http://noimage.jpg',
+            smallThumbnail: 'http://noimage_small.jpg',
+          },
           description: 'Description',
         },
       };
@@ -432,23 +517,27 @@ describe('AcquisitionComponent', () => {
     let mockFileReader: jasmine.SpyObj<FileReader>;
 
     beforeEach(() => {
-      let fileReaderInstance: FileReader;
-
       // Create a mock FileReader instance that we control
-      fileReaderInstance = {
+      const fileReaderInstance: FileReader = {
         result: '',
         onload: null,
         onerror: null,
         // Mock readAsDataURL to immediately trigger onload with a fake result
-        readAsDataURL: jasmine.createSpy('readAsDataURL').and.callFake(function(this: FileReader, file: File) {
-          // Simulate async behavior, trigger onload after a microtask
-          Promise.resolve().then(() => {
-            Object.defineProperty(this, 'result', { value: 'data:image/png;base64,mockedbase64', writable: true, configurable: true });
-            if (this.onload) {
-              this.onload({ target: this } as ProgressEvent<FileReader>); // Call the captured onload
-            }
-          });
-        })
+        readAsDataURL: jasmine
+          .createSpy('readAsDataURL')
+          .and.callFake(function (this: FileReader) {
+            // Simulate async behavior, trigger onload after a microtask
+            Promise.resolve().then(() => {
+              Object.defineProperty(this, 'result', {
+                value: 'data:image/png;base64,mockedbase64',
+                writable: true,
+                configurable: true,
+              });
+              if (this.onload) {
+                this.onload({ target: this } as ProgressEvent<FileReader>); // Call the captured onload
+              }
+            });
+          }),
       } as any; // Cast to any because we are not fully implementing the FileReader interface
 
       // Spy on the FileReader constructor and return our mock instance
@@ -533,7 +622,12 @@ describe('AcquisitionComponent', () => {
       image: 'http://example.com/default.jpg',
     };
     const mockUploadedImageUrl = 'http://uploaded.com/image.jpg';
-    const mockAddedItem: CollectionItem = { ...mockNewItem as CollectionItem, id: '123', room: '', movementName: '' };
+    const mockAddedItem: CollectionItem = {
+      ...(mockNewItem as CollectionItem),
+      id: '123',
+      room: '',
+      movementName: '',
+    };
 
     beforeEach(() => {
       component.newItem.set(mockNewItem); // Set a valid item for submission
@@ -563,7 +657,7 @@ describe('AcquisitionComponent', () => {
     it('should call archive.uploadImage if selectedFile is present and no image URL in newItem', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update(item => ({ ...item, image: '' })); // Ensure no image URL is present
+      component.newItem.update((item) => ({ ...item, image: '' })); // Ensure no image URL is present
 
       await component.handleSubmit();
 
@@ -575,33 +669,40 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should not call archive.uploadImage if newItem already has an image URL', async () => {
-      component.newItem.set({ ...mockNewItem, image: 'http://existing.com/image.jpg' });
+      component.newItem.set({
+        ...mockNewItem,
+        image: 'http://existing.com/image.jpg',
+      });
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-
-      await component.handleSubmit();
-
-      expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
-      expect(mockArchiveService.addItem).toHaveBeenCalledWith({ ...mockNewItem, image: 'http://existing.com/image.jpg' } as CollectionItem);
-    });
-
-    it('should not call archive.uploadImage if no selectedFile', async () => {
-      component.selectedFile.set(null);
-      component.newItem.update(item => ({ ...item, image: '' })); // Ensure no image URL is present
 
       await component.handleSubmit();
 
       expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
       expect(mockArchiveService.addItem).toHaveBeenCalledWith({
         ...mockNewItem,
-        image: 'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Default image URL
+        image: 'http://existing.com/image.jpg',
+      } as CollectionItem);
+    });
+
+    it('should not call archive.uploadImage if no selectedFile', async () => {
+      component.selectedFile.set(null);
+      component.newItem.update((item) => ({ ...item, image: '' })); // Ensure no image URL is present
+
+      await component.handleSubmit();
+
+      expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
+      expect(mockArchiveService.addItem).toHaveBeenCalledWith({
+        ...mockNewItem,
+        image:
+          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Default image URL
       } as CollectionItem);
     });
 
     it('should call archive.addItem with the correct data (with uploaded image)', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update(item => ({ ...item, image: '' }));
+      component.newItem.update((item) => ({ ...item, image: '' }));
 
       await component.handleSubmit();
 
@@ -619,7 +720,7 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should call archive.addItem with default image if no image source', async () => {
-      component.newItem.update(item => ({ ...item, image: '' }));
+      component.newItem.update((item) => ({ ...item, image: '' }));
       component.selectedFile.set(null);
 
       await component.handleSubmit();
@@ -644,8 +745,15 @@ describe('AcquisitionComponent', () => {
     beforeEach(() => {
       component.newItem.set(mockNewItem);
       // Ensure other mocks don't interfere
-      mockArchiveService.uploadImage.and.resolveTo('http://uploaded.com/image.jpg');
-      mockArchiveService.addItem.and.resolveTo({ ...mockNewItem, id: '123', room: '', movementName: '' } as CollectionItem);
+      mockArchiveService.uploadImage.and.resolveTo(
+        'http://uploaded.com/image.jpg',
+      );
+      mockArchiveService.addItem.and.resolveTo({
+        ...mockNewItem,
+        id: '123',
+        room: '',
+        movementName: '',
+      } as CollectionItem);
       spyOn(component as any, 'resetForm'); // Spy on resetForm, but expect it not to be called
       spyOn(console, 'error'); // Suppress console error during test
     });
@@ -653,7 +761,7 @@ describe('AcquisitionComponent', () => {
     it('should handle error during image upload', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update(item => ({ ...item, image: '' }));
+      component.newItem.update((item) => ({ ...item, image: '' }));
       mockArchiveService.uploadImage.and.rejectWith(new Error('Upload failed'));
 
       await component.handleSubmit();
@@ -663,7 +771,10 @@ describe('AcquisitionComponent', () => {
       expect(component.isSubmitting()).toBeFalse();
       expect(component.successMessage()).toBeNull();
       expect((component as any).resetForm).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalledWith('Acquisition failed:', jasmine.any(Error));
+      expect(console.error).toHaveBeenCalledWith(
+        'Acquisition failed:',
+        jasmine.any(Error),
+      );
     });
 
     it('should handle error during item addition', async () => {
@@ -675,7 +786,10 @@ describe('AcquisitionComponent', () => {
       expect(component.isSubmitting()).toBeFalse();
       expect(component.successMessage()).toBeNull();
       expect((component as any).resetForm).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalledWith('Acquisition failed:', jasmine.any(Error));
+      expect(console.error).toHaveBeenCalledWith(
+        'Acquisition failed:',
+        jasmine.any(Error),
+      );
     });
 
     it('should reset isSubmitting to false even on error', async () => {
@@ -842,9 +956,7 @@ describe('AcquisitionComponent', () => {
 
       tick(600); // Pass debounceTime
 
-      expect(searchSubject.next).toHaveBeenCalledTimes(3); // All calls technically go through next
-      // However, the switchMap in ngOnInit will only act on the last distinct value after debounce
-      // Testing the *effect* of debounce on API calls will be done in search functionality tests.
+      expect(searchSubject.next).toHaveBeenCalledTimes(3);
     }));
 
     it('should not call search$.next for distinctUntilChanged if value is the same', fakeAsync(() => {
@@ -853,10 +965,6 @@ describe('AcquisitionComponent', () => {
       component.onNomenclatureChange(event);
       tick(600);
       component.onNomenclatureChange(event);
-
-      // distinctUntilChanged happens within the pipe, after search$.next.
-      // So search$.next will be called twice, but the downstream effect should only happen once.
-      // We will verify the downstream effect (API calls) in the search tests.
     }));
   });
 });

@@ -9,18 +9,14 @@ describe('AppComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      [], // No methods are called directly in AppComponent's spec that need spying
-      {
-        loading: signal(false), // Default to false for isLoading test
-        user: signal(null), // Default to null if not logged in
-      }
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', [], {
+      loading: signal(false),
+      user: signal(null),
+    });
 
     await TestBed.configureTestingModule({
       imports: [AppComponent, HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
     }).compileComponents();
   });
 

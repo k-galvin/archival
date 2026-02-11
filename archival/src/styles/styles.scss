@@ -1,12 +1,5 @@
 @use "sass:color";
-
-// --- ARCHIVAL GLOBAL VARIABLES ---
-$primary-blue: #0047ab;
-$text-black: #1a1a1a;
-$bg-white: #ffffff;
-$bg-gray: #fafafa;
-$border-light: rgba(0, 0, 0, 0.1);
-$border-ultra-light: rgba(0, 0, 0, 0.05);
+@use "colors";
 
 // --- BASE STYLES ---
 * {
@@ -18,8 +11,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: $bg-white;
-  color: $text-black;
+  background-color: colors.$gray; // Use Sass variable directly
+  color: colors.$text-black; // Use Sass variable directly
   font-family:
     ui-sans-serif,
     system-ui,
@@ -35,18 +28,18 @@ body {
 }
 
 ::selection {
-  background: $primary-blue;
-  color: white;
+  background: colors.$accent-blue; // Use Sass variable directly
+  color: colors.$white; // Use Sass variable directly
 }
 
 // --- UTILITY CLASSES ---
 
 // Accent Colors
 .text-accent {
-  color: $primary-blue !important;
+  color: colors.$accent-blue !important; // Use Sass variable directly
 }
 .bg-accent {
-  background-color: $primary-blue !important;
+  background-color: colors.$accent-blue !important; // Use Sass variable directly
 }
 
 // Typography
@@ -72,8 +65,8 @@ body {
 .submit-btn {
   width: 100%;
   padding: 1rem;
-  background: $primary-blue;
-  color: white;
+  background: colors.$accent-blue; // Use Sass variable directly
+  color: colors.$white; // Use Sass variable directly
   border: none;
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;
@@ -86,7 +79,10 @@ body {
     transform 0.1s;
 
   &:hover {
-    background: color.adjust($primary-blue, $lightness: -10%);
+    background: color.adjust(
+      colors.$accent-blue,
+      $lightness: -10%
+    ); // Sass's color.adjust works with Sass color types
   }
 
   &:active {
@@ -101,7 +97,10 @@ body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 71, 171, 0.1);
+    background: rgba(
+      colors.$accent-blue,
+      0.1
+    ); // Use Sass rgba function directly
     border-radius: 10px;
   }
 }
@@ -190,7 +189,7 @@ button.mobile-toggle {
   background: none;
   opacity: 0.6;
   cursor: pointer;
-  display: flex; // Property moved above media query
+  display: flex;
 
   @media (min-width: 768px) {
     display: none;
@@ -202,6 +201,9 @@ button.mobile-toggle {
   inset: 0;
   pointer-events: none;
   opacity: 0.08;
-  background-image: radial-gradient($primary-blue 0.8px, transparent 0.8px);
+  background-image: radial-gradient(
+    colors.$accent-blue 0.8px,
+    transparent 0.8px
+  ); // Use Sass rgba directly
   background-size: 30px 30px;
 }

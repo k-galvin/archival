@@ -1,3 +1,5 @@
+@use "colors";
+
 .acquisition-container {
   display: flex;
   flex-direction: column;
@@ -7,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(colors.$primary-black, 0.1);
   padding-bottom: 1.5rem;
   margin-bottom: 3rem;
 
@@ -23,7 +25,7 @@
 .category-tabs {
   display: flex;
   gap: 0.5rem;
-  
+
   button {
     background: none;
     border: none;
@@ -31,14 +33,15 @@
     cursor: pointer;
     transition: all 0.2s;
 
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 12px; // Increased font size
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.3em;
-    opacity: 0.4; 
+    opacity: 0.4;
 
-    color: #0047ab;
-    
+    color: colors.$accent-blue;
+
     &:hover {
       opacity: 0.8;
     }
@@ -65,8 +68,8 @@
 .upload-zone {
   .preview-container {
     aspect-ratio: 1/1;
-    background: #fafafa;
-    border: 1px dashed rgba(0, 0, 0, 0.1);
+    background: colors.$gray;
+    border: 1px dashed rgba(colors.$primary-black, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,8 +79,8 @@
     transition: all 0.3s ease;
 
     &:hover {
-      border-color: #0047ab;
-      background: rgba(0, 71, 171, 0.02);
+      border-color: colors.$accent-blue;
+      background: rgba(colors.$accent-blue, 0.02);
     }
 
     &.has-image {
@@ -91,7 +94,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    color: rgba(0, 0, 0, 0.2);
+    color: rgba(colors.$primary-black, 0.2);
     text-align: center;
 
     .upload-hint {
@@ -109,13 +112,13 @@
   .change-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(colors.$primary-black, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s;
-    color: white;
+    color: colors.$white;
 
     &:hover {
       opacity: 1;
@@ -149,16 +152,16 @@
   select,
   textarea {
     padding: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    background: #f9f9f9;
+    border: 1px solid rgba(colors.$primary-black, 0.05);
+    background: colors.$gray;
     font-size: 14px;
     width: 100%;
     transition: all 0.2s;
 
     &:focus {
       outline: none;
-      border-color: #0047ab;
-      background: white;
+      border-color: colors.$accent-blue;
+      background: colors.$white;
     }
   }
 
@@ -173,11 +176,11 @@
   align-items: flex-end;
   gap: 1.5rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(colors.$primary-black, 0.05);
 
   .success-txt {
     font-size: 12px;
-    color: #10b981;
+    color: colors.$success-green;
     font-style: italic;
     margin: 0;
   }
@@ -186,7 +189,7 @@
 .submit-btn {
   padding: 1rem 3rem;
   border: none;
-  color: white;
+  color: colors.$white;
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;
   text-transform: uppercase;
@@ -201,7 +204,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
+    box-shadow: 0 4px 12px rgba(colors.$accent-blue, 0.2);
   }
 }
 
@@ -217,10 +220,10 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #eee;
+  background: colors.$white;
+  border: 1px solid colors.$gray;
   border-radius: 4px;
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px -5px rgba(colors.$primary-black, 0.1);
   max-height: 20rem;
   overflow-y: auto;
   z-index: 100;
@@ -228,7 +231,7 @@
   .result-item {
     padding: 0.75rem 1rem;
     font-size: 14px;
-    color: #666;
+    color: colors.$text-medium-gray;
   }
 
   .book-result {
@@ -239,7 +242,7 @@
     transition: background-color 0.2s;
 
     &:hover {
-      background-color: #f7f7f7;
+      background-color: colors.$gray;
     }
   }
 
@@ -248,7 +251,7 @@
     width: 3rem;
     height: auto;
     object-fit: cover;
-    border: 1px solid #eee;
+    border: 1px solid colors.$gray;
   }
 
   .book-meta {
@@ -260,7 +263,7 @@
 
   .book-title {
     font-weight: 600;
-    color: #111;
+    color: colors.$text-dark-gray;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -268,7 +271,6 @@
 
   .book-author {
     font-size: 12px;
-    color: #888;
+    color: colors.$text-light-gray;
   }
 }
-

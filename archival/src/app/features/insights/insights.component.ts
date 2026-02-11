@@ -15,8 +15,6 @@ import { CollectionItem } from '../../shared/models/archive.models';
 
 import * as L from 'leaflet';
 
-
-
 @Component({
   selector: 'app-insights',
   standalone: true,
@@ -57,10 +55,15 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   // --- Analytical Computeds ---
 
   mappedOrigins = computed(() => {
-    const grouped: Record<string, { lat: number; lng: number; items: CollectionItem[] }> = {};
-    const cityMap = new Map(this.cities().map(c => [c.name.toLowerCase(), c]));
+    const grouped: Record<
+      string,
+      { lat: number; lng: number; items: CollectionItem[] }
+    > = {};
+    const cityMap = new Map(
+      this.cities().map((c) => [c.name.toLowerCase(), c]),
+    );
 
-    this.collection().forEach(item => {
+    this.collection().forEach((item) => {
       if (item.origin) {
         const originKey = item.origin.toLowerCase();
         const city = cityMap.get(originKey);
@@ -80,16 +83,18 @@ export class InsightsComponent implements OnInit, AfterViewInit {
    */
   originCounts = computed(() => {
     return this.mappedOrigins()
-      .map(o => ({ name: o.name, count: o.items.length }))
+      .map((o) => ({ name: o.name, count: o.items.length }))
       .sort((a, b) => b.count - a.count);
   });
 
   temporalData = computed(() => {
-    const decades = [1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020];
+    const decades = [
+      1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020,
+    ];
     const counts: Record<number, number> = {};
-    decades.forEach(d => (counts[d] = 0));
+    decades.forEach((d) => (counts[d] = 0));
 
-    this.collection().forEach(item => {
+    this.collection().forEach((item) => {
       const year = item.year;
       if (!isNaN(year)) {
         const d = Math.floor(year / 10) * 10;
@@ -106,7 +111,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     const data = this.temporalData();
     const width = 1000;
     const height = 100;
-    const max = Math.max(...data.map(d => d.count), 1);
+    const max = Math.max(...data.map((d) => d.count), 1);
 
     return data
       .map((d, i) => {
@@ -179,7 +184,6 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     const geoUrl =
       'https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson';
 
-
     try {
       const response = await fetch(geoUrl);
       const data = await response.json();
@@ -195,7 +199,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       console.warn('GeoJSON load failed. Map will be empty.', e);
     }
 
-    this.mappedOrigins().forEach(origin => {
+    this.mappedOrigins().forEach((origin) => {
       const marker = L.circleMarker([origin.lat, origin.lng], {
         radius: 5,
         fillColor: '#0047AB',
@@ -208,11 +212,14 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       const content = `
         <div style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; color: #0047AB; margin-bottom: 6px; font-weight: bold;">${origin.name}</div>
         <ul style="margin: 0; padding: 0; list-style: none; font-size: 11px; color: #1A1A1A;">
-          ${origin.items.map(i => `<li style="border-bottom: 1px solid #f0f0f0; padding: 4px 0;">${i.name}</li>`).join('')}
+          ${origin.items.map((i) => `<li style="border-bottom: 1px solid #f0f0f0; padding: 4px 0;">${i.name}</li>`).join('')}
         </ul>
       `;
 
-      marker.bindPopup(content, { className: 'archival-popup', closeButton: false });
+      marker.bindPopup(content, {
+        className: 'archival-popup',
+        closeButton: false,
+      });
       marker.on('mouseover', () => marker.openPopup());
       marker.on('mouseout', () => marker.closePopup());
     });

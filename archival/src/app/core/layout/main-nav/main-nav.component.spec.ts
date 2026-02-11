@@ -11,19 +11,14 @@ describe('MainNavComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      ['signOut'], // The signOut method is called
-      {
-        user: signal(null), // Default to null for not logged in
-      }
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', ['signOut'], {
+      user: signal(null),
+    });
 
     await TestBed.configureTestingModule({
       imports: [MainNavComponent, HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
-    })
-    .compileComponents();
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MainNavComponent);
     component = fixture.componentInstance;
@@ -78,7 +73,10 @@ describe('MainNavComponent', () => {
   });
 
   it('should display logout button and avatar when user is present', () => {
-    mockArchiveService.user.set({ id: '123', email: 'test@example.com' } as any);
+    mockArchiveService.user.set({
+      id: '123',
+      email: 'test@example.com',
+    } as any);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.auth-link')).toBeNull();
@@ -87,7 +85,10 @@ describe('MainNavComponent', () => {
   });
 
   it('should reset user to null on logout', () => {
-    mockArchiveService.user.set({ id: '123', email: 'test@example.com' } as any);
+    mockArchiveService.user.set({
+      id: '123',
+      email: 'test@example.com',
+    } as any);
     fixture.detectChanges();
 
     component.logout();
@@ -95,4 +96,3 @@ describe('MainNavComponent', () => {
     expect(mockArchiveService.user()).toBeNull();
   });
 });
-

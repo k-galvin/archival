@@ -16,19 +16,13 @@ import {
   City,
   GoogleBooksResponse,
 } from '../../shared/models/archive.models';
-import { environment } from '../../../environments/environment';
-
-/**
- * Supabase Project Credentials
- */
-const SUPABASE_URL = 'https://oaqzbymmhusbhvscfcrp.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_Y8hY9if-e5PdwcmCKALzsQ_bzUpYVHp';
+import { environment } from '../../../environments/environment'; // Import environment
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArchiveService {
-  supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+  supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
   private http = inject(HttpClient);
 
   // Global Signals for Application State

@@ -12,8 +12,7 @@ import { ArchiveService } from '../../services/archive.service';
 export class MainFooterComponent {
   private archive = inject(ArchiveService);
 
-  // Derived state for footer metadata
+  // Footer metadata
   itemCount = computed(() => this.archive.collection().length);
   collectionCount = computed(() => this.archive.userCollections().length);
-  currentYear = new Date().getFullYear();
 }

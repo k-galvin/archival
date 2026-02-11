@@ -11,29 +11,84 @@ describe('ChronologyComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   const mockCollection: CollectionItem[] = [
-    { id: '1', name: 'Item A', category: 'decor', origin: 'Paris', year: 1995, image: '', designer: '', note: '', movementId: '1', movementName: 'Bauhaus', room: '' },
-    { id: '2', name: 'Item B', category: 'music', origin: 'London', year: 2005, image: '', designer: '', note: '', movementId: '2', movementName: 'IDM', room: '' },
-    { id: '3', name: 'Item C', category: 'decor', origin: 'Paris', year: 1995, image: '', designer: '', note: '', movementId: '1', movementName: 'Bauhaus', room: '' },
-    { id: '4', name: 'Item D', category: 'books', origin: 'Berlin', year: 1980, image: '', designer: '', note: '', movementId: '3', movementName: 'Postmodern', room: '' },
-    { id: '5', name: 'Item E', category: 'fashion', origin: 'Milan', year: 2005, image: '', designer: '', note: '', movementId: '4', movementName: 'Minimalism', room: '' },
+    {
+      id: '1',
+      name: 'Item A',
+      category: 'decor',
+      origin: 'Paris',
+      year: 1995,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '1',
+      movementName: 'Bauhaus',
+      room: '',
+    },
+    {
+      id: '2',
+      name: 'Item B',
+      category: 'music',
+      origin: 'London',
+      year: 2005,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '2',
+      movementName: 'IDM',
+      room: '',
+    },
+    {
+      id: '3',
+      name: 'Item C',
+      category: 'decor',
+      origin: 'Paris',
+      year: 1995,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '1',
+      movementName: 'Bauhaus',
+      room: '',
+    },
+    {
+      id: '4',
+      name: 'Item D',
+      category: 'books',
+      origin: 'Berlin',
+      year: 1980,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '3',
+      movementName: 'Postmodern',
+      room: '',
+    },
+    {
+      id: '5',
+      name: 'Item E',
+      category: 'fashion',
+      origin: 'Milan',
+      year: 2005,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '4',
+      movementName: 'Minimalism',
+      room: '',
+    },
   ];
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      [], // No methods are called directly in ChronologyComponent's spec that need spying
-      {
-        collection: signal(mockCollection),
-        movements: signal([]), // Not used by ChronologyComponent logic under test
-        cities: signal([]), // Not used by ChronologyComponent logic under test
-      }
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', [], {
+      collection: signal(mockCollection),
+      movements: signal([]),
+      cities: signal([]),
+    });
 
     await TestBed.configureTestingModule({
       imports: [ChronologyComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
-    })
-    .compileComponents();
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChronologyComponent);
     component = fixture.componentInstance;
@@ -55,15 +110,19 @@ describe('ChronologyComponent', () => {
   it('should show all items for a given year', () => {
     const groupedYears = component.groupedByYear();
 
-    const year1995 = groupedYears.find(g => g.year === 1995);
+    const year1995 = groupedYears.find((g) => g.year === 1995);
     expect(year1995).toBeDefined();
     expect(year1995?.items.length).toBe(2);
-    expect(year1995?.items.map(item => item.name)).toEqual(jasmine.arrayContaining(['Item A', 'Item C']));
+    expect(year1995?.items.map((item) => item.name)).toEqual(
+      jasmine.arrayContaining(['Item A', 'Item C']),
+    );
 
-    const year2005 = groupedYears.find(g => g.year === 2005);
+    const year2005 = groupedYears.find((g) => g.year === 2005);
     expect(year2005).toBeDefined();
     expect(year2005?.items.length).toBe(2);
-    expect(year2005?.items.map(item => item.name)).toEqual(jasmine.arrayContaining(['Item B', 'Item E']));
+    expect(year2005?.items.map((item) => item.name)).toEqual(
+      jasmine.arrayContaining(['Item B', 'Item E']),
+    );
   });
 
   it('should correctly calculate the gap between years', () => {
@@ -77,5 +136,4 @@ describe('ChronologyComponent', () => {
     expect(component.calculateGap(groupedYears[1].gap)).toBeGreaterThan(0); // Year 1995
     expect(component.calculateGap(groupedYears[2].gap)).toBeGreaterThan(0); // Year 2005
   });
-
 });

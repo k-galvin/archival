@@ -10,21 +10,16 @@ describe('MainFooterComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      [], // No methods are called directly in MainFooterComponent's spec that need spying
-      {
-        user: signal(null), // Default to null for not logged in
-        collection: signal([]),
-        userCollections: signal([]),
-      }
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', [], {
+      user: signal(null),
+      collection: signal([]),
+      userCollections: signal([]),
+    });
 
     await TestBed.configureTestingModule({
       imports: [MainFooterComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
-    })
-    .compileComponents();
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MainFooterComponent);
     component = fixture.componentInstance;
@@ -42,7 +37,9 @@ describe('MainFooterComponent', () => {
     ]);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.stat-item:first-child .stat-value')?.textContent).toContain('2');
+    expect(
+      compiled.querySelector('.stat-item:first-child .stat-value')?.textContent,
+    ).toContain('2');
   });
 
   it('should display the correct collection count', () => {
@@ -53,13 +50,17 @@ describe('MainFooterComponent', () => {
     ]);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.stat-item:last-child .stat-value')?.textContent).toContain('3');
+    expect(
+      compiled.querySelector('.stat-item:last-child .stat-value')?.textContent,
+    ).toContain('3');
   });
 
   it('should display the current year', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const currentYear = new Date().getFullYear().toString();
-    expect(compiled.querySelector('.branding-group .archival-overline:last-child')?.textContent).toContain(currentYear);
+    expect(
+      compiled.querySelector('.branding-group .archival-overline:last-child')
+        ?.textContent,
+    ).toContain(currentYear);
   });
 });
-

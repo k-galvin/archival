@@ -1,6 +1,8 @@
+export type CategoryType = 'decor' | 'music' | 'books' | 'fashion';
+
 export interface Movement {
   id: string;
-  category: 'decor' | 'music' | 'books' | 'fashion';
+  category: CategoryType;
   name: string;
   era: string;
 }
@@ -13,19 +15,18 @@ export interface City {
   lng: number;
 }
 
-
 export interface CollectionItem {
   id: string;
-  category: 'decor' | 'music' | 'books' | 'fashion';
+  category: CategoryType;
   name: string;
   designer: string;
-  year: number; // Root Fix: Aligned with Supabase 'integer' type
+  year: number;
   origin: string;
   room: string;
   image: string;
   note: string;
   movementId: string;
-  movementName: string; // New property to store the movement name
+  movementName: string;
   image_url?: string;
   room_id?: string;
   movement_id?: string;

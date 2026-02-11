@@ -1,59 +1,63 @@
-// Component-local variables for theming
-:host {
-    --bg-color: #ffffff;
-    --line-color: #000000;
-    --anim-speed: 1.6s;
-    --stroke-weight: 1.2;
-}
+@use "colors";
+
+$anim-speed: 1.6s;
+$stroke-weight: 1.2;
 
 .loader-container {
-    width: 320px;
-    height: 320px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    /* Added to center the loader on the page */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999; /* Ensure it's on top */
-    background-color: var(--bg-color); /* To hide content behind */
+  width: 320px;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background-color: colors.$white;
 }
 
 .loader-container svg {
-    width: 100%;
-    height: auto;
-    shape-rendering: geometricPrecision;
-    overflow: visible;
+  width: 100%;
+  height: auto;
+  shape-rendering: geometricPrecision;
+  overflow: visible;
 }
 
-/* Shared Stroke Styles */
-.mag-base, .flipping-page {
-    fill: none;
-    stroke: var(--line-color);
-    stroke-width: var(--stroke-weight);
-    stroke-linecap: butt;
-    stroke-linejoin: miter;
+.mag-base,
+.flipping-page {
+  fill: none;
+  stroke: colors.$primary-black;
+  stroke-width: $stroke-weight;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
 }
 
 .flipping-page {
-    fill: var(--bg-color); /* Solid mask to hide underlying lines */
-    stroke-miterlimit: 10;
-    animation: flip var(--anim-speed) infinite ease-in-out;
+  fill: colors.$white;
+  stroke-miterlimit: 10;
+  animation: flip $anim-speed infinite ease-in-out;
 }
 
 .loading-text {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5em;
-    font-size: 10px;
-    color: var(--line-color);
-    opacity: 0.8;
-    text-align: center;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  font-size: 10px;
+  color: colors.$primary-black;
+  opacity: 0.8;
+  text-align: center;
 }
 
 /* Symmetrical Path Logic:
@@ -62,24 +66,26 @@
    Top: 40 | Bottom: 140
 */
 @keyframes flip {
-    0%, 5% {
-        /* Start: Flat Right */
-        d: path("M 100,40 L 165,40 L 165,140 L 100,140 Z");
-    }
-    30% {
-        /* Lifting with Quadratic Bezier curves */
-        d: path("M 100,40 Q 130,30 145,35 L 145,145 Q 130,150 100,140 Z");
-    }
-    50% {
-        /* Mid-point (Peak over the spine) */
-        d: path("M 100,40 Q 100,20 100,30 L 100,150 Q 100,160 100,140 Z");
-    }
-    70% {
-        /* Falling to the left */
-        d: path("M 100,40 Q 70,30 55,35 L 55,145 Q 70,150 100,140 Z");
-    }
-    95%, 100% {
-        /* End: Flat Left */
-        d: path("M 100,40 L 35,40 L 35,140 L 100,140 Z");
-    }
+  0%,
+  5% {
+    /* Start: Flat Right */
+    d: path("M 100,40 L 165,40 L 165,140 L 100,140 Z");
+  }
+  30% {
+    /* Lifting with Quadratic Bezier curves */
+    d: path("M 100,40 Q 130,30 145,35 L 145,145 Q 130,150 100,140 Z");
+  }
+  50% {
+    /* Mid-point (Peak over the spine) */
+    d: path("M 100,40 Q 100,20 100,30 L 100,150 Q 100,160 100,140 Z");
+  }
+  70% {
+    /* Falling to the left */
+    d: path("M 100,40 Q 70,30 55,35 L 55,145 Q 70,150 100,140 Z");
+  }
+  95%,
+  100% {
+    /* End: Flat Left */
+    d: path("M 100,40 L 35,40 L 35,140 L 100,140 Z");
+  }
 }

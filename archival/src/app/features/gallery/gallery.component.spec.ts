@@ -11,9 +11,45 @@ describe('GalleryComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   const mockItems: CollectionItem[] = [
-    { id: '1', name: 'Item 1', category: 'decor', origin: 'orig1', year: 2020, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
-    { id: '2', name: 'Item 2', category: 'music', origin: 'orig2', year: 1995, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
-    { id: '3', name: 'Item 3', category: 'decor', origin: 'orig1', year: 2021, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
+    {
+      id: '1',
+      name: 'Item 1',
+      category: 'decor',
+      origin: 'orig1',
+      year: 2020,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    },
+    {
+      id: '2',
+      name: 'Item 2',
+      category: 'music',
+      origin: 'orig2',
+      year: 1995,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    },
+    {
+      id: '3',
+      name: 'Item 3',
+      category: 'decor',
+      origin: 'orig1',
+      year: 2021,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    },
   ];
 
   beforeEach(async () => {
@@ -22,13 +58,13 @@ describe('GalleryComponent', () => {
       ['setFilter', 'addToUserCollection', 'deleteItem'],
       {
         collection: signal(mockItems),
-        userCollections: signal([]), // Or provide mock data if needed
-      }
+        userCollections: signal([]),
+      },
     );
 
     await TestBed.configureTestingModule({
       imports: [GalleryComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
+      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GalleryComponent);
@@ -53,7 +89,9 @@ describe('GalleryComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const itemElements = compiled.querySelectorAll('.record-card');
     expect(itemElements.length).toBe(1);
-    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain('Item 2');
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 2',
+    );
   });
 
   it('should filter items by origin', () => {
@@ -62,7 +100,9 @@ describe('GalleryComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const itemElements = compiled.querySelectorAll('.record-card');
     expect(itemElements.length).toBe(1);
-    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain('Item 2');
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 2',
+    );
   });
 
   it('should filter items by era', () => {
@@ -71,7 +111,9 @@ describe('GalleryComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const itemElements = compiled.querySelectorAll('.record-card');
     expect(itemElements.length).toBe(1);
-    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain('Item 2');
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 2',
+    );
   });
 
   it('should show no items if no filter match', () => {

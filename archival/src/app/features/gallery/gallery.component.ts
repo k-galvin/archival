@@ -37,8 +37,6 @@ export class GalleryComponent {
 
   /**
    * Computes the filtered list of records based on active UI selections.
-   * Since 'item.year' is now a number in the Canvas, we perform
-   * direct numeric operations for decade grouping.
    */
   filteredItems = computed(() => {
     const items = this.items();
@@ -50,7 +48,6 @@ export class GalleryComponent {
       const origMatch =
         filters['origin'] === 'all' || item.origin === filters['origin'];
 
-      // Root Fix: 'item.year' is now a number. No parseInt required.
       const yr = item.year;
       const decade = !yr ? 'unknown' : Math.floor(yr / 10) * 10 + 's';
       const eraMatch = filters['era'] === 'all' || decade === filters['era'];
@@ -110,5 +107,4 @@ export class GalleryComponent {
   deleteItem(id: string): void {
     this.archive.deleteItem(id);
   }
-
 }
