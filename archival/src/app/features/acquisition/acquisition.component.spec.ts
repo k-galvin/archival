@@ -154,6 +154,7 @@ describe('AcquisitionComponent', () => {
 
   it('should set up search subscription on ngOnInit', () => {
     // Check if the searchSubscription is truthy, indicating it was created
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((component as any).searchSubscription).toBeTruthy();
   });
 
@@ -308,6 +309,7 @@ describe('AcquisitionComponent', () => {
         of({
           data: { results: mockAlbumResults },
           error: null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as FunctionsResponse<any>),
       );
 
@@ -327,6 +329,7 @@ describe('AcquisitionComponent', () => {
         of({
           data: { results: [] },
           error: null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as FunctionsResponse<any>).pipe(delay(100)),
       ); // Simulate async operation
 
@@ -425,7 +428,7 @@ describe('AcquisitionComponent', () => {
         volumeInfo: {
           title: 'No Date Book',
           authors: ['Author'],
-          publishedDate: '2000-01-01', // Added missing required property
+          publishedDate: '', // Simulate missing publishedDate
           imageLinks: {
             thumbnail: 'http://noimage.jpg',
             smallThumbnail: 'http://noimage_small.jpg',
@@ -434,6 +437,7 @@ describe('AcquisitionComponent', () => {
         },
       };
       component.selectBook(bookWithoutDate);
+      expect(component.newItem().year).toBe(2024); // Year defaults to 2024 if not parsed from publishedDate
     });
   });
 
@@ -518,7 +522,7 @@ describe('AcquisitionComponent', () => {
 
     beforeEach(() => {
       // Create a mock FileReader instance that we control
-      const fileReaderInstance: FileReader = {
+      const fileReaderInstance: Partial<FileReader> = {
         result: '',
         onload: null,
         onerror: null,
@@ -538,9 +542,10 @@ describe('AcquisitionComponent', () => {
               }
             });
           }),
-      } as any; // Cast to any because we are not fully implementing the FileReader interface
+      } as Partial<FileReader>;
 
       // Spy on the FileReader constructor and return our mock instance
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(window as any, 'FileReader').and.returnValue(fileReaderInstance);
 
       // We still need mockFileReader as a spyObj for other expectations, e.g., toHaveBeenCalledWith
@@ -622,8 +627,8 @@ describe('AcquisitionComponent', () => {
       image: 'http://example.com/default.jpg',
     };
     const mockUploadedImageUrl = 'http://uploaded.com/image.jpg';
-    const mockAddedItem: CollectionItem = {
-      ...(mockNewItem as CollectionItem),
+    const mockAddedItem: Partial<CollectionItem> = {
+      ...mockNewItem,
       id: '123',
       room: '',
       movementName: '',
@@ -633,6 +638,7 @@ describe('AcquisitionComponent', () => {
       component.newItem.set(mockNewItem); // Set a valid item for submission
       mockArchiveService.uploadImage.and.resolveTo(mockUploadedImageUrl);
       mockArchiveService.addItem.and.resolveTo(mockAddedItem);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(component as any, 'resetForm').and.callThrough(); // Spy on resetForm
     });
 
@@ -644,6 +650,7 @@ describe('AcquisitionComponent', () => {
       expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
       expect(mockArchiveService.addItem).not.toHaveBeenCalled();
       expect(component.successMessage()).toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).not.toHaveBeenCalled();
     });
 
@@ -706,6 +713,7 @@ describe('AcquisitionComponent', () => {
 
       await component.handleSubmit();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).toHaveBeenCalled();
     });
 
@@ -716,6 +724,7 @@ describe('AcquisitionComponent', () => {
 
       await component.handleSubmit();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).toHaveBeenCalled();
     });
 
@@ -725,6 +734,7 @@ describe('AcquisitionComponent', () => {
 
       await component.handleSubmit();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).toHaveBeenCalled();
     });
   });
@@ -754,6 +764,7 @@ describe('AcquisitionComponent', () => {
         room: '',
         movementName: '',
       } as CollectionItem);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(component as any, 'resetForm'); // Spy on resetForm, but expect it not to be called
       spyOn(console, 'error'); // Suppress console error during test
     });
@@ -770,6 +781,7 @@ describe('AcquisitionComponent', () => {
       expect(mockArchiveService.addItem).not.toHaveBeenCalled(); // addItem should not be called
       expect(component.isSubmitting()).toBeFalse();
       expect(component.successMessage()).toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).not.toHaveBeenCalled();
       expect(console.error).toHaveBeenCalledWith(
         'Acquisition failed:',
@@ -785,6 +797,7 @@ describe('AcquisitionComponent', () => {
       expect(mockArchiveService.addItem).toHaveBeenCalled();
       expect(component.isSubmitting()).toBeFalse();
       expect(component.successMessage()).toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((component as any).resetForm).not.toHaveBeenCalled();
       expect(console.error).toHaveBeenCalledWith(
         'Acquisition failed:',
@@ -875,6 +888,7 @@ describe('AcquisitionComponent', () => {
       component.successMessage.set('Success!');
 
       // Call the private resetForm method
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (component as any).resetForm();
     });
 
@@ -926,6 +940,7 @@ describe('AcquisitionComponent', () => {
 
     beforeEach(() => {
       // Access the private search$ subject
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       searchSubject = (component as any).search$;
       spyOn(searchSubject, 'next').and.callThrough();
     });
@@ -957,14 +972,6 @@ describe('AcquisitionComponent', () => {
       tick(600); // Pass debounceTime
 
       expect(searchSubject.next).toHaveBeenCalledTimes(3);
-    }));
-
-    it('should not call search$.next for distinctUntilChanged if value is the same', fakeAsync(() => {
-      const event = { target: { value: 'Same Query' } } as unknown as Event;
-
-      component.onNomenclatureChange(event);
-      tick(600);
-      component.onNomenclatureChange(event);
     }));
   });
 });

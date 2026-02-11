@@ -76,6 +76,7 @@ describe('MainNavComponent', () => {
     mockArchiveService.user.set({
       id: '123',
       email: 'test@example.com',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -88,6 +89,7 @@ describe('MainNavComponent', () => {
     mockArchiveService.user.set({
       id: '123',
       email: 'test@example.com',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     fixture.detectChanges();
 

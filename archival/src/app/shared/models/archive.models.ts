@@ -81,5 +81,5 @@ export interface DiscogsRelease {
 
 export interface FunctionsResponse<T> {
   data: T | null;
-  error: any | null;
+  error: unknown | null;
 }

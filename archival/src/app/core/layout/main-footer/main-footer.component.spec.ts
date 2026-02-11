@@ -4,6 +4,7 @@ import { MainFooterComponent } from './main-footer.component';
 import { ArchiveService } from '../../services/archive.service';
 import { signal } from '@angular/core';
 
+
 describe('MainFooterComponent', () => {
   let component: MainFooterComponent;
   let fixture: ComponentFixture<MainFooterComponent>;
@@ -32,7 +33,9 @@ describe('MainFooterComponent', () => {
 
   it('should display the correct item count', () => {
     mockArchiveService.collection.set([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { id: '1', name: 'Item 1' } as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { id: '2', name: 'Item 2' } as any,
     ]);
     fixture.detectChanges();
@@ -44,8 +47,11 @@ describe('MainFooterComponent', () => {
 
   it('should display the correct collection count', () => {
     mockArchiveService.userCollections.set([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { id: 'col1', title: 'Collection 1' } as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { id: 'col2', title: 'Collection 2' } as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { id: 'col3', title: 'Collection 3' } as any,
     ]);
     fixture.detectChanges();
