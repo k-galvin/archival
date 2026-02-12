@@ -26,6 +26,17 @@ export class ArchiveService {
   supabase: SupabaseClient = createClient(
     environment.supabaseUrl,
     environment.supabaseKey,
+    {
+      db: {
+        schema: 'public',
+      },
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+      }
+    }
   );
   private http = inject(HttpClient);
   private router = inject(Router);

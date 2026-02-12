@@ -81,8 +81,8 @@ describe('AuthComponent', () => {
     component.isLogin.set(true);
     component.authData = { email: 'test@example.com', password: 'password123', name: '' };
     const error = new Error('Login failed');
-    mockArchiveService.signIn.and.callFake(async () => {
-      mockArchiveService.authError.set(error.message);
+    mockArchiveService.signIn.and.callFake(() => {
+      mockArchiveService.authError.set('Login failed');
       return Promise.reject(error);
     });
 
@@ -133,8 +133,8 @@ describe('AuthComponent', () => {
     component.isLogin.set(false); // Switch to sign-up mode
     component.authData = { email: 'fail@example.com', password: 'password123', name: 'Fail User' };
     const error = new Error('Sign-up failed');
-    mockArchiveService.signUp.and.callFake(async () => {
-      mockArchiveService.authError.set(error.message);
+    mockArchiveService.signUp.and.callFake(() => {
+      mockArchiveService.authError.set('Sign-up failed');
       return Promise.reject(error);
     });
 
