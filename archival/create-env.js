@@ -1,48 +1,16 @@
-
 const fs = require('fs');
 const path = require('path');
 
-console.log('--- Starting create-env.js script ---');
-
-// Vercel environment variables are automatically available in the build process
-const isProduction = process.env.VERCEL_ENV === 'production';
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const googleBooksApiKey = process.env.GOOGLE_BOOKS_API_KEY;
 
-// --- Debug Logging ---
-console.log(`Is production build (VERCEL_ENV=production): ${isProduction}`);
-
-if (supabaseUrl) {
-  console.log(`Found SUPABASE_URL: ${supabaseUrl}`);
-} else {
-  console.error('Error: SUPABASE_URL environment variable not found!');
-}
-
-if (supabaseKey) {
-  // Log metadata about the key for verification, without logging the key itself.
-  console.log(`Found SUPABASE_KEY. Type: ${typeof supabaseKey}, Length: ${supabaseKey.length}`);
-  console.log(`SUPABASE_KEY starts with: '${supabaseKey.substring(0, 5)}...'`);
-} else {
-  console.error('Error: SUPABASE_KEY environment variable not found!');
-}
-
-if (googleBooksApiKey) {
-  console.log(`Found GOOGLE_BOOKS_API_KEY.`);
-} else {
-  console.log('Info: GOOGLE_BOOKS_API_KEY environment variable not found. Skipping.');
-}
-// --- End Debug Logging ---
-
-
 const envDir = path.join(__dirname, 'src', 'environments');
 
-// Create the environments directory if it doesn't exist
 if (!fs.existsSync(envDir)) {
   fs.mkdirSync(envDir, { recursive: true });
 }
 
-// Content for environment.ts (development)
 const devEnvironmentContent = `
 export const environment = {
   production: false,
@@ -52,7 +20,6 @@ export const environment = {
 };
 `;
 
-// Content for environment.prod.ts (production)
 const prodEnvironmentContent = `
 export const environment = {
   production: true,
@@ -64,13 +31,8 @@ export const environment = {
 
 try {
   fs.writeFileSync(path.join(envDir, 'environment.ts'), devEnvironmentContent.trim());
-  console.log('Successfully created src/environments/environment.ts');
-
   fs.writeFileSync(path.join(envDir, 'environment.prod.ts'), prodEnvironmentContent.trim());
-  console.log('Successfully created src/environments/environment.prod.ts for production build.');
 } catch (error) {
   console.error('Error writing environment files:', error);
-  process.exit(1); // Exit with an error code to fail the build
+  process.exit(1);
 }
-
-console.log('--- Finished create-env.js script ---');
