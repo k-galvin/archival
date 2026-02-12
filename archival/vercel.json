@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "dist/archival",
+  "outputDirectory": "dist/archival/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

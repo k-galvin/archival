@@ -20,8 +20,9 @@ if (supabaseUrl) {
 }
 
 if (supabaseKey) {
-  // Log only a non-sensitive part of the key for verification
-  console.log(`Found SUPABASE_KEY starting with: '${supabaseKey.substring(0, 5)}...'`);
+  // Log metadata about the key for verification, without logging the key itself.
+  console.log(`Found SUPABASE_KEY. Type: ${typeof supabaseKey}, Length: ${supabaseKey.length}`);
+  console.log(`SUPABASE_KEY starts with: '${supabaseKey.substring(0, 5)}...'`);
 } else {
   console.error('Error: SUPABASE_KEY environment variable not found!');
 }
