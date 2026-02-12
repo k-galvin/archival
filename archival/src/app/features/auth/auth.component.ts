@@ -12,7 +12,7 @@ import { ArchiveService } from '../../core/services/archive.service';
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
-  private archive = inject(ArchiveService);
+  public archive = inject(ArchiveService);
   private router = inject(Router);
 
   // UI State Signals

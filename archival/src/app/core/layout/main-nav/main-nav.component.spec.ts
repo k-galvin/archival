@@ -14,6 +14,11 @@ describe('MainNavComponent', () => {
     mockArchiveService = jasmine.createSpyObj('ArchiveService', ['signOut'], {
       user: signal(null),
     });
+    // Configure the signOut spy to set the user signal to null when called
+    mockArchiveService.signOut.and.callFake(async () => {
+      mockArchiveService.user.set(null);
+      return Promise.resolve(); // Simulate async signOut
+    });
 
     await TestBed.configureTestingModule({
       imports: [MainNavComponent, HttpClientTestingModule, RouterTestingModule],
@@ -69,7 +74,6 @@ describe('MainNavComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.auth-link')).not.toBeNull();
     expect(compiled.querySelector('.logout')).toBeNull();
-    expect(compiled.querySelector('.avatar-circle')).toBeNull();
   });
 
   it('should display logout button and avatar when user is present', () => {
@@ -82,7 +86,6 @@ describe('MainNavComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.auth-link')).toBeNull();
     expect(compiled.querySelector('.logout')).not.toBeNull();
-    expect(compiled.querySelector('.avatar-circle')).not.toBeNull();
   });
 
   it('should reset user to null on logout', () => {

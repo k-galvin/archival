@@ -1,0 +1,281 @@
+@use "colors";
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.fixed.inset-0 {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.z-\[400\] {
+  z-index: 400;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.animate-in {
+  animation: fade-in 1s ease-in-out;
+}
+
+.fade-in-duration-1000 {
+  animation-duration: 1000ms;
+}
+
+.relative {
+  position: relative;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.space-y-20 > *:not(:last-child) {
+  margin-bottom: 5rem; /* 20 * 0.25rem = 5rem */
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.w-1 {
+  width: 0.25rem;
+}
+
+.h-1 {
+  height: 0.25rem;
+}
+
+.bg-black-10 {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.font-mono {
+  font-family: monospace;
+}
+
+.text-8px {
+  font-size: 8px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.tracking-06 {
+  letter-spacing: 0.6em;
+}
+
+.opacity-30 {
+  opacity: 0.3;
+}
+
+.space-y-4 > *:not(:last-child) {
+  margin-bottom: 1rem; /* 4 * 0.25rem = 1rem */
+}
+
+.font-sans {
+  font-family: sans-serif;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.text-7xl {
+  font-size: 4.5rem; /* 72px */
+}
+
+.md-text-9xl {
+  @media (min-width: 768px) {
+    /* md breakpoint */
+    font-size: 8rem; /* 128px */
+  }
+}
+
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+
+.text-blue-archival {
+  color: #0047ab;
+}
+
+.leading-08 {
+  line-height: 0.8;
+}
+
+.select-none {
+  user-select: none;
+}
+
+.font-editorial {
+  /* This font needs to be imported or defined globally if it's a custom font */
+  font-family:
+    "Editorial New", serif; /* Placeholder, replace with actual font family */
+}
+
+.text-xl {
+  font-size: 1.25rem; /* 20px */
+}
+
+.md-text-2xl {
+  @media (min-width: 768px) {
+    /* md breakpoint */
+    font-size: 1.5rem; /* 24px */
+  }
+}
+
+.text-black-30 {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.pt-4 {
+  padding-top: 1rem;
+}
+
+.group:hover .hover-border-black-40 {
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.relative.px-16 {
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.border {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.border-black-10 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.transition-all {
+  transition-property: all;
+}
+
+.duration-500 {
+  transition-duration: 500ms;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+.text-9px {
+  font-size: 9px;
+}
+
+.fixed.bottom-12 {
+  position: fixed;
+  bottom: 3rem;
+}
+
+.left-1\/2 {
+  left: 50%;
+}
+
+.-\translate-x-1\/2 {
+  transform: translateX(-50%);
+}
+
+.opacity-20 {
+  opacity: 0.2;
+}
+
+.tracking-08 {
+  letter-spacing: 0.8em;
+}
+
+/* Specific button styling to ensure it looks like the JSX */
+.auth-button-style {
+  background-color: rgba(0, 0, 0, 0.1); /* Darker grey background */
+  color: colors.$text-black; /* Black text */
+  border: none;
+  /* padding: 0; Removed to allow HTML classes to define padding */
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+
+  display: block; /* Ensure it takes up its own space */
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease; /* Add transition for color */
+
+  &:hover {
+    background-color: colors.$accent-blue; /* Darken on hover: blue */
+    color: colors.$white; /* White text on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+  }
+}
+
+.button-text-style {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}

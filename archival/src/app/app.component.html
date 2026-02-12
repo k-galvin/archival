@@ -1,20 +1,26 @@
 <div class="app-container">
   <!-- Page Loader -->
-  <app-page-loader [isLoading]="isLoading"></app-page-loader>
+  <app-page-loader [isLoading]="isLoading()"></app-page-loader>
 
-  <!-- Fixed Layout Components -->
-  <app-magazine-spine />
-  <app-main-nav />
+  <!-- Fixed Layout Components (conditionally rendered) -->
+  @if (archiveService.user()) {
+    <app-magazine-spine />
+    <app-main-nav />
+  }
 
   <!-- Persistent Frame Borders-->
-  <div class="frame-border-outer"></div>
-  <div class="frame-border-inner"></div>
+  @if (archiveService.user()) {
+    <div class="frame-border-outer"></div>
+    <div class="frame-border-inner" [class.logged-in-frame-inner]="isUserLoggedIn()"></div>
+  }
 
   <!-- Dynamic Feature Content Swapped by Router -->
-  <main class="content-area">
+  <main class="content-area" [class.logged-in-content]="isUserLoggedIn()">
     <router-outlet />
   </main>
 
-  <!-- Persistent Page Footer -->
-  <app-main-footer />
+  <!-- Persistent Page Footer (conditionally rendered) -->
+  @if (archiveService.user()) {
+    <app-main-footer />
+  }
 </div>

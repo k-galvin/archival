@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import {
   Router,
   RouterOutlet,
@@ -12,6 +12,7 @@ import { MainNavComponent } from './core/layout/main-nav/main-nav.component';
 import { MainFooterComponent } from './core/layout/main-footer/main-footer.component';
 import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
 import { filter } from 'rxjs/operators';
+import { ArchiveService } from './core/services/archive.service';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +29,18 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent {
   private router = inject(Router);
+  public archiveService = inject(ArchiveService);
 
-  isLoading = false;
+  public isUserLoggedIn = computed(() => !!this.archiveService.user());
+
+  public isLoading = computed(() => {
+    return (
+      this.archiveService.isLoggingOut() ||
+      this.archiveService.isLoggingIn() ||
+      this._routerLoading
+    );
+  });
+  private _routerLoading = false;
   private timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
   constructor() {
@@ -47,14 +58,14 @@ export class AppComponent {
         if (event instanceof NavigationStart) {
           // Set a timer to only show the loader if navigation is slow
           this.timer = setTimeout(() => {
-            this.isLoading = true;
+            this._routerLoading = true;
           }, 300); // 300ms delay
         } else {
           // Navigation has ended (or was cancelled/errored)
           if (this.timer) {
             clearTimeout(this.timer); // Clear the timer so the loader doesn't appear
           }
-          this.isLoading = false; // Hide the loader if it was already visible
+          this._routerLoading = false;
         }
       });
   }

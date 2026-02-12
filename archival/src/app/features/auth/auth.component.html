@@ -27,6 +27,7 @@
             name="name"
             placeholder="full name / identifier"
             required
+            [disabled]="archive.isLoggingIn()"
           />
         </div>
       }
@@ -40,6 +41,7 @@
           name="email"
           placeholder="email address"
           required
+          [disabled]="archive.isLoggingIn()"
         />
         <input
           type="password"
@@ -47,6 +49,7 @@
           name="password"
           placeholder="passcode"
           required
+          [disabled]="archive.isLoggingIn()"
         />
       </div>
 
@@ -54,7 +57,7 @@
         <button
           type="submit"
           class="submit-btn bg-accent"
-          [disabled]="isSubmitting()"
+          [disabled]="isSubmitting() || archive.isLoggingIn()"
         >
           {{
             isSubmitting()
@@ -69,7 +72,7 @@
           type="button"
           (click)="toggleMode()"
           class="toggle-link"
-          [disabled]="isSubmitting()"
+          [disabled]="isSubmitting() || archive.isLoggingIn()"
         >
           {{ isLogin() ? "Request new access" : "Existing archivist sign-in" }}
         </button>

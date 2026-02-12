@@ -3,6 +3,16 @@
 $anim-speed: 1.6s;
 $stroke-weight: 1.2;
 
+.full-screen-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: colors.$white;
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .loader-container {
   width: 320px;
   height: 320px;
@@ -11,12 +21,9 @@ $stroke-weight: 1.2;
   justify-content: center;
   align-items: center;
   gap: 20px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   z-index: 9999;
-  background-color: colors.$white;
+  background-color: transparent;
 }
 
 .loader-container svg {

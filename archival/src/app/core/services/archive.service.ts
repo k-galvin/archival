@@ -8,6 +8,7 @@ import {
 } from '@supabase/supabase-js';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
+import { Router } from '@angular/router';
 import {
   CollectionItem,
   Room,
@@ -16,14 +17,18 @@ import {
   City,
   GoogleBooksResponse,
 } from '../../shared/models/archive.models';
-import { environment } from '../../../environments/environment'; // Import environment
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArchiveService {
-  supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
+  supabase: SupabaseClient = createClient(
+    environment.supabaseUrl,
+    environment.supabaseKey,
+  );
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   // Global Signals for Application State
   collection = signal<CollectionItem[]>([]);
@@ -36,6 +41,8 @@ export class ArchiveService {
   user = signal<User | null>(null);
   loading = signal(true);
   authError = signal<string | null>(null);
+  isLoggingOut = signal(false);
+  isLoggingIn = signal(false);
 
   constructor() {
     this.initAuth();
@@ -91,21 +98,40 @@ export class ArchiveService {
   }
 
   async signIn(email: string, password: string) {
+    this.isLoggingIn.set(true);
     this.authError.set(null);
-    const { data, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      this.authError.set(error.message);
+    try {
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        this.authError.set(error.message);
+        throw error;
+      }
+      if (data.user) {
+        await this.router.navigate(['/gallery']);
+      }
+      return data;
+    } catch (error) {
+      console.error('Error during signIn:', error);
       throw error;
+    } finally {
+      this.isLoggingIn.set(false);
     }
-    return data;
   }
 
   async signOut() {
-    await this.supabase.auth.signOut();
-    this.user.set(null);
+    this.isLoggingOut.set(true);
+    try {
+      await this.supabase.auth.signOut();
+      this.user.set(null);
+      await this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Error during signOut:', error);
+    } finally {
+      this.isLoggingOut.set(false);
+    }
   }
 
   // --- Data Fetching ---

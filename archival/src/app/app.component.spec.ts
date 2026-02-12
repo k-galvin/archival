@@ -12,6 +12,8 @@ describe('AppComponent', () => {
     mockArchiveService = jasmine.createSpyObj('ArchiveService', [], {
       loading: signal(false),
       user: signal(null),
+      isLoggingOut: signal(false),
+      isLoggingIn: signal(false),
     });
 
     await TestBed.configureTestingModule({
@@ -29,6 +31,6 @@ describe('AppComponent', () => {
   it(`should have isLoading set to false by default`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.isLoading).toBe(false);
+    expect(app.isLoading()).toBe(false);
   });
 });

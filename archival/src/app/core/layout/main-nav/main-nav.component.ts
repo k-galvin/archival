@@ -26,7 +26,7 @@ export class MainNavComponent {
   ];
 
   logout(): void {
-    this.archive.user.set(null);
+    this.archive.signOut();
   }
 
   toggleMenu(): void {

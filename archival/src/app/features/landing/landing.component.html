@@ -1,0 +1,35 @@
+<div class="fixed inset-0 z-[400] bg-white flex flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
+  <div class="relative flex flex-col items-center text-center space-y-20">
+    
+    <!-- Status Indicator -->
+    <div class="flex items-center gap-3">
+       <div class="w-1 h-1 bg-black-10 rounded-full animate-pulse"></div>
+       <span class="font-mono text-8px uppercase tracking-06 opacity-30">Access Protocol Restricted</span>
+    </div>
+
+    <!-- Heading Block -->
+    <div class="space-y-4">
+      <h1 class="font-sans font-bold text-7xl md-text-9xl tracking-tighter text-blue-archival leading-08 select-none">
+        archival
+      </h1>
+      <p class="font-editorial text-xl md-text-2xl text-black-30 tracking-tight italic">curated object registry</p>
+    </div>
+
+    <!-- Interaction -->
+    <div class="pt-4">
+      <button 
+        (click)="navigateToAuth()"
+        class="auth-button-style group relative px-16 py-5 border border-black-10 hover-border-black-40 transition-all duration-500"
+      >
+        <span class="relative z-10 font-sans font-bold text-9px uppercase tracking-06 flex items-center gap-3">
+          access registry
+        </span>
+      </button>
+    </div>
+
+    <!-- Reference Marker -->
+    <div class="fixed bottom-12 left-1/2 -translate-x-1/2 opacity-20">
+       <span class="font-mono text-7px uppercase tracking-08">v.2026.01</span>
+    </div>
+  </div>
+</div>
