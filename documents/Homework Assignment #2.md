@@ -34,15 +34,19 @@
 
 - Consider the ClassyDraw classes Line, Rectangle, Ellipse, Star, and Text.
 - What properties do these classes all share?
+  
   Location, color, and layer order would be some shared properties.
   
 - What properties do they NOT share?
+  
   Text properties and properties specific to shapes like the number of points of a star wouldn't be shared.
   
 - Are there any properties shared by some classes and not others?
+
   Fill color would be shared among shapes and line thickness would be shared amount class that draw lines but not text.
   
 - Where should the shared and nonshared properties be implemented?
+  
   The shared properties could be implemented in a base class and unique properties in subclassses.
   
 
