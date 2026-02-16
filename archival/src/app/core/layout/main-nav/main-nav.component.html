@@ -21,8 +21,12 @@
   <!-- Desktop Navigation Links -->
   <div class="nav-links" [class.open]="isMenuOpen">
     @for (link of navLinks; track link.path) {
-      <a [routerLink]="link.path" routerLinkActive="active" class="nav-link">
-        {{ link.label }}
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="active"
+        class="nav-link"
+        (click)="closeMenu()"
+      >        {{ link.label }}
         <div class="active-underline bg-accent"></div>
       </a>
     }

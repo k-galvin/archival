@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node create-env.js && ng build",
+    "build": "ng build",
+    "build:vercel": "node create-vercel-env.js && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
@@ -32,6 +33,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/leaflet": "^1.9.21",
     "angular-eslint": "21.0.1",
+    "dotenv": "^17.3.1",
     "eslint": "^9.39.1",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
