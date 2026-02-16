@@ -221,7 +221,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
         closeButton: false,
       });
       marker.on('mouseover', () => marker.openPopup());
-      marker.on('mouseout', () => marker.closePopup());
+      marker.on('click', () => marker.openPopup());
     });
   }
 

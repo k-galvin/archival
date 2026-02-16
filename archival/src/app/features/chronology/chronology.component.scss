@@ -41,6 +41,10 @@
     bottom: 0;
     width: 1px;
     background: rgba(colors.$primary-black, 0.05);
+
+    @media (max-width: 768px) {
+      left: 2rem;
+    }
   }
 }
 
@@ -50,6 +54,10 @@
   gap: 2rem;
   align-items: start;
   position: relative;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 4rem 1fr;
+  }
 }
 
 .year-marker {
