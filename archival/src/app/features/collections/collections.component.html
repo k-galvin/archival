@@ -45,7 +45,13 @@
               @let item = getItemById(itemId);
               @if (item) {
                 <div class="item-thumb-wrapper">
-                  <div class="thumb-box">
+                  <div
+                  class="thumb-box"
+                  [class.is-formatted-cover]="
+                    item.image.includes('books.google.com') ||
+                    item.image.includes('discogs.com')
+                  "
+                >
                     <img
                       [src]="item.image"
                       [alt]="item.name"

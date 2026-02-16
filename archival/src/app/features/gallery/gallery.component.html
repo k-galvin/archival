@@ -39,13 +39,20 @@
     @for (item of filteredItems(); track item.id) {
       <div class="record-card">
         <div
-          class="image-wrapper"
+          #imageWrapper
+          class="image-wrapper image-load-shimmer"
           [class.is-formatted-cover]="
             item.image.includes('books.google.com') ||
             item.image.includes('discogs.com')
           "
         >
-          <img [src]="item.image" [alt]="item.name" class="record-image" />
+          <img
+            [src]="item.image"
+            [alt]="item.name"
+            class="record-image"
+            (load)="imageWrapper.classList.add('loaded')"
+            loading="lazy"
+          />
           <div class="image-overlay">
             <button
               (click)="openCollectionPicker(item)"

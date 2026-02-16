@@ -150,6 +150,14 @@
     }
   }
 
+  .thumb-box.is-formatted-cover {
+    background-color: colors.$white;
+    padding: 1rem;
+    .thumb-img {
+      object-fit: contain;
+    }
+  }
+
   .thumb-label {
     margin: 0;
     font-size: 9px;
