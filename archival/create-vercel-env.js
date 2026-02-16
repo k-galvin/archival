@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 const targetDir = path.join(__dirname, 'src/environments');
-const targetPath = path.join(targetDir, 'environment.prod.ts');
+const prodTargetPath = path.join(targetDir, 'environment.prod.ts');
+const devTargetPath = path.join(targetDir, 'environment.ts');
 
-const envConfigFile = `export const environment = {
+const prodEnvConfigFile = `export const environment = {
   production: true,
   supabaseUrl: '${process.env.SUPABASE_URL}',
   supabaseKey: '${process.env.SUPABASE_KEY}',
@@ -13,16 +14,34 @@ const envConfigFile = `export const environment = {
 };
 `;
 
+const devEnvConfigFile = `export const environment = {
+  production: false,
+  supabaseUrl: '',
+  supabaseKey: '',
+  googleBooksApiKey: '',
+  discogsToken: '',
+};
+`;
+
 // Create the directory if it does not exist
 if (!fs.existsSync(targetDir)) {
   fs.mkdirSync(targetDir, { recursive: true });
 }
 
-fs.writeFile(targetPath, envConfigFile, (err) => {
+fs.writeFile(prodTargetPath, prodEnvConfigFile, (err) => {
   if (err) {
-    console.error(err);
+    console.error('Error writing production environment file:', err);
     throw err;
   } else {
     console.log(`Successfully generated environment.prod.ts`);
+  }
+});
+
+fs.writeFile(devTargetPath, devEnvConfigFile, (err) => {
+  if (err) {
+    console.error('Error writing development environment file:', err);
+    throw err;
+  } else {
+    console.log(`Successfully generated environment.ts`);
   }
 });
