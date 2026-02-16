@@ -1,6 +1,8 @@
 const fs = require('fs');
+const path = require('path');
 
-const targetPath = './src/environments/environment.prod.ts';
+const targetDir = path.join(__dirname, 'src/environments');
+const targetPath = path.join(targetDir, 'environment.prod.ts');
 
 const envConfigFile = `export const environment = {
   production: true,
@@ -10,6 +12,11 @@ const envConfigFile = `export const environment = {
   discogsToken: '${process.env.DISCOGS_TOKEN}',
 };
 `;
+
+// Create the directory if it does not exist
+if (!fs.existsSync(targetDir)) {
+  fs.mkdirSync(targetDir, { recursive: true });
+}
 
 fs.writeFile(targetPath, envConfigFile, (err) => {
   if (err) {
