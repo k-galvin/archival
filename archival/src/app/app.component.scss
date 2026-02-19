@@ -13,7 +13,7 @@
   inset: 0;
   border: 40px solid colors.$white;
   pointer-events: none;
-  z-index: 100;
+  z-index: 50;
 
   @media (max-width: 768px) {
     border-width: 10px;
@@ -25,7 +25,7 @@
   inset: 0;
   border: 1px solid rgba(colors.$primary-black, 0.1);
   pointer-events: none;
-  z-index: 101;
+  z-index: 51;
 }
 
 .logged-in-frame-inner {

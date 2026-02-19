@@ -12,13 +12,39 @@ import {
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
+import { NgApexchartsModule } from 'ng-apexcharts';
+
+import {
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  ApexChart,
+  ApexFill,
+  ApexDataLabels,
+  ApexLegend,
+  ApexStroke,
+  ApexTooltip,
+  ChartType,
+} from 'ng-apexcharts';
+
+export interface PieChartOptions {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: string[];
+  fill: ApexFill;
+  legend: ApexLegend;
+  dataLabels: ApexDataLabels;
+  stroke: ApexStroke;
+  colors: string[];
+  tooltip: ApexTooltip;
+}
 
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-insights',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgApexchartsModule],
   templateUrl: './insights.component.html',
   styleUrl: './insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,10 +58,53 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
   // --- Local UI State ---
   hoveredMovement = signal<string | null>(null);
+  hoveredPoint = signal<{ 
+    decade: number; 
+    category: string; 
+    count: number; 
+    x: number; 
+    y: number 
+  } | null>(null);
 
   // --- Reference signals from central service ---
   collection = this.archive.collection;
   cities = this.archive.cities;
+
+  // --- ApexCharts Options ---
+
+  pieOptions = computed<Partial<PieChartOptions>>(() => {
+    const data = this.originCounts();
+    return {
+      series: data.map(d => d.count),
+      labels: data.map(d => d.name),
+      chart: {
+        type: 'pie' as ChartType,
+        height: 280,
+        fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+        toolbar: { show: false }
+      },
+      stroke: { show: false },
+      dataLabels: { enabled: false },
+      legend: {
+        position: 'bottom',
+        fontSize: '10px',
+        markers: { 
+          width: 8,
+          height: 8
+        },
+        formatter: (name: string, opts: { w: { globals: { series: number[] } }; seriesIndex: number }) => {
+          return `${name}: ${opts.w.globals.series[opts.seriesIndex]}`;
+        }
+      },
+      colors: data.map(d => d.color),
+      tooltip: {
+        enabled: true,
+        fillSeriesColor: false,
+        theme: 'light',
+        style: { fontSize: '10px' }
+      }
+    };
+  });
 
   // --- Static Metadata ---
   MOVEMENT_DESCRIPTIONS: Record<string, string> = {
@@ -51,6 +120,8 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     modernism:
       'Broad movement emphasizing structural honesty and the rejection of traditional ornament.',
   };
+
+  ORIGIN_COLORS = ['#b9d3a4', '#1e3a8a', '#e9d5ff', '#fbcfe8', '#e0f2fe'];
 
   // --- Analytical Computeds ---
 
@@ -79,47 +150,139 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   });
 
   /**
-   * Returns all mapped origins sorted by item count.
+   * Returns all mapped origins sorted by item count with pie chart segment data and dynamic colors.
    */
   originCounts = computed(() => {
-    return this.mappedOrigins()
+    const origins = this.mappedOrigins()
       .map((o) => ({ name: o.name, count: o.items.length }))
       .sort((a, b) => b.count - a.count);
+    
+    const total = origins.reduce((acc, curr) => acc + curr.count, 0);
+    let cumulativePercent = 0;
+
+    return origins.map((o, i) => {
+      const startPercent = cumulativePercent;
+      const percent = (o.count / total) * 100;
+      cumulativePercent += percent;
+      
+      // Revert to archival blue monochromatic palette
+      const hue = 210; // Archival blue base
+      const saturation = 30 + (i * 10) % 40;
+      const lightness = 35 + (i * 15) % 45;
+      const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+      return { 
+        ...o, 
+        startPercent, 
+        percent,
+        color,
+        // Hard stops: color start% end%
+        gradientSegment: `${color} ${startPercent.toFixed(2)}% ${cumulativePercent.toFixed(2)}%`
+      };
+    });
   });
 
   temporalData = computed(() => {
-    const decades = [
-      1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020,
-    ];
-    const counts: Record<number, number> = {};
-    decades.forEach((d) => (counts[d] = 0));
+    const items = this.collection();
+    const categories: string[] = ['decor', 'music', 'books', 'fashion'];
+    
+    if (items.length === 0) {
+      return { decades: [], categoryPaths: [], maxVal: 1 };
+    }
 
-    this.collection().forEach((item) => {
+    const years = items.map(i => i.year).filter(y => !isNaN(y));
+    if (years.length === 0) {
+      return { decades: [], categoryPaths: [], maxVal: 1 };
+    }
+
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const startDecade = Math.floor(minYear / 10) * 10;
+    const endDecade = Math.floor(maxYear / 10) * 10;
+
+    const decades: number[] = [];
+    for (let d = startDecade; d <= endDecade; d += 10) {
+      decades.push(d);
+    }
+    
+    // Structure: { 1920: { decor: 0, music: 0, ... }, ... }
+    const counts: Record<number, Record<string, number>> = {};
+    decades.forEach((d) => {
+      counts[d] = {};
+      categories.forEach(cat => counts[d][cat] = 0);
+    });
+
+    items.forEach((item) => {
       const year = item.year;
       if (!isNaN(year)) {
         const d = Math.floor(year / 10) * 10;
-        if (d in counts) counts[d]++;
+        if (d in counts && item.category in counts[d]) {
+          counts[d][item.category]++;
+        }
+      }
+    });
+
+    const chartWidth = 1000;
+    const baselineY = 100;
+    const paddingTop = 10;
+    const paddingX = 5; // Minimal padding to fill width
+    const effectiveWidth = chartWidth - paddingX * 2;
+    const effectiveHeight = baselineY - paddingTop;
+
+    // Flatten to a more usable format for the template
+    const decadeList = decades.map((decade, i) => ({
+      decade,
+      x: paddingX + (decades.length > 1 ? (i / (decades.length - 1)) * effectiveWidth : effectiveWidth / 2),
+      counts: counts[decade]
+    }));
+
+    // Find overall max for scaling
+    let maxVal = 1;
+    decades.forEach(d => {
+      categories.forEach(cat => {
+        if (counts[d][cat] > maxVal) maxVal = counts[d][cat];
+      });
+    });
+
+    // Generate paths for each category
+    const categoryPaths = categories.map(cat => {
+      const points = decadeList.map(d => ({
+        x: d.x,
+        y: baselineY - (d.counts[cat] / maxVal) * effectiveHeight
+      }));
+      
+      const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+      
+      return {
+        category: cat,
+        path: linePath,
+        points // For drawing individual dots if needed
+      };
+    });
+
+    return {
+      decades: decadeList,
+      categoryPaths,
+      maxVal
+    };
+  });
+
+  /**
+   * Provenance Leaderboard - Top Designers/Authors
+   */
+  topDesigners = computed(() => {
+    const counts: Record<string, number> = {};
+    this.collection().forEach(item => {
+      const name = item.designer?.trim();
+      if (name && name.toLowerCase() !== 'unknown' && name.toLowerCase() !== 'unknown artist') {
+        counts[name] = (counts[name] || 0) + 1;
       }
     });
 
     return Object.entries(counts)
-      .sort((a, b) => Number(a[0]) - Number(b[0]))
-      .map(([decade, count]) => ({ decade: Number(decade), count }));
-  });
-
-  temporalLinePath = computed(() => {
-    const data = this.temporalData();
-    const width = 1000;
-    const height = 100;
-    const max = Math.max(...data.map((d) => d.count), 1);
-
-    return data
-      .map((d, i) => {
-        const x = (i / (data.length - 1)) * width;
-        const y = height - (d.count / max) * height;
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-      })
-      .join(' ');
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
   });
 
   // --- Lifecycle Hooks ---
@@ -237,10 +400,17 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       }
     });
 
-    return (Object.entries(counts) as [string, number][])
+    const sorted = (Object.entries(counts) as [string, number][])
       .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 5)
       .map(([label, count]: [string, number]) => ({ label, count }));
+
+    const max = sorted.length > 0 ? sorted[0].count : 1;
+
+    return sorted.map(s => ({
+      ...s,
+      percent: (s.count / max) * 100
+    }));
   }
 
   getMovementDescription(name: string): string {
@@ -248,5 +418,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       this.MOVEMENT_DESCRIPTIONS[name.toLowerCase()] ||
       'Archival movement defining a specific era of stylistic and structural innovation.'
     );
+  }
+
+  getOriginColor(index: number): string {
+    return this.ORIGIN_COLORS[index % this.ORIGIN_COLORS.length];
   }
 }

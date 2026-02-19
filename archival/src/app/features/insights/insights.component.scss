@@ -1,12 +1,16 @@
 @use "colors";
 
-// --- Component Root ---
+:host {
+  display: block;
+  position: relative;
+  z-index: 60;
+}
+
 .insights-container {
   display: flex;
   flex-direction: column;
 }
 
-// --- Header ---
 .insights-header {
   border-bottom: 1px solid rgba(colors.$primary-black, 0.05);
   padding-bottom: 2rem;
@@ -26,16 +30,8 @@
   .header-note {
     text-align: right;
   }
-
-  .note-text {
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 10px;
-    margin-top: 4px;
-    display: block;
-  }
 }
 
-// --- Main Grid Layout ---
 .insights-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -60,7 +56,6 @@
   min-height: 0;
 }
 
-// --- Stat & List Boxes ---
 .stat-box {
   background-color: colors.$gray;
   border: 1px solid rgba(colors.$primary-black, 0.05);
@@ -75,42 +70,48 @@
 }
 
 .list-box {
-  .density-list {
-    margin-top: 1.5rem;
+  .pie-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .pie-legend {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-  }
 
-  .density-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(colors.$primary-black, 0.03);
-  }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 11px;
 
-  .origin-name {
-    font-size: 12px;
-    text-transform: lowercase;
-    opacity: 0.6;
-  }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
 
-  .origin-count {
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 12px;
-    font-weight: 700;
-  }
+      .label {
+        opacity: 0.6;
+        text-transform: lowercase;
+        flex-grow: 1;
+        font-size: 11px;
+      }
 
-  .empty-hint {
-    font-size: 12px;
-    font-style: italic;
-    opacity: 0.4;
-    padding: 2rem 0;
+      .val {
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-weight: 700;
+      }
+    }
   }
 }
 
-// --- Map Styles ---
 .map-wrapper {
   position: relative;
   height: 100%;
@@ -136,7 +137,6 @@
   pointer-events: none;
 }
 
-// --- Leaflet Customizations ---
 :host ::ng-deep {
   .leaflet-container {
     background: transparent !important;
@@ -163,7 +163,16 @@
   }
 }
 
-// --- Styles for Re-introduced Charts ---
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  margin-bottom: 1rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 0.8fr 3.2fr;
+  }
+}
 
 .analysis-section,
 .movements-section {
@@ -171,37 +180,212 @@
   border-top: 1px solid rgba(colors.$primary-black, 0.05);
 }
 
+// Shared Bar styles
+.leaderboard-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bar-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  cursor: default;
+
+  &:focus {
+    outline: none;
+    .bar-track { border-color: rgba(colors.$accent-blue, 0.3); }
+  }
+
+  .creator-name {
+    font-size: 11px;
+    text-transform: lowercase;
+    opacity: 0.6;
+  }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    
+    .creator-name {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 1;
+    }
+    
+    .creator-count {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 10px;
+      opacity: 0.4;
+    }
+  }
+
+  .bar-and-count {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .bar-track {
+    flex-grow: 1;
+    height: 4px;
+    background: rgba(colors.$primary-black, 0.03);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.bg-cat-decor { background-color: #a9d6e5; }
+    &.bg-cat-music { background-color: #6495ed; }
+    &.cat-books, &.bg-cat-books { background-color: #2563eb; }
+    &.bg-cat-fashion { background-color: #000080; }
+  }
+
+  .creator-count {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 1.5rem;
+    text-align: right;
+    opacity: 0.4;
+  }
+}
+
+.temporal-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+
+  .chart-container {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+  }
+}
+
 .section-label {
   margin-bottom: 3rem;
   display: block;
 }
 
-// Temporal Chart
-.chart-container {
+.svg-wrapper {
   width: 100%;
+  position: relative;
 }
 
 .temporal-chart {
   width: 100%;
   height: auto;
+  display: block;
 
   .chart-line {
-    stroke: colors.$accent-blue;
-    stroke-width: 2;
+    stroke-width: 2.5;
+    fill: none !important;
+    transition: opacity 0.3s;
+
+    &.cat-decor { stroke: #a9d6e5; }
+    &.cat-music { stroke: #6495ed; }
+    &.cat-books { stroke: #2563eb; }
+    &.cat-fashion { stroke: #000080; }
   }
 
   .chart-dot {
-    fill: colors.$accent-blue;
-  }
+    transition: all 0.2s ease;
+    cursor: pointer;
 
-  .chart-label {
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 10px;
-    fill: rgba(colors.$primary-black, 0.3);
+    &.cat-decor { fill: #a9d6e5; }
+    &.cat-music { fill: #6495ed; }
+    &.cat-books { fill: #2563eb; }
+    &.cat-fashion { fill: #000080; }
+
+    &:hover { r: 5; }
   }
 }
 
-// Taxonomy Grid
+.temporal-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2100;
+  transform: translate(-50%, calc(-100% - 15px));
+
+  .tooltip-content {
+    background: colors.$white;
+    border: 1px solid rgba(colors.$primary-black, 0.1);
+    padding: 0.75rem 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 100px;
+    text-align: center;
+
+    .archival-overline {
+      font-size: 8px;
+      margin: 0;
+    }
+
+    .count {
+      font-size: 12px;
+      font-weight: 700;
+      margin: 4px 0;
+    }
+
+    .decade {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 9px;
+      opacity: 0.4;
+    }
+  }
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legend-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    &.bg-cat-decor { background-color: #a9d6e5; }
+    &.bg-cat-music { background-color: #6495ed; }
+    &.bg-cat-books { background-color: #2563eb; }
+    &.bg-cat-fashion { background-color: #000080; }
+  }
+
+  .legend-label {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+  }
+}
+
 .distribution-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -222,35 +406,14 @@
     border-bottom: 1px solid rgba(colors.$primary-black, 0.05);
     display: block;
   }
-
-  .dist-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .dist-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 12px;
-    position: relative;
-    cursor: default;
-
-    .row-label {
-      opacity: 0.6;
-      text-transform: lowercase;
-    }
-  }
-
-  .empty-hint {
-    font-size: 11px;
-    font-style: italic;
-    opacity: 0.3;
-  }
 }
 
-// Movement Tooltip
+.empty-hint {
+  font-size: 11px;
+  font-style: italic;
+  opacity: 0.3;
+}
+
 .movement-tooltip {
   position: absolute;
   bottom: calc(100% + 12px);

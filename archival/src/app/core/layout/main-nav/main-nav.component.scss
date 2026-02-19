@@ -22,17 +22,6 @@
   }
 }
 
-.mobile-toggle {
-  display: none; // Hidden on desktop
-  background: none;
-  border: none;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    display: block; // Visible on mobile
-  }
-}
-
 .nav-links {
   display: flex;
   gap: 2.5rem;

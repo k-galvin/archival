@@ -1,4 +1,9 @@
-<div class="insights-container fade-in">
+<div
+  class="insights-container fade-in"
+  (click)="hoveredPoint.set(null); hoveredMovement.set(null)"
+  (keydown.escape)="hoveredPoint.set(null); hoveredMovement.set(null)"
+  tabindex="0"
+>
   <header class="insights-header">
     <div>
       <span class="archival-overline text-accent">Archival Overview</span>
@@ -18,15 +23,17 @@
       </div>
       <div class="list-box">
         <span class="archival-overline">Distribution Density</span>
-        <div class="density-list">
-          @for (origin of originCounts(); track origin.name) {
-            <div class="density-row">
-              <span class="origin-name">{{ origin.name }}</span>
-              <span class="origin-count text-accent">{{ origin.count }}</span>
-            </div>
-          } @empty {
-            <p class="empty-hint">No origin data to display.</p>
-          }
+        <div class="pie-container">
+          <apx-chart
+            [series]="pieOptions().series!"
+            [chart]="pieOptions().chart!"
+            [labels]="pieOptions().labels!"
+            [colors]="pieOptions().colors!"
+            [stroke]="pieOptions().stroke!"
+            [dataLabels]="pieOptions().dataLabels!"
+            [legend]="pieOptions().legend!"
+            [tooltip]="pieOptions().tooltip!"
+          ></apx-chart>
         </div>
       </div>
     </aside>
@@ -42,45 +49,137 @@
     </div>
   </div>
 
-  <!-- Temporal Analysis -->
-  <section class="analysis-section">
-    <span class="section-label archival-overline"
-      >temporal distribution (1920 — 2020)</span
-    >
-    <div class="chart-container">
-      <svg
-        viewBox="0 0 1000 120"
-        preserveAspectRatio="none"
-        class="temporal-chart"
-      >
-        <!-- Baseline -->
-        <line
-          x1="0"
-          y1="100"
-          x2="1000"
-          y2="100"
-          stroke="rgba(0,0,0,0.05)"
-          stroke-width="1"
-        />
-
-        <!-- Data Path -->
-        <path [attr.d]="temporalLinePath()" fill="none" class="chart-line" />
-
-        <!-- Data Points & Labels -->
-        @for (d of temporalData(); track d.decade; let i = $index) {
-          @let x = (i / (temporalData().length - 1)) * 1000;
-          @let y = 100 - (d.count / temporalData().length) * 100;
-
-          <g class="chart-group">
-            <circle [attr.cx]="x" [attr.cy]="y" r="3" class="chart-dot" />
-            <text [attr.x]="x" y="118" text-anchor="middle" class="chart-label">
-              {{ d.decade }}s
-            </text>
-          </g>
+  <!-- Analytical Row: Provenance & Temporal -->
+  <div class="analysis-grid">
+    <!-- Provenance Leaderboard (Bar Chart) -->
+    <section class="analysis-section provenance-leaderboard">
+      <span class="section-label archival-overline">Frequent Favorites</span>
+      <div class="leaderboard-bars">
+        @for (creator of topDesigners(); track creator.name) {
+          <div class="bar-row">
+            <div class="bar-meta">
+              <span class="creator-name">{{ creator.name }}</span>
+              <span class="creator-count">{{ creator.count }}</span>
+            </div>
+            <div class="bar-track">
+              <div
+                class="bar-fill bg-accent"
+                [style.width.%]="
+                  (creator.count / topDesigners()[0].count) * 100
+                "
+              ></div>
+            </div>
+          </div>
+        } @empty {
+          <p class="empty-hint">No creator data recorded.</p>
         }
-      </svg>
-    </div>
-  </section>
+      </div>
+    </section>
+
+    <!-- Temporal Analysis (Centered) -->
+    <section class="analysis-section temporal-flow">
+      <span class="section-label archival-overline">
+        categorical temporal distribution
+        @if (temporalData().decades.length > 0) {
+          ({{ temporalData().decades[0].decade }} —
+          {{
+            temporalData().decades[temporalData().decades.length - 1].decade
+          }})
+        }
+      </span>
+      <div class="chart-container">
+        <div class="svg-wrapper">
+          <svg viewBox="0 0 1000 110" class="temporal-chart">
+            <!-- Baseline -->
+            <line
+              x1="0"
+              y1="100"
+              x2="1000"
+              y2="100"
+              stroke="rgba(0,0,0,0.05)"
+              stroke-width="1"
+              vector-effect="non-scaling-stroke"
+            />
+
+            <!-- Layer 1: Lines -->
+            @for (cat of temporalData().categoryPaths; track cat.category) {
+              <path
+                [attr.d]="cat.path"
+                fill="none"
+                class="chart-line"
+                [attr.class]="'chart-line cat-' + cat.category"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+
+            <!-- Layer 2: Dots -->
+            @for (cat of temporalData().categoryPaths; track cat.category) {
+              @for (p of cat.points; track $index) {
+                @let decade = temporalData().decades[$index].decade;
+                @let count =
+                  temporalData().decades[$index].counts[cat.category];
+                <circle
+                  [attr.cx]="p.x"
+                  [attr.cy]="p.y"
+                  r="3"
+                  [attr.class]="'chart-dot cat-' + cat.category"
+                  vector-effect="non-scaling-stroke"
+                  (mouseenter)="
+                    hoveredPoint.set({
+                      decade,
+                      category: cat.category,
+                      count,
+                      x: p.x,
+                      y: p.y,
+                    })
+                  "
+                  (mouseleave)="hoveredPoint.set(null)"
+                  (click)="
+                    hoveredPoint.set({
+                      decade,
+                      category: cat.category,
+                      count,
+                      x: p.x,
+                      y: p.y,
+                    });
+                    $event.stopPropagation()
+                  "
+                />
+              }
+            }
+          </svg>
+
+          <!-- Temporal Tooltip -->
+          @if (hoveredPoint(); as hp) {
+            <div
+              class="temporal-tooltip fade-in-fast"
+              [style.left.%]="(hp.x / 1000) * 100"
+              [style.top.%]="(hp.y / 110) * 100"
+            >
+              <div class="tooltip-content">
+                <span class="archival-overline">{{ hp.category }}</span>
+                <p class="count">{{ hp.count }} {{ hp.count === 1 ? 'item' : 'items' }}</p>
+                <span class="decade">{{ hp.decade }}s</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Legend -->
+        <div class="chart-legend">
+          @for (cat of ["decor", "music", "books", "fashion"]; track cat) {
+            <div class="legend-item">
+              <span
+                class="legend-swatch"
+                [attr.class]="'legend-swatch bg-cat-' + cat"
+              ></span>
+              <span class="legend-label">{{ cat }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- Taxonomy / Movement Grid -->
   <section class="movements-section">
@@ -90,15 +189,38 @@
           <span class="dist-label text-accent archival-overline"
             >{{ cat }} movements</span
           >
-          <div class="dist-rows">
+          <div class="leaderboard-bars">
             @for (row of getTaxonomyCounts(cat); track row.label) {
               <div
-                class="dist-row"
+                class="bar-row"
                 (mouseenter)="hoveredMovement.set(row.label)"
                 (mouseleave)="hoveredMovement.set(null)"
+                (click)="
+                  hoveredMovement.set(
+                    row.label === hoveredMovement() ? null : row.label
+                  );
+                  $event.stopPropagation()
+                "
+                (keydown.enter)="
+                  hoveredMovement.set(
+                    row.label === hoveredMovement() ? null : row.label
+                  );
+                  $event.stopPropagation()
+                "
+                tabindex="0"
+                role="button"
               >
-                <span class="row-label">{{ row.label }}</span>
-                <span class="row-val text-accent">{{ row.count }}</span>
+                <span class="creator-name">{{ row.label }}</span>
+                <div class="bar-and-count">
+                  <div class="bar-track">
+                    <div
+                      class="bar-fill"
+                      [attr.class]="'bar-fill bg-cat-' + cat"
+                      [style.width.%]="row.percent"
+                    ></div>
+                  </div>
+                  <span class="creator-count">{{ row.count }}</span>
+                </div>
 
                 @if (hoveredMovement() === row.label) {
                   <div class="movement-tooltip fade-in-fast">
