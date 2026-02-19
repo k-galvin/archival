@@ -195,7 +195,7 @@
           <select id="origin" [(ngModel)]="newItem().origin" name="origin">
             <option value="">Select a city</option>
             @for (city of cities(); track city.id) {
-              <option [value]="city.name.toLowerCase()">
+              <option [value]="city.name">
                 {{ city.name }}, {{ city.country }}
               </option>
             }
