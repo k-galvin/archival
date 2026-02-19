@@ -7,7 +7,7 @@ Archival is a specialized curation platform designed for intentional collectors 
 
 The application utilizes an Angular-based "Museum View" to visualize the chronological density of a collection, leveraging a Supabase-managed PostgreSQL database to identify hidden common threads across disparate items. Through this sophisticated logic engine, users can analyze the historical evolution of their lifestyle and curate their surroundings with the rigor of a professional archivist.
 
-![UML Diagram](UML-Diagram.png)
+![UML Diagram](diagrams/UML-Diagram.png)
 
 The remainder of this document is structured as follows. The Functional Requirements section presents features as User Stories to define project value. The Performance Requirements section details interface responsiveness metrics. Finally, the Environment Requirements section specifies the resources required for development and execution.
 
