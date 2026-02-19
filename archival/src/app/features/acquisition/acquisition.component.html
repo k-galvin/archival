@@ -176,9 +176,9 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline" for="designer"
-            >Designer / Author</label
-          >
+          <label class="archival-overline" for="designer">{{
+            designerLabel()
+          }}</label>
           <input
             id="designer"
             type="text"
@@ -189,9 +189,7 @@
         </div>
 
         <div class="field-group">
-          <label class="archival-overline" for="origin"
-            >Provenance / Origin</label
-          >
+          <label class="archival-overline" for="origin">Origin</label>
           <select id="origin" [(ngModel)]="newItem().origin" name="origin">
             <option value="">Select a city</option>
             @for (city of cities(); track city.id) {
@@ -215,15 +213,15 @@
 
         <!-- Movement Selection -->
         <div class="field-group">
-          <label class="archival-overline" for="movement"
-            >Associated Movement</label
-          >
+          <label class="archival-overline" for="movement">{{
+            movementLabel()
+          }}</label>
           <select
             id="movement"
             [(ngModel)]="newItem().movementId"
             name="movement"
           >
-            <option value="">Select Movement</option>
+            <option value="">Select {{ movementLabel() }}</option>
             @for (movement of filteredMovements(); track movement.id) {
               <option [value]="movement.id">{{ movement.name }}</option>
             }

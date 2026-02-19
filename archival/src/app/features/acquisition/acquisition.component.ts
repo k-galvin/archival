@@ -89,6 +89,19 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     return this.movements().filter((m) => m.category === selectedCategory);
   });
 
+  designerLabel = computed(() => {
+    const category = this.newItem().category;
+    if (category === 'books') return 'Author';
+    if (category === 'music') return 'Artist';
+    return 'Designer';
+  });
+
+  movementLabel = computed(() => {
+    const category = this.newItem().category;
+    if (category === 'books' || category === 'music') return 'Genre';
+    return 'Movement';
+  });
+
   ngOnInit(): void {
     this.searchSubscription = this.search$
       .pipe(
