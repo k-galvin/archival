@@ -414,6 +414,11 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   }
 
   getMovementDescription(name: string): string {
+    const movement = this.archive.movements().find(m => m.name.toLowerCase() === name.toLowerCase());
+    if (movement && movement.description) {
+      return movement.description;
+    }
+    
     return (
       this.MOVEMENT_DESCRIPTIONS[name.toLowerCase()] ||
       'Archival movement defining a specific era of stylistic and structural innovation.'

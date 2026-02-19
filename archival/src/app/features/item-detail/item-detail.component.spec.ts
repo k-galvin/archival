@@ -6,7 +6,12 @@ import { signal } from '@angular/core';
 
 import { ItemDetailComponent } from './item-detail.component';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem, Room, UserCollection, Movement } from '../../shared/models/archive.models';
+import {
+  CollectionItem,
+  Room,
+  UserCollection,
+  Movement,
+} from '../../shared/models/archive.models';
 
 // --- Mocks ---
 const mockItem: CollectionItem = {
@@ -15,7 +20,8 @@ const mockItem: CollectionItem = {
   year: 2023,
   designer: 'Test Designer',
   origin: 'Test Origin',
-  image: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+  image:
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
   category: 'decor',
   note: 'Test Note',
   movementId: 'm1',
@@ -27,12 +33,24 @@ class MockArchiveService {
   collection = signal<CollectionItem[]>([mockItem]);
   rooms = signal<Room[]>([{ id: 'r1', name: 'Test Room', x: 0, y: 0 }]);
   userCollections = signal<UserCollection[]>([]);
-  movements = signal<Movement[]>([{ id: 'm1', name: 'Test Movement', category: 'decor', era: '2020s' }]);
+  movements = signal<Movement[]>([
+    {
+      id: 'm1',
+      name: 'Test Movement',
+      category: 'decor',
+      era: '2020s',
+      description: 'Test Description',
+    },
+  ]);
 
   updateItem = jasmine.createSpy('updateItem').and.resolveTo(mockItem);
   deleteItem = jasmine.createSpy('deleteItem').and.resolveTo(undefined);
-  addToUserCollection = jasmine.createSpy('addToUserCollection').and.resolveTo(undefined);
-  uploadImage = jasmine.createSpy('uploadImage').and.resolveTo('http://uploaded.com/new.jpg');
+  addToUserCollection = jasmine
+    .createSpy('addToUserCollection')
+    .and.resolveTo(undefined);
+  uploadImage = jasmine
+    .createSpy('uploadImage')
+    .and.resolveTo('http://uploaded.com/new.jpg');
 }
 
 class MockRouter {
@@ -62,7 +80,9 @@ describe('ItemDetailComponent', () => {
 
     fixture = TestBed.createComponent(ItemDetailComponent);
     component = fixture.componentInstance;
-    archiveService = TestBed.inject(ArchiveService) as unknown as MockArchiveService;
+    archiveService = TestBed.inject(
+      ArchiveService,
+    ) as unknown as MockArchiveService;
     router = TestBed.inject(Router) as unknown as MockRouter;
 
     fixture.detectChanges(); // ngOnInit will be called
@@ -83,13 +103,13 @@ describe('ItemDetailComponent', () => {
   it('should save an edit and update the item', async () => {
     component.startEdit();
     const editedName = 'Updated Name';
-    
+
     // Create a copy of the editable item and modify it
     const editedItem = { ...component.editableItem(), name: editedName };
     component.editableItem.set(editedItem);
 
     await component.saveEdit();
-    
+
     // The component now sends a specific set of properties
     const expectedUpdates: Partial<CollectionItem> = {
       name: editedItem.name,
@@ -102,7 +122,10 @@ describe('ItemDetailComponent', () => {
       image: editedItem.image,
     };
 
-    expect(archiveService.updateItem).toHaveBeenCalledWith('1', expectedUpdates);
+    expect(archiveService.updateItem).toHaveBeenCalledWith(
+      '1',
+      expectedUpdates,
+    );
     expect(component.isEditing()).toBe(false);
   });
 
@@ -114,23 +137,26 @@ describe('ItemDetailComponent', () => {
     await component.saveEdit();
 
     expect(archiveService.uploadImage).toHaveBeenCalledWith(testFile);
-    expect(archiveService.updateItem).toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
-      image: 'http://uploaded.com/new.jpg'
-    }));
+    expect(archiveService.updateItem).toHaveBeenCalledWith(
+      jasmine.any(String),
+      jasmine.objectContaining({
+        image: 'http://uploaded.com/new.jpg',
+      }),
+    );
   });
 
   it('should set selectedFile and imagePreview when onFileSelected is called', (done) => {
     const testFile = new File([''], 'test.png', { type: 'image/png' });
     const event = {
       target: {
-        files: [testFile]
-      }
+        files: [testFile],
+      },
     } as unknown as Event;
 
     component.onFileSelected(event);
 
     expect(component.selectedFile()).toBe(testFile);
-    
+
     // We need to wait for FileReader onload
     setTimeout(() => {
       expect(component.imagePreview()).toBeTruthy();
@@ -158,7 +184,7 @@ describe('ItemDetailComponent', () => {
     expect(archiveService.deleteItem).not.toHaveBeenCalled();
     expect(router.navigate).not.toHaveBeenCalled();
   });
-  
+
   it('should open the collection picker modal', () => {
     component.openCollectionPicker();
     expect(component.collectionPickerOpen()).toBe(true);
@@ -168,7 +194,10 @@ describe('ItemDetailComponent', () => {
     const collectionId = 'c1';
     component.openCollectionPicker();
     component.addToCollection(collectionId);
-    expect(archiveService.addToUserCollection).toHaveBeenCalledWith(collectionId, '1');
+    expect(archiveService.addToUserCollection).toHaveBeenCalledWith(
+      collectionId,
+      '1',
+    );
     expect(component.collectionPickerOpen()).toBe(false);
   });
 });

@@ -35,24 +35,28 @@ describe('AcquisitionComponent', () => {
             name: 'Bauhaus',
             category: 'decor',
             era: 'Early 20th Century',
+            description: 'Rational design.',
           },
           {
             id: '2',
             name: 'Minimalism',
             category: 'decor',
             era: 'Mid 20th Century',
+            description: 'Essential elements.',
           },
           {
             id: '3',
             name: 'Impressionism',
             category: 'music',
             era: 'Late 19th Century',
+            description: 'Focus on texture.',
           },
           {
             id: '4',
             name: 'Modernism',
             category: 'books',
             era: 'Early 20th Century',
+            description: 'Broad movement.',
           },
         ]),
         rooms: signal([
@@ -109,24 +113,28 @@ describe('AcquisitionComponent', () => {
         name: 'Bauhaus',
         category: 'decor',
         era: 'Early 20th Century',
+        description: 'Rational design.',
       },
       {
         id: '2',
         name: 'Minimalism',
         category: 'decor',
         era: 'Mid 20th Century',
+        description: 'Essential elements.',
       },
       {
         id: '3',
         name: 'Impressionism',
         category: 'music',
         era: 'Late 19th Century',
+        description: 'Focus on texture.',
       },
       {
         id: '4',
         name: 'Modernism',
         category: 'books',
         era: 'Early 20th Century',
+        description: 'Broad movement.',
       },
     ]);
     expect(component.cities()).toEqual([
@@ -142,12 +150,14 @@ describe('AcquisitionComponent', () => {
         name: 'Bauhaus',
         category: 'decor',
         era: 'Early 20th Century',
+        description: 'Rational design.',
       },
       {
         id: '2',
         name: 'Minimalism',
         category: 'decor',
         era: 'Mid 20th Century',
+        description: 'Essential elements.',
       },
     ]);
   });
@@ -187,6 +197,7 @@ describe('AcquisitionComponent', () => {
           name: 'Impressionism',
           category: 'music',
           era: 'Late 19th Century',
+          description: 'Focus on texture.',
         },
       ]);
 
@@ -197,6 +208,7 @@ describe('AcquisitionComponent', () => {
           name: 'Modernism',
           category: 'books',
           era: 'Early 20th Century',
+          description: 'Broad movement.',
         },
       ]);
 
@@ -207,12 +219,14 @@ describe('AcquisitionComponent', () => {
           name: 'Bauhaus',
           category: 'decor',
           era: 'Early 20th Century',
+          description: 'Rational design.',
         },
         {
           id: '2',
           name: 'Minimalism',
           category: 'decor',
           era: 'Mid 20th Century',
+          description: 'Essential elements.',
         },
       ]);
     });

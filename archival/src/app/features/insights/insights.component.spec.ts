@@ -21,8 +21,8 @@ describe('InsightsComponent', () => {
   ];
 
   const mockMovements: Movement[] = [
-    { id: '1', category: 'decor', name: 'Bauhaus', era: '1920s' },
-    { id: '2', category: 'music', name: 'IDM', era: '1990s' },
+    { id: '1', category: 'decor', name: 'Bauhaus', era: '1920s', description: 'Rational design.' },
+    { id: '2', category: 'music', name: 'IDM', era: '1990s', description: 'Digital synthesis.' },
   ];
 
   let mockCollection: CollectionItem[];

@@ -5,6 +5,7 @@ export interface Movement {
   category: CategoryType;
   name: string;
   era: string;
+  description: string;
 }
 
 export interface City {
