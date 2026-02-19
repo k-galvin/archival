@@ -2,8 +2,11 @@
   <!-- View Header -->
   <header class="view-header">
     <div class="header-left">
-      <h2 class="view-title">inventory</h2>
-      <span class="record-count">{{ filteredItems().length }} records</span>
+      <span class="archival-overline text-accent">museum view</span>
+      <div class="title-row">
+        <h2 class="view-title">gallery</h2>
+        <span class="record-count">{{ filteredItems().length }} records</span>
+      </div>
     </div>
     <button (click)="toggleFilters()" class="filter-toggle">
       {{ showFilters() ? "close" : "filter" }}
