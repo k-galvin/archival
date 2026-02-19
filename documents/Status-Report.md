@@ -15,7 +15,7 @@
 *   **CSS Cohesiveness:** Maintaining a unified "Museum Minimalist" aesthetic across diverse components and third-party library styles.
 
 ### Next Steps
-*   **Search Implementation:** Add text-based search to the Gallery component to fulfill FR 8.
-*   **Enhanced Curation:** Add the "Related Items" logic as defined in the Collections & Curation epic.
-*   **Test Alignment:** Add additional unit tests to ensure comprehensive coverage for the consolidated service logic.
+*   **Search Implementation:** Add text-based search to the Gallery component.
+*   **Enhanced Curation:** Add the "Related Items" logic.
+*   **Test Alignment:** Add additional unit tests to ensure comprehensive coverage.
 *   **Improved Blueprints:** Make the blueprints UI more visual and meaningful to enhance spatial awareness.
