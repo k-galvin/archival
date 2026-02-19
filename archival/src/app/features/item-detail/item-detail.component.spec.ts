@@ -11,6 +11,7 @@ import {
   Room,
   UserCollection,
   Movement,
+  City,
 } from '../../shared/models/archive.models';
 
 // --- Mocks ---
@@ -42,6 +43,7 @@ class MockArchiveService {
       description: 'Test Description',
     },
   ]);
+  cities = signal<City[]>([]);
 
   updateItem = jasmine.createSpy('updateItem').and.resolveTo(mockItem);
   deleteItem = jasmine.createSpy('deleteItem').and.resolveTo(undefined);
@@ -93,11 +95,45 @@ describe('ItemDetailComponent', () => {
     expect(component.item()).toEqual(mockItem);
   });
 
-  it('should start editing by creating a copy of the item', () => {
+  it('should filter movements based on the item category', () => {
+    // mockItem category is 'decor'
+    const decorMovement = {
+      id: 'm1',
+      name: 'Decor Movement',
+      category: 'decor',
+      era: '2020s',
+      description: 'Test',
+    } as Movement;
+    const musicMovement = {
+      id: 'm2',
+      name: 'Music Genre',
+      category: 'music',
+      era: '2020s',
+      description: 'Test',
+    } as Movement;
+
+    archiveService.movements.set([decorMovement, musicMovement]);
+
+    expect(component.filteredMovements()).toEqual([decorMovement]);
+  });
+
+  it('should start editing by creating a copy of the item and normalizing origin/IDs', () => {
+    // cities signal has [{ name: 'Paris', ... }]
+    archiveService.cities.set([{ id: 1, name: 'Paris', country: 'France' } as City]);
+
+    const testItem: CollectionItem = {
+      ...mockItem,
+      origin: 'paris', // Lowercase to test normalization
+      room_id: 'r1',
+      movement_id: 'm1'
+    } as any;
+    component.item.set(testItem);
+
     component.startEdit();
     expect(component.isEditing()).toBe(true);
-    expect(component.editableItem()).toEqual({ ...mockItem });
-    expect(component.editableItem()).not.toBe(component.item()); // Ensure it's a copy
+    expect(component.editableItem()?.origin).toBe('Paris');
+    expect(component.editableItem()?.room).toBe('r1');
+    expect(component.editableItem()?.movementId).toBe('m1');
   });
 
   it('should save an edit and update the item', async () => {

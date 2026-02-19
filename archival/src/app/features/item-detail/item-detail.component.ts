@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +23,27 @@ export class ItemDetailComponent implements OnInit {
   collectionPickerOpen = signal(false);
   deleteConfirmOpen = signal(false);
 
+  // Filter movements based on the selected item's category
+  filteredMovements = computed(() => {
+    const category = this.item()?.category;
+    const allMovements = this.archive.movements();
+    if (!category) return allMovements;
+    return allMovements.filter((m) => m.category === category);
+  });
+
+  movementLabel = computed(() => {
+    const category = this.item()?.category;
+    if (category === 'books' || category === 'music') return 'Genre';
+    return 'Movement';
+  });
+
+  designerLabel = computed(() => {
+    const category = this.item()?.category;
+    if (category === 'books') return 'Author';
+    if (category === 'music') return 'Artist';
+    return 'Designer';
+  });
+
   // Image Edit State
   selectedFile = signal<File | null>(null);
   imagePreview = signal<string | null>(null);
@@ -37,9 +58,6 @@ export class ItemDetailComponent implements OnInit {
   }
   get userCollections() {
     return this.archive.userCollections;
-  }
-  get movements() {
-    return this.archive.movements;
   }
   get cities() {
     return this.archive.cities;
@@ -68,8 +86,30 @@ export class ItemDetailComponent implements OnInit {
     const current = this.item();
     if (!current) return;
 
+    // Normalize origin to match the dropdown value (case-insensitive check)
+    const cityMatch = this.archive.cities().find(
+      (c) => c.name.toLowerCase() === (current.origin || '').toLowerCase(),
+    );
+    const origin = cityMatch ? cityMatch.name : current.origin;
+
+    // Use raw IDs from the database if available, otherwise find by name as a fallback
+    const rawItem = current as any;
+    const roomId =
+      rawItem.room_id?.toString() ||
+      this.archive.rooms().find((r) => r.name === current.room)?.id?.toString() ||
+      '';
+    const movementId =
+      rawItem.movement_id ||
+      this.archive.movements().find((m) => m.name === current.movementName)?.id ||
+      '';
+
     // Create a mutable copy for editing
-    this.editableItem.set({ ...current });
+    this.editableItem.set({
+      ...current,
+      origin: origin,
+      room: roomId, // Bind ID to the room property used by the select
+      movementId: movementId, // Bind ID to the movementId property used by the select
+    });
     this.imagePreview.set(current.image);
     this.selectedFile.set(null);
     this.errorMessage.set(null);

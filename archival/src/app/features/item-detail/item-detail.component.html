@@ -26,7 +26,7 @@
 
           <div class="metadata-grid">
             <div>
-              <span class="label-caption">Designer/Author</span>
+              <span class="label-caption">{{ designerLabel() }}</span>
               <p>{{ currentItem.designer }}</p>
             </div>
             <div>
@@ -34,7 +34,7 @@
               <p>{{ currentItem.origin | titlecase }}</p>
             </div>
             <div>
-              <span class="label-caption">Movement/Genre</span>
+              <span class="label-caption">{{ movementLabel() }}</span>
               <p>{{ currentItem.movementName }}</p>
             </div>
             <div>
@@ -136,7 +136,7 @@
             />
           </div>
           <div class="form-field">
-            <label for="edit-designer">Designer / Author</label>
+            <label for="edit-designer">{{ designerLabel() }}</label>
             <input
               id="edit-designer"
               [(ngModel)]="editItem.designer"
@@ -145,7 +145,7 @@
           </div>
           <div class="form-field">
             <label for="edit-origin">Origin</label>
-            <select id="edit-origin" [(ngModel)]="editItem.origin">
+            <select id="edit-origin" [(ngModel)]="editItem.origin" name="origin">
               <option value="">Select a city</option>
               @for (city of cities(); track city.id) {
                 <option [value]="city.name">
@@ -164,18 +164,22 @@
           </div>
           <div class="form-field">
             <label for="edit-room">Room</label>
-            <select id="edit-room" [(ngModel)]="editItem.room">
-              <option [ngValue]="null">Unassigned</option>
+            <select id="edit-room" [(ngModel)]="editItem.room" name="room">
+              <option value="">Unassigned</option>
               @for (room of rooms(); track room.id) {
                 <option [value]="room.id">{{ room.name }}</option>
               }
             </select>
           </div>
           <div class="form-field">
-            <label for="edit-movement">Movement / Genre</label>
-            <select id="edit-movement" [(ngModel)]="editItem.movementId">
-              <option [ngValue]="null">Unassigned</option>
-              @for (movement of movements(); track movement.id) {
+            <label for="edit-movement">{{ movementLabel() }}</label>
+            <select
+              id="edit-movement"
+              [(ngModel)]="editItem.movementId"
+              name="movement"
+            >
+              <option value="">Unassigned</option>
+              @for (movement of filteredMovements(); track movement.id) {
                 <option [value]="movement.id">{{ movement.name }}</option>
               }
             </select>
