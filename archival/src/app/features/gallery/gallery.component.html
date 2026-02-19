@@ -39,37 +39,49 @@
 
   <!-- Records Grid -->
   <div class="records-grid">
-    @for (item of filteredItems(); track item.id) {
-      <div class="record-card">
-        <a [routerLink]="['/item', item.id]">
-          <div
-            #imageWrapper
-            class="image-wrapper image-load-shimmer"
-            [class.is-formatted-cover]="
-              item.image.includes('books.google.com') ||
-              item.image.includes('discogs.com')
-            "
-          >
-            <img
-              [src]="item.image"
-              [alt]="item.name"
-              class="record-image"
-              (load)="imageWrapper.classList.add('loaded')"
-              loading="lazy"
-            />
-            <div class="image-overlay"></div>
-          </div>
-
+    @if (isLoading()) {
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+        <div class="record-card skeleton-card">
+          <div class="image-wrapper image-load-shimmer"></div>
           <div class="record-details">
-            <div class="detail-top">
-              <h3 class="item-name">{{ item.name }}</h3>
-              <span class="item-year">{{ item.year }}</span>
-            </div>
-            <p class="item-designer">{{ item.designer }}</p>
-            <span class="item-meta">Provenance: {{ item.origin }}</span>
+            <div class="skeleton-text title"></div>
+            <div class="skeleton-text subtitle"></div>
           </div>
-        </a>
-      </div>
+        </div>
+      }
+    } @else {
+      @for (item of filteredItems(); track item.id) {
+        <div class="record-card">
+          <a [routerLink]="['/item', item.id]">
+            <div
+              #imageWrapper
+              class="image-wrapper image-load-shimmer"
+              [class.is-formatted-cover]="
+                item.image.includes('books.google.com') ||
+                item.image.includes('discogs.com')
+              "
+            >
+              <img
+                [src]="item.image"
+                [alt]="item.name"
+                class="record-image"
+                (load)="imageWrapper.classList.add('loaded')"
+                loading="lazy"
+              />
+              <div class="image-overlay"></div>
+            </div>
+
+            <div class="record-details">
+              <div class="detail-top">
+                <h3 class="item-name">{{ item.name }}</h3>
+                <span class="item-year">{{ item.year }}</span>
+              </div>
+              <p class="item-designer">{{ item.designer }}</p>
+              <span class="item-meta">Provenance: {{ item.origin }}</span>
+            </div>
+          </a>
+        </div>
+      }
     }
   </div>
 

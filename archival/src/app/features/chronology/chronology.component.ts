@@ -20,6 +20,7 @@ import { RouterLink } from '@angular/router';
 export class ChronologyComponent {
   private archive = inject(ArchiveService);
 
+  isLoading = this.archive.loading;
   private collection = this.archive.collection;
 
   private sortedCollection = computed(() => {

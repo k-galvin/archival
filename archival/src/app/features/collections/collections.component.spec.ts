@@ -30,6 +30,7 @@ describe('CollectionsComponent', () => {
       {
         collection: signal(mockItems),
         userCollections: signal(mockUserCollections),
+        loading: signal(false),
       }
     );
 

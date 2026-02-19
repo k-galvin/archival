@@ -20,7 +20,25 @@
   </header>
 
   <!-- Collections List -->
-  @if (userCollections().length === 0) {
+  @if (isLoading()) {
+    <div class="collections-grid">
+      @for (i of [1, 2]; track i) {
+        <section class="collection-card skeleton-collection">
+          <div class="card-header">
+            <div class="skeleton-text title"></div>
+          </div>
+          <div class="items-strip">
+            @for (j of [1, 2, 3, 4]; track j) {
+              <div class="item-thumb-wrapper">
+                <div class="thumb-box image-load-shimmer"></div>
+                <div class="skeleton-text label"></div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  } @else if (userCollections().length === 0) {
     <div class="empty-state">
       <p>No curated collections recorded. Create your first archive above.</p>
     </div>

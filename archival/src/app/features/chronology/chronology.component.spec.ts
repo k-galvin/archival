@@ -86,6 +86,7 @@ describe('ChronologyComponent', () => {
       collection: signal(mockCollection),
       movements: signal([]),
       cities: signal([]),
+      loading: signal(false),
     });
 
     await TestBed.configureTestingModule({

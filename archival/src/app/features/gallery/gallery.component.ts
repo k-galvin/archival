@@ -30,6 +30,7 @@ export class GalleryComponent {
 
   // Direct access to the Supabase-driven signals from the ArchiveService
   items = this.archive.collection;
+  isLoading = this.archive.loading;
 
   /**
    * Computes the filtered list of records based on active UI selections.

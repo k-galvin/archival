@@ -229,6 +229,40 @@
   }
 }
 
+// Skeleton Styles
+.skeleton-text {
+  background-color: rgba(colors.$primary-black, 0.05);
+  height: 1rem;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  &.title {
+    width: 80%;
+    height: 14px;
+    margin-bottom: 0.5rem;
+  }
+
+  &.subtitle {
+    width: 50%;
+    height: 10px;
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: 10rem 0;

@@ -132,3 +132,48 @@
     }
   }
 }
+
+// Skeleton Styles
+.skeleton-text {
+  background-color: rgba(colors.$primary-black, 0.05);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  &.year {
+    width: 4rem;
+    height: 2.5rem;
+    margin-left: auto;
+  }
+
+  &.title {
+    width: 80%;
+    height: 14px;
+    margin-bottom: 0.5rem;
+  }
+
+  &.subtitle {
+    width: 40%;
+    height: 10px;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

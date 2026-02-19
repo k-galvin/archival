@@ -9,46 +9,70 @@
 
   <!-- Vertical Timeline -->
   <div class="vertical-timeline">
-    @for (group of groupedByYear(); track group.year) {
-      <div class="timeline-year-section" [style.marginTop.rem]="calculateGap(group.gap)">
-        <div class="year-marker">
-          <span class="year-text">{{ group.year }}</span>
-        </div>
-        <div class="item-grid">
-          @for (item of group.items; track item.id) {
-            <div class="timeline-item">
-              <a
-                [routerLink]="['/item', item.id]"
-                style="text-decoration: none; color: inherit"
-              >
-                <div
-                  #imageWrapper
-                  class="card-img-wrapper image-load-shimmer"
-                  [class.is-formatted-cover]="
-                    item.image.includes('books.google.com') ||
-                    item.image.includes('discogs.com')
-                  "
-                >
-                  <img
-                    [src]="item.image"
-                    [alt]="item.name"
-                    class="card-img"
-                    (load)="imageWrapper.classList.add('loaded')"
-                    loading="lazy"
-                  />
-                  <div class="image-overlay"></div>
-                </div>
+    @if (isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="timeline-year-section">
+          <div class="year-marker">
+            <div class="skeleton-text year"></div>
+          </div>
+          <div class="item-grid">
+            @for (j of [1, 2]; track j) {
+              <div class="timeline-item skeleton-item">
+                <div class="card-img-wrapper image-load-shimmer"></div>
                 <div class="card-meta">
-                  <p class="card-name">{{ item.name }}</p>
-                  <span class="card-year archival-overline text-accent">{{
-                    item.year
-                  }}</span>
+                  <div class="skeleton-text title"></div>
+                  <div class="skeleton-text subtitle"></div>
                 </div>
-              </a>
-            </div>
-          }
+              </div>
+            }
+          </div>
         </div>
-      </div>
+      }
+    } @else {
+      @for (group of groupedByYear(); track group.year) {
+        <div
+          class="timeline-year-section"
+          [style.marginTop.rem]="calculateGap(group.gap)"
+        >
+          <div class="year-marker">
+            <span class="year-text">{{ group.year }}</span>
+          </div>
+          <div class="item-grid">
+            @for (item of group.items; track item.id) {
+              <div class="timeline-item">
+                <a
+                  [routerLink]="['/item', item.id]"
+                  style="text-decoration: none; color: inherit"
+                >
+                  <div
+                    #imageWrapper
+                    class="card-img-wrapper image-load-shimmer"
+                    [class.is-formatted-cover]="
+                      item.image.includes('books.google.com') ||
+                      item.image.includes('discogs.com')
+                    "
+                  >
+                    <img
+                      [src]="item.image"
+                      [alt]="item.name"
+                      class="card-img"
+                      (load)="imageWrapper.classList.add('loaded')"
+                      loading="lazy"
+                    />
+                    <div class="image-overlay"></div>
+                  </div>
+                  <div class="card-meta">
+                    <p class="card-name">{{ item.name }}</p>
+                    <span class="card-year archival-overline text-accent">{{
+                      item.year
+                    }}</span>
+                  </div>
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      }
     }
   </div>
 </div>

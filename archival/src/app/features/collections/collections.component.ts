@@ -19,6 +19,7 @@ export class CollectionsComponent {
 
   // Access central state signals from the service
   userCollections = this.archive.userCollections;
+  isLoading = this.archive.loading;
 
   /**
    * Creates a new empty collection based on user input

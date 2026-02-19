@@ -60,6 +60,7 @@ describe('GalleryComponent', () => {
       ['setFilter'],
       {
         collection: signal(mockItems),
+        loading: signal(false),
       },
     );
 
