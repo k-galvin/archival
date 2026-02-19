@@ -7,11 +7,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-chronology',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './chronology.component.html',
   styleUrl: './chronology.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

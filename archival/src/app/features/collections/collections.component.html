@@ -36,7 +36,7 @@
               >
             </div>
             <button (click)="deleteCollection(col.id)" class="delete-btn">
-              delete archive
+              delete collection
             </button>
           </div>
 
@@ -45,38 +45,48 @@
               @let item = getItemById(itemId);
               @if (item) {
                 <div class="item-thumb-wrapper">
-                  <div
-                  class="thumb-box"
-                  [class.is-formatted-cover]="
-                    item.image.includes('books.google.com') ||
-                    item.image.includes('discogs.com')
-                  "
-                >
-                    <img
-                      [src]="item.image"
-                      [alt]="item.name"
-                      class="thumb-img"
-                    />
-                    <button
-                      (click)="removeFromCollection(col.id, itemId)"
-                      class="remove-item-btn"
-                      title="Remove from collection"
+                  <a
+                    [routerLink]="['/item', item.id]"
+                    style="text-decoration: none; color: inherit"
+                  >
+                    <div
+                      class="thumb-box"
+                      [class.is-formatted-cover]="
+                        item.image.includes('books.google.com') ||
+                        item.image.includes('discogs.com')
+                      "
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="3"
+                      <img
+                        [src]="item.image"
+                        [alt]="item.name"
+                        class="thumb-img"
+                      />
+                      <div class="image-overlay"></div>
+                      <button
+                        (click)="
+                          removeFromCollection(col.id, itemId);
+                          $event.preventDefault();
+                          $event.stopPropagation()
+                        "
+                        class="remove-item-btn"
+                        title="Remove from collection"
                       >
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
-                  </div>
-                  <p class="thumb-label">{{ item.name }}</p>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                    <p class="thumb-label">{{ item.name }}</p>
+                  </a>
                 </div>
               }
             } @empty {

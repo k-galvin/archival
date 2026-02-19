@@ -167,18 +167,6 @@
 .blueprint-canvas {
   position: relative;
   width: 100%;
-
-  .blueprint-pattern {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.08;
-    background-image: radial-gradient(
-      colors.$accent-blue 0.8px,
-      transparent 0.8px
-    );
-    background-size: 30px 30px;
-  }
 }
 
 .grid-layer {

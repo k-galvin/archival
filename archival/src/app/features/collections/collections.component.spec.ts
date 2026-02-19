@@ -5,6 +5,8 @@ import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem, UserCollection } from '../../shared/models/archive.models';
 import { FormsModule } from '@angular/forms';
 import { signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('CollectionsComponent', () => {
   let component: CollectionsComponent;
@@ -33,7 +35,10 @@ describe('CollectionsComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [CollectionsComponent, HttpClientTestingModule, FormsModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }]
+      providers: [
+        { provide: ArchiveService, useValue: mockArchiveService },
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } }
+      ]
     })
     .compileComponents();
 

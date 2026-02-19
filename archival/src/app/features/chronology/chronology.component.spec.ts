@@ -4,6 +4,9 @@ import { ChronologyComponent } from './chronology.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal } from '@angular/core';
 import { CollectionItem } from '../../shared/models/archive.models';
+import { of } from 'rxjs';
+
+import { ActivatedRoute } from '@angular/router';
 
 describe('ChronologyComponent', () => {
   let component: ChronologyComponent;
@@ -87,7 +90,10 @@ describe('ChronologyComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ChronologyComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      providers: [
+        { provide: ArchiveService, useValue: mockArchiveService },
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChronologyComponent);

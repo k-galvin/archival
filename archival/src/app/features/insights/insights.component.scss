@@ -288,30 +288,3 @@
     transform: rotate(45deg);
   }
 }
-
-// --- Global Overlines ---
-.archival-overline {
-  display: block;
-  font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  opacity: 0.4;
-}
-
-.text-accent {
-  color: colors.$accent-blue;
-}
-
-.fade-in-fast {
-  animation: fadeIn 0.2s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}

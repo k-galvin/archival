@@ -2,17 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ArchiveService } from './archive.service';
 import { MockSupabaseClient } from './supabase.service.mock';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_CLIENT } from './supabase-client.token';
 
 describe('ArchiveService', () => {
   let service: ArchiveService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
+      providers: [
+        { provide: SUPABASE_CLIENT, useClass: MockSupabaseClient }
+      ]
     });
     service = TestBed.inject(ArchiveService);
-    service.supabase = new MockSupabaseClient() as unknown as SupabaseClient;
   });
 
   it('should be created', () => {

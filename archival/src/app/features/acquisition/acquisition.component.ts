@@ -40,9 +40,12 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   // Form State
   isSubmitting = signal(false);
   successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
 
   // Categories
   categories: CategoryType[] = ['decor', 'music', 'books', 'fashion'];
+
+  currentYear = new Date().getFullYear();
 
   // Image Upload State
   selectedFile = signal<File | null>(null);
@@ -244,10 +247,26 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
 
   async handleSubmit(): Promise<void> {
     const currentItem = this.newItem();
-    if (!currentItem.name) return;
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    if (!currentItem.name) {
+      this.errorMessage.set('Object nomenclature is required.');
+      return;
+    }
+
+    // Year validation
+    if (
+      currentItem.year &&
+      (currentItem.year < 1000 || currentItem.year > this.currentYear)
+    ) {
+      this.errorMessage.set(
+        `Please enter a valid archival year (1000-${this.currentYear}).`,
+      );
+      return;
+    }
 
     this.isSubmitting.set(true);
-    this.successMessage.set(null);
 
     try {
       let imageUrl = currentItem.image || '';
@@ -271,6 +290,9 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       console.error('Acquisition failed:', err);
+      this.errorMessage.set(
+        'An error occurred while integrating the record. Please try again.',
+      );
     } finally {
       this.isSubmitting.set(false);
     }
@@ -295,5 +317,6 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.albumSearchResults.set([]);
     this.isSearchingMusic.set(false);
     this.successMessage.set(null);
+    this.errorMessage.set(null);
   }
 }

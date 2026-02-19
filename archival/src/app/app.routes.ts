@@ -55,6 +55,13 @@ export const routes: Routes = [
             (m) => m.AcquisitionComponent,
           ),
       },
+      {
+        path: 'item/:id',
+        loadComponent: () =>
+          import('./features/item-detail/item-detail.component').then(
+            (m) => m.ItemDetailComponent,
+          ),
+      },
     ],
   },
   {

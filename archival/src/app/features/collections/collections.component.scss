@@ -148,6 +148,20 @@
       object-fit: cover;
       transition: filter 0.3s ease;
     }
+
+    .image-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(colors.$primary-black, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &:hover .image-overlay {
+      opacity: 1;
+    }
   }
 
   .thumb-box.is-formatted-cover {
@@ -189,6 +203,7 @@
     transform: translateY(-5px);
     box-shadow: 0 4px 6px rgba(colors.$primary-black, 0.05);
     transition: all 0.2s;
+    z-index: 2;
 
     &:hover {
       background: colors.$accent-blue;

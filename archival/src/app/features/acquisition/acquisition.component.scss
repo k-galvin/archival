@@ -178,11 +178,18 @@
   padding-top: 2rem;
   border-top: 1px solid rgba(colors.$primary-black, 0.05);
 
-  .success-txt {
+  .success-txt, .error-txt {
     font-size: 12px;
-    color: colors.$success-green;
     font-style: italic;
     margin: 0;
+  }
+
+  .success-txt {
+    color: colors.$success-green;
+  }
+
+  .error-txt {
+    color: colors.$error-red;
   }
 }
 

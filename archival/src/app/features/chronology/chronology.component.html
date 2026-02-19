@@ -17,28 +17,34 @@
         <div class="item-grid">
           @for (item of group.items; track item.id) {
             <div class="timeline-item">
-              <div
-                #imageWrapper
-                class="card-img-wrapper image-load-shimmer"
-                [class.is-formatted-cover]="
-                  item.image.includes('books.google.com') ||
-                  item.image.includes('discogs.com')
-                "
+              <a
+                [routerLink]="['/item', item.id]"
+                style="text-decoration: none; color: inherit"
               >
-                <img
-                  [src]="item.image"
-                  [alt]="item.name"
-                  class="card-img"
-                  (load)="imageWrapper.classList.add('loaded')"
-                  loading="lazy"
-                />
-              </div>
-              <div class="card-meta">
-                <p class="card-name">{{ item.name }}</p>
-                <span class="card-year archival-overline text-accent">{{
-                  item.year
-                }}</span>
-              </div>
+                <div
+                  #imageWrapper
+                  class="card-img-wrapper image-load-shimmer"
+                  [class.is-formatted-cover]="
+                    item.image.includes('books.google.com') ||
+                    item.image.includes('discogs.com')
+                  "
+                >
+                  <img
+                    [src]="item.image"
+                    [alt]="item.name"
+                    class="card-img"
+                    (load)="imageWrapper.classList.add('loaded')"
+                    loading="lazy"
+                  />
+                  <div class="image-overlay"></div>
+                </div>
+                <div class="card-meta">
+                  <p class="card-name">{{ item.name }}</p>
+                  <span class="card-year archival-overline text-accent">{{
+                    item.year
+                  }}</span>
+                </div>
+              </a>
             </div>
           }
         </div>

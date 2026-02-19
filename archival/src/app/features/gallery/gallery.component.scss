@@ -126,7 +126,14 @@
 .record-card {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 .image-wrapper {
@@ -150,34 +157,14 @@
   .image-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(colors.$accent-blue, 0.05);
+    background: rgba(colors.$primary-black, 0.1);
     opacity: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: opacity 0.3s ease;
+    pointer-events: none;
   }
 
   &:hover .image-overlay {
     opacity: 1;
-  }
-}
-
-.action-btn {
-  width: 2.5rem;
-  height: 2.5rem;
-  background: colors.$white;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(colors.$primary-black, 0.1);
-  transition: transform 0.2s;
-  color: colors.$accent-blue;
-  &:hover {
-    transform: scale(1.1);
   }
 }
 
@@ -233,121 +220,6 @@
     text-transform: uppercase;
     opacity: 0.25;
     letter-spacing: -0.02em;
-  }
-}
-
-// Picker Modal Styling
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(colors.$white, 0.8);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.picker-modal {
-  background: colors.$white;
-  border: 1px solid rgba(colors.$primary-black, 0.1);
-  padding: 3rem;
-  width: 100%;
-  max-width: 24rem;
-  box-shadow: 0 25px 50px -12px rgba(colors.$primary-black, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-
-  .modal-header {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .picker-title {
-    font-family: "heldane", Georgia, serif;
-    font-style: italic;
-    font-size: 1.25rem;
-    margin: 0;
-  }
-
-  .picker-subtitle {
-    font-size: 11px;
-    opacity: 0.4;
-    margin: 0;
-  }
-}
-
-.picker-list {
-  max-height: 15rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.picker-btn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: none;
-  border: 1px solid rgba(colors.$primary-black, 0.05);
-  cursor: pointer;
-  transition: all 0.2s;
-
-  .col-name {
-    font-size: 13px;
-    text-transform: lowercase;
-  }
-
-  .col-count {
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 10px;
-  }
-
-  &:hover {
-    background: colors.$accent-blue;
-    color: colors.$white;
-    .col-count {
-      color: colors.$white !important;
-    }
-  }
-}
-
-.cancel-btn {
-  background: none;
-  border: none;
-  font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.3;
-  cursor: pointer;
-  margin-top: 1rem;
-
-  &:hover {
-    opacity: 1;
-    color: colors.$error-red;
-  }
-}
-
-.empty-picker {
-  text-align: center;
-  padding: 2rem 0;
-  opacity: 0.3;
-  font-style: italic;
-  font-size: 12px;
-  p {
-    margin: 0;
-  }
-  .small {
-    font-size: 9px;
-    margin-top: 0.5rem;
-    text-transform: uppercase;
   }
 }
 

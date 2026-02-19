@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem } from '../../shared/models/archive.models';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,12 +28,8 @@ export class GalleryComponent {
     era: 'all',
   });
 
-  // Modal state for routing items to personal collections
-  collectionPickerItem = signal<CollectionItem | null>(null);
-
   // Direct access to the Supabase-driven signals from the ArchiveService
   items = this.archive.collection;
-  userCollections = this.archive.userCollections;
 
   /**
    * Computes the filtered list of records based on active UI selections.
@@ -84,27 +80,5 @@ export class GalleryComponent {
 
   setFilter(tray: string, value: string): void {
     this.activeFilters.update((prev) => ({ ...prev, [tray]: value }));
-  }
-
-  /**
-   * Opens the collection routing modal for a specific archival record.
-   */
-  openCollectionPicker(item: CollectionItem): void {
-    this.collectionPickerItem.set(item);
-  }
-
-  /**
-   * Triggers the Supabase junction table insertion via the ArchiveService.
-   */
-  addToCollection(colId: string): void {
-    const item = this.collectionPickerItem();
-    if (item) {
-      this.archive.addToUserCollection(colId, item.id);
-      this.collectionPickerItem.set(null);
-    }
-  }
-
-  deleteItem(id: string): void {
-    this.archive.deleteItem(id);
   }
 }

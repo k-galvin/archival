@@ -1,6 +1,5 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
 import {
-  createClient,
   User,
   AuthChangeEvent,
   Session,
@@ -18,26 +17,13 @@ import {
   GoogleBooksResponse,
 } from '../../shared/models/archive.models';
 import { environment } from '../../../environments/environment';
+import { SUPABASE_CLIENT } from './supabase-client.token';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArchiveService {
-  supabase: SupabaseClient = createClient(
-    environment.supabaseUrl,
-    environment.supabaseKey,
-    {
-      db: {
-        schema: 'public',
-      },
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-      }
-    }
-  );
+  supabase: SupabaseClient = inject(SUPABASE_CLIENT);
   private http = inject(HttpClient);
   private router = inject(Router);
 
@@ -474,6 +460,69 @@ export class ArchiveService {
     } else if (error) {
       console.error('Record Registration Error:', error.message);
       return null;
+    }
+    return null;
+  }
+
+  async updateItem(id: string, updates: Partial<CollectionItem>) {
+    const dbUpdates: Record<string, unknown> = { ...updates };
+
+    // Map frontend properties to database columns
+    if (updates.image !== undefined) {
+      dbUpdates['image_url'] = updates.image;
+      delete dbUpdates['image'];
+    }
+    if (updates.movementId !== undefined) {
+      dbUpdates['movement_id'] = updates.movementId === '' ? null : updates.movementId;
+      delete dbUpdates['movementId'];
+    }
+    if (updates.room !== undefined) {
+      dbUpdates['room_id'] = updates.room === '' ? null : updates.room;
+      delete dbUpdates['room'];
+    }
+
+    // Remove read-only or non-db properties
+    delete dbUpdates['movementName'];
+    delete dbUpdates['id'];
+
+    const { data, error } = await this.supabase
+      .from('items')
+      .update(dbUpdates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating item:', error.message);
+      return null;
+    }
+
+    if (data) {
+      const roomName = data.room_id
+        ? this.rooms().find((r: Room) => r.id === data.room_id)?.name || ''
+        : '';
+      const movementName = data.movement_id
+        ? this.movements().find((m: Movement) => m.id === data.movement_id)?.name || ''
+        : '';
+
+      const updatedFullItem = {
+        ...data,
+        image: data.image_url,
+        room: roomName,
+        movementName: movementName,
+      };
+
+      // Update the local collection signal
+      this.collection.update((prev) => {
+        const index = prev.findIndex((i) => i.id === id);
+        if (index > -1) {
+          const newCollection = [...prev];
+          newCollection[index] = updatedFullItem;
+          return newCollection;
+        }
+        return prev;
+      });
+      return updatedFullItem;
     }
     return null;
   }

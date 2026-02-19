@@ -170,6 +170,8 @@
             [(ngModel)]="newItem().year"
             name="year"
             placeholder="1925"
+            min="1000"
+            [max]="currentYear"
           />
         </div>
 
@@ -242,6 +244,9 @@
 
       <!-- Action Footer -->
       <footer class="form-footer">
+        @if (errorMessage()) {
+          <p class="error-txt slide-down">{{ errorMessage() }}</p>
+        }
         @if (successMessage()) {
           <p class="success-txt slide-down">{{ successMessage() }}</p>
         }

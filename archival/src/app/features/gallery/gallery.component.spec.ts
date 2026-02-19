@@ -4,6 +4,8 @@ import { GalleryComponent } from './gallery.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
 import { signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('GalleryComponent', () => {
   let component: GalleryComponent;
@@ -55,16 +57,18 @@ describe('GalleryComponent', () => {
   beforeEach(async () => {
     mockArchiveService = jasmine.createSpyObj(
       'ArchiveService',
-      ['setFilter', 'addToUserCollection', 'deleteItem'],
+      ['setFilter'],
       {
         collection: signal(mockItems),
-        userCollections: signal([]),
       },
     );
 
     await TestBed.configureTestingModule({
       imports: [GalleryComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      providers: [
+        { provide: ArchiveService, useValue: mockArchiveService },
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } }
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GalleryComponent);

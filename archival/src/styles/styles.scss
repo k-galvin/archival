@@ -45,6 +45,9 @@ app-root {
 .text-accent {
   color: colors.$accent-blue !important;
 }
+.text-error {
+  color: colors.$error-red !important;
+}
 .bg-accent {
   background-color: colors.$accent-blue !important;
 }

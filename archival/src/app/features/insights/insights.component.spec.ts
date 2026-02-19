@@ -86,6 +86,17 @@ describe('InsightsComponent', () => {
       cities: signal(mockCities),
     });
 
+    // Mock the global fetch function
+    spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            type: 'FeatureCollection',
+            features: [],
+          }),
+      }) as Promise<Response>,
+    );
+
     await TestBed.configureTestingModule({
       imports: [InsightsComponent, HttpClientTestingModule],
       providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
