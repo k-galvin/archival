@@ -29,7 +29,9 @@ describe('MagazineSpineComponent', () => {
     expect(compiled.querySelector('.spine-logo')?.textContent).toContain('archival');
 
     // Check for the top meta label
-    expect(compiled.querySelector('.spine-top .meta-label')?.textContent).toContain('Issue 01 / 2026');
+    const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    const currentYear = new Date().getFullYear();
+    expect(compiled.querySelector('.spine-top .meta-label')?.textContent).toContain(`Issue ${currentMonth} / ${currentYear}`);
 
     // Check for the bottom meta label
     expect(compiled.querySelector('.spine-bottom .meta-label')?.textContent).toContain('EST. 2026');
