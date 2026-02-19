@@ -51,8 +51,11 @@ The Angular frontend communicates with Supabase via the `supabase-js` client. Al
 
 ### 6.2.3 Architectural Design Diagrams Section
 1. **Use Case Diagram:** Defines the interactions between the "Curator" (User) and the Acquisition, Gallery, and Insights subsystems.
+![Use Case Diagram](Use-Case-Diagram.jpg)
 2. **Component Diagram:** Illustrates the Angular frontend's dependency on the Supabase Client and external REST APIs.
+![Component Diagram](Component-Diagram.jpg)
 3. **Deployment Diagram:** Shows the frontend hosted on Vercel communicating with Supabase infrastructure (Database, Storage, Auth, Functions).
+![Deployment Diagram](Deployment-Diagram.jpg)
 
 ---
 
@@ -115,20 +118,13 @@ The Angular frontend communicates with Supabase via the `supabase-js` client. Al
 * **Signal-based State:** Use of Angular Signals for reactive synchronization of collection data and authentication state.
 
 ### 6.3.4 Detailed Design Diagrams Section
-Detailed UML diagrams in this section illustrate the Angular Signal-based state management: User Action -> Service Method -> Supabase Update -> Signal Update -> UI Re-render.
-
+![State Management Diagram](State-Management-Diagram.jpg)
 ---
 
 ## 6.4 Database Design and Description
 
 ### 6.4.1 Database Design ER Diagram
-The relational schema follows a normalized approach with clear relationships:
-* **`items` (Table):** The central entity storing item details, linked to users, rooms, and movements.
-* **`movements` (Table):** A lookup table for design movements and historical eras.
-* **`rooms` (Table):** Stores user-defined spatial locations (grid coordinates) for the Blueprint view.
-* **`collections` (Table):** Stores named groupings of items defined by users.
-* **`collection_items` (Join Table):** Manages the many-to-many relationship between `items` and `collections`.
-* **`cities` (Table):** Stores geographical data (latitude and longitude) for provenance mapping.
+![Database Diagram](Database-Diagram.jpg)
 
 ### 6.4.2 Database Access
 Database access is managed via the Supabase PostgREST API. The `ArchiveService` uses the `supabase-js` client to perform authenticated queries. All queries are scoped to the `user_id` of the currently logged-in user, ensuring data isolation.
