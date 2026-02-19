@@ -275,6 +275,50 @@
   }
 }
 
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .confirm-delete-btn {
+    width: 100%;
+    padding: 1rem;
+    background: none;
+    border: 1px solid colors.$error-red;
+    color: colors.$error-red;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: colors.$error-red;
+      color: colors.$white;
+    }
+  }
+
+  .cancel-text-btn {
+    background: none;
+    border: none;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);

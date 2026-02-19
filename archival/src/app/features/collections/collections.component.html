@@ -1,121 +1,171 @@
-<div class="collections-page fade-in-anim">
-  <!-- Page Header & Collection Creation -->
-  <header class="collections-header">
-    <div class="header-text">
-      <span class="archival-overline text-accent">Personal Curations</span>
-      <h2 class="view-title">collections</h2>
-    </div>
+<ng-container>
+  <div class="collections-page fade-in-anim">
+    <!-- Page Header & Collection Creation -->
+    <header class="collections-header">
+      <div class="header-text">
+        <span class="archival-overline text-accent">Personal Curations</span>
+        <h2 class="view-title">collections</h2>
+      </div>
 
-    <div class="create-control">
-      <input
-        [(ngModel)]="newCollectionTitle"
-        (keyup.enter)="createCollection()"
-        placeholder="new collection title..."
-        class="create-input"
-      />
-      <button (click)="createCollection()" class="text-accent action-link">
-        create
-      </button>
-    </div>
-  </header>
+      <div class="create-control">
+        <input
+          [(ngModel)]="newCollectionTitle"
+          (keyup.enter)="createCollection()"
+          placeholder="new collection title..."
+          class="create-input"
+        />
+        <button (click)="createCollection()" class="text-accent action-link">
+          create
+        </button>
+      </div>
+    </header>
 
-  <!-- Collections List -->
-  @if (isLoading()) {
-    <div class="collections-grid">
-      @for (i of [1, 2]; track i) {
-        <section class="collection-card skeleton-collection">
-          <div class="card-header">
-            <div class="skeleton-text title"></div>
-          </div>
-          <div class="items-strip">
-            @for (j of [1, 2, 3, 4]; track j) {
-              <div class="item-thumb-wrapper">
-                <div class="thumb-box image-load-shimmer"></div>
-                <div class="skeleton-text label"></div>
-              </div>
-            }
-          </div>
-        </section>
-      }
-    </div>
-  } @else if (userCollections().length === 0) {
-    <div class="empty-state">
-      <p>No curated collections recorded. Create your first archive above.</p>
-    </div>
-  } @else {
-    <div class="collections-grid">
-      @for (col of userCollections(); track col.id) {
-        <section class="collection-card">
-          <div class="card-header">
-            <div class="header-meta">
-              <h3 class="col-title">{{ col.title }}</h3>
-              <span class="archival-overline"
-                >{{ col.itemIds.length }} items</span
-              >
+    <!-- Collections List -->
+    @if (isLoading()) {
+      <div class="collections-grid">
+        @for (i of [1, 2]; track i) {
+          <section class="collection-card skeleton-collection">
+            <div class="card-header">
+              <div class="skeleton-text title"></div>
             </div>
-            <button (click)="deleteCollection(col.id)" class="delete-btn">
-              delete collection
-            </button>
-          </div>
-
-          <div class="items-strip custom-scrollbar">
-            @for (itemId of col.itemIds; track itemId) {
-              @let item = getItemById(itemId);
-              @if (item) {
+            <div class="items-strip">
+              @for (j of [1, 2, 3, 4]; track j) {
                 <div class="item-thumb-wrapper">
-                  <a
-                    [routerLink]="['/item', item.id]"
-                    style="text-decoration: none; color: inherit"
-                  >
-                    <div
-                      class="thumb-box"
-                      [class.is-formatted-cover]="
-                        item.image.includes('books.google.com') ||
-                        item.image.includes('discogs.com')
-                      "
-                    >
-                      <img
-                        [src]="item.image"
-                        [alt]="item.name"
-                        class="thumb-img"
-                      />
-                      <div class="image-overlay"></div>
-                      <button
-                        (click)="
-                          removeFromCollection(col.id, itemId);
-                          $event.preventDefault();
-                          $event.stopPropagation()
-                        "
-                        class="remove-item-btn"
-                        title="Remove from collection"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="3"
-                        >
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                    <p class="thumb-label">{{ item.name }}</p>
-                  </a>
+                  <div class="thumb-box image-load-shimmer"></div>
+                  <div class="skeleton-text label"></div>
                 </div>
               }
-            } @empty {
-              <div class="vacant-hint">
-                <p>Archive currently vacant.</p>
-                <p class="small">Add items from the index.</p>
+            </div>
+          </section>
+        }
+      </div>
+    } @else if (userCollections().length === 0) {
+      <div class="empty-state">
+        <p>No curated collections recorded. Create your first archive above.</p>
+      </div>
+    } @else {
+      <div class="collections-grid">
+        @for (col of userCollections(); track col.id) {
+          <section class="collection-card">
+            <div class="card-header">
+              <div class="header-meta">
+                <h3 class="col-title">{{ col.title }}</h3>
+                <span class="archival-overline"
+                  >{{ col.itemIds.length }} items</span
+                >
               </div>
-            }
-          </div>
-        </section>
-      }
+              <button (click)="deleteCollection(col.id)" class="delete-btn">
+                delete collection
+              </button>
+            </div>
+
+            <div class="items-strip custom-scrollbar">
+              @for (itemId of col.itemIds; track itemId) {
+                @let item = getItemById(itemId);
+                @if (item) {
+                  <div class="item-thumb-wrapper">
+                    <a
+                      [routerLink]="['/item', item.id]"
+                      style="text-decoration: none; color: inherit"
+                    >
+                      <div
+                        class="thumb-box"
+                        [class.is-formatted-cover]="
+                          item.image.includes('books.google.com') ||
+                          item.image.includes('discogs.com')
+                        "
+                      >
+                        <img
+                          [src]="item.image"
+                          [alt]="item.name"
+                          class="thumb-img"
+                        />
+                        <div class="image-overlay"></div>
+                        <button
+                          (click)="
+                            removeFromCollection(col.id, itemId);
+                            $event.preventDefault();
+                            $event.stopPropagation()
+                          "
+                          class="remove-item-btn"
+                          title="Remove from collection"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                      <p class="thumb-label">{{ item.name }}</p>
+                    </a>
+                  </div>
+                }
+              } @empty {
+                <div class="vacant-hint">
+                  <p>Archive currently vacant.</p>
+                  <p class="small">Add items from the index.</p>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Deletion Confirmation Modal -->
+  @if (deleteConfirmOpen() && collectionToDelete()) {
+    <div class="archival-modal-overlay fade-in-fast">
+      <div class="archival-modal zoom-in">
+        <button
+          (click)="closeDeleteModal()"
+          class="close-modal-btn"
+          aria-label="Close modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="modal-header">
+          <span class="archival-overline text-error"
+            >Warning: irreversible action</span
+          >
+          <h3 class="modal-title">Confirm Deletion</h3>
+          <p class="modal-subtitle">
+            Are you sure you want to permanently remove the collection
+            <strong>{{ collectionToDelete()?.title }}</strong
+            >? This action cannot be undone.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button (click)="confirmDelete()" class="confirm-delete-btn">
+            Confirm Deletion
+          </button>
+          <button (click)="closeDeleteModal()" class="cancel-text-btn">
+            Keep Collection
+          </button>
+        </div>
+      </div>
     </div>
   }
-</div>
+</ng-container>

@@ -21,6 +21,10 @@ export class CollectionsComponent {
   userCollections = this.archive.userCollections;
   isLoading = this.archive.loading;
 
+  // Modal state for deletion confirmation
+  deleteConfirmOpen = signal(false);
+  collectionToDelete = signal<{ id: string; title: string } | null>(null);
+
   /**
    * Creates a new empty collection based on user input
    */
@@ -33,13 +37,33 @@ export class CollectionsComponent {
   }
 
   /**
-   * Removes an entire collection record from the state
+   * Opens the confirmation modal for deleting a collection
    */
   deleteCollection(id: string): void {
-    // Confirmation before deleting
-    if (confirm('Are you sure you want to delete this entire collection?')) {
-      this.archive.deleteCollection(id);
+    const col = this.userCollections().find((c) => c.id === id);
+    if (col) {
+      this.collectionToDelete.set({ id: col.id, title: col.title });
+      this.deleteConfirmOpen.set(true);
     }
+  }
+
+  /**
+   * Triggers the actual deletion via the ArchiveService
+   */
+  async confirmDelete(): Promise<void> {
+    const col = this.collectionToDelete();
+    if (col) {
+      await this.archive.deleteCollection(col.id);
+      this.closeDeleteModal();
+    }
+  }
+
+  /**
+   * Resets deletion modal state
+   */
+  closeDeleteModal(): void {
+    this.deleteConfirmOpen.set(false);
+    this.collectionToDelete.set(null);
   }
 
   /**

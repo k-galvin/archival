@@ -212,6 +212,62 @@ button.mobile-toggle {
   background-size: 30px 30px;
 }
 
+// Modal & Overlay System
+.archival-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(colors.$white, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.archival-modal {
+  background: colors.$white;
+  border: 1px solid rgba(colors.$primary-black, 0.1);
+  padding: 3rem;
+  width: 100%;
+  max-width: 40rem;
+  box-shadow: 0 25px 50px -12px rgba(colors.$primary-black, 0.15);
+  position: relative;
+
+  .close-modal-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-subtitle {
+    font-size: 14px;
+    opacity: 0.5;
+    margin-bottom: 2rem;
+    max-width: 35ch;
+  }
+}
+
 // Generic image loading shimmer/swipe effect
 .image-load-shimmer {
   position: relative;

@@ -66,231 +66,230 @@
 
   <!-- Modals moved outside animated container to fix stacking context -->
 
-  <!-- Editing Modal -->
-  @if (isEditing() && editableItem(); as editItem) {
-    <div class="editing-overlay fade-in-fast">
-      <div class="editing-modal zoom-in">
-        <button
-          (click)="isEditing.set(false)"
-          class="close-modal-btn"
-          aria-label="Close modal"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+    <!-- Editing Modal -->
+    @if (isEditing() && editableItem(); as editItem) {
+      <div class="archival-modal-overlay fade-in-fast">
+        <div class="archival-modal zoom-in">
+          <button
+            (click)="isEditing.set(false)"
+            class="close-modal-btn"
+            aria-label="Close modal"
           >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <h3 class="editing-title">Editing: {{ item()?.name }}</h3>
-
-        <div class="edit-image-zone">
-          <div
-            class="edit-preview-container"
-            (click)="fileInput.click()"
-            (keyup.enter)="fileInput.click()"
-            tabindex="0"
-            role="button"
-          >
-            @if (imagePreview()) {
-              <img
-                [src]="imagePreview()"
-                alt="Edit Preview"
-                class="edit-preview-image"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <h3 class="modal-title">Editing: {{ item()?.name }}</h3>
+  
+          <div class="edit-image-zone">
+            <div
+              class="edit-preview-container"
+              (click)="fileInput.click()"
+              (keyup.enter)="fileInput.click()"
+              tabindex="0"
+              role="button"
+            >
+              @if (imagePreview()) {
+                <img
+                  [src]="imagePreview()"
+                  alt="Edit Preview"
+                  class="edit-preview-image"
+                />
+                <div class="change-overlay">
+                  <span class="archival-overline">Change Photograph</span>
+                </div>
+              }
+            </div>
+            <input
+              #fileInput
+              type="file"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
+  
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="edit-name">Name</label>
+              <input id="edit-name" [(ngModel)]="editItem.name" type="text" />
+            </div>
+            <div class="form-field">
+              <label for="edit-year">Year</label>
+              <input
+                id="edit-year"
+                [(ngModel)]="editItem.year"
+                type="number"
+                min="1000"
+                [max]="currentYear"
               />
-              <div class="change-overlay">
-                <span class="archival-overline">Change Photograph</span>
+            </div>
+            <div class="form-field">
+              <label for="edit-designer">Designer / Author</label>
+              <input
+                id="edit-designer"
+                [(ngModel)]="editItem.designer"
+                type="text"
+              />
+            </div>
+            <div class="form-field">
+              <label for="edit-origin">Origin</label>
+              <select id="edit-origin" [(ngModel)]="editItem.origin">
+                <option value="">Select a city</option>
+                @for (city of cities(); track city.id) {
+                  <option [value]="city.name.toLowerCase()">
+                    {{ city.name }}, {{ city.country }}
+                  </option>
+                }
+              </select>
+            </div>
+            <div class="form-field full-width">
+              <label for="edit-note">Archivist Notes</label>
+              <textarea
+                id="edit-note"
+                [(ngModel)]="editItem.note"
+                rows="4"
+              ></textarea>
+            </div>
+            <div class="form-field">
+              <label for="edit-room">Room</label>
+              <select id="edit-room" [(ngModel)]="editItem.room">
+                <option [ngValue]="null">Unassigned</option>
+                @for (room of rooms(); track room.id) {
+                  <option [value]="room.id">{{ room.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="edit-movement">Movement / Genre</label>
+              <select id="edit-movement" [(ngModel)]="editItem.movementId">
+                <option [ngValue]="null">Unassigned</option>
+                @for (movement of movements(); track movement.id) {
+                  <option [value]="movement.id">{{ movement.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+  
+          <div class="editing-actions">
+            @if (errorMessage()) {
+              <p class="error-txt slide-down">{{ errorMessage() }}</p>
+            }
+            <button
+              (click)="saveEdit()"
+              class="submit-btn"
+              [disabled]="isSubmitting()"
+            >
+              {{ isSubmitting() ? "Updating..." : "Save Changes" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  
+    <!-- Routing Picker Modal -->
+    @if (collectionPickerOpen()) {
+      <div class="archival-modal-overlay fade-in-fast">
+        <div class="archival-modal zoom-in">
+          <button
+            (click)="collectionPickerOpen.set(false)"
+            class="close-modal-btn"
+            aria-label="Close modal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <div class="modal-header">
+            <span class="archival-overline text-accent">Add To Collection</span>
+            <h3 class="modal-title">{{ item()?.name }}</h3>
+            <p class="modal-subtitle">Select target collection for this item.</p>
+          </div>
+  
+          <div class="picker-list custom-scrollbar">
+            @for (col of userCollections(); track col.id) {
+              <button (click)="addToCollection(col.id)" class="picker-btn">
+                <span class="col-name">{{ col.title }}</span>
+                <span class="col-count text-accent">{{
+                  col.itemIds.length
+                }}</span>
+              </button>
+            } @empty {
+              <div class="empty-picker">
+                <p>No active curations detected.</p>
+                <p class="small">Visit 'Collections' to create an archive.</p>
               </div>
             }
           </div>
-          <input
-            #fileInput
-            type="file"
-            (change)="onFileSelected($event)"
-            accept="image/*"
-            style="display: none"
-          />
         </div>
-
-        <div class="form-grid">
-          <div class="form-field">
-            <label for="edit-name">Name</label>
-            <input id="edit-name" [(ngModel)]="editItem.name" type="text" />
-          </div>
-          <div class="form-field">
-            <label for="edit-year">Year</label>
-            <input
-              id="edit-year"
-              [(ngModel)]="editItem.year"
-              type="number"
-              min="1000"
-              [max]="currentYear"
-            />
-          </div>
-          <div class="form-field">
-            <label for="edit-designer">Designer / Author</label>
-            <input
-              id="edit-designer"
-              [(ngModel)]="editItem.designer"
-              type="text"
-            />
-          </div>
-                  <div class="form-field">
-                    <label for="edit-origin">Origin</label>
-                    <select id="edit-origin" [(ngModel)]="editItem.origin">
-                      <option value="">Select a city</option>
-                      @for (city of cities(); track city.id) {
-                        <option [value]="city.name.toLowerCase()">
-                          {{ city.name }}, {{ city.country }}
-                        </option>
-                      }
-                    </select>
-                  </div>
-          <div class="form-field full-width">
-            <label for="edit-note">Archivist Notes</label>
-            <textarea
-              id="edit-note"
-              [(ngModel)]="editItem.note"
-              rows="4"
-            ></textarea>
-          </div>
-          <div class="form-field">
-            <label for="edit-room">Room</label>
-            <select id="edit-room" [(ngModel)]="editItem.room">
-              <option [ngValue]="null">Unassigned</option>
-              @for (room of rooms(); track room.id) {
-                <option [value]="room.id">{{ room.name }}</option>
-              }
-            </select>
-          </div>
-          <div class="form-field">
-            <label for="edit-movement">Movement / Genre</label>
-            <select id="edit-movement" [(ngModel)]="editItem.movementId">
-              <option [ngValue]="null">Unassigned</option>
-              @for (movement of movements(); track movement.id) {
-                <option [value]="movement.id">{{ movement.name }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="editing-actions">
-          @if (errorMessage()) {
-            <p class="error-txt slide-down">{{ errorMessage() }}</p>
-          }
+      </div>
+    }
+  
+    <!-- Deletion Confirmation Modal -->
+    @if (deleteConfirmOpen()) {
+      <div class="archival-modal-overlay fade-in-fast">
+        <div class="archival-modal zoom-in delete-confirm-modal">
           <button
-            (click)="saveEdit()"
-            class="submit-btn"
-            [disabled]="isSubmitting()"
+            (click)="cancelDelete()"
+            class="close-modal-btn"
+            aria-label="Close modal"
           >
-            {{ isSubmitting() ? "Updating..." : "Save Changes" }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Routing Picker Modal -->
-  @if (collectionPickerOpen()) {
-    <div class="modal-backdrop fade-in-fast">
-      <div class="picker-modal zoom-in">
-        <button
-          (click)="collectionPickerOpen.set(false)"
-          class="close-modal-btn"
-          aria-label="Close modal"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <div class="modal-header">
-          <span class="archival-overline text-accent">Add To Collection</span>
-          <h3 class="picker-title">{{ item()?.name }}</h3>
-          <p class="picker-subtitle">Select target collection for this item.</p>
-        </div>
-
-        <div class="picker-list custom-scrollbar">
-          @for (col of userCollections(); track col.id) {
-            <button (click)="addToCollection(col.id)" class="picker-btn">
-              <span class="col-name">{{ col.title }}</span>
-              <span class="col-count text-accent">{{
-                col.itemIds.length
-              }}</span>
+          <div class="modal-header">
+            <span class="archival-overline text-error"
+              >Warning: irreversible action</span
+            >
+            <h3 class="modal-title">Confirm Deletion</h3>
+            <p class="modal-subtitle">
+              Are you sure you want to permanently remove
+              <strong>{{ item()?.name }}</strong> from the archive?
+            </p>
+          </div>
+  
+          <div class="modal-actions">
+            <button (click)="confirmDelete()" class="confirm-delete-btn">
+              Confirm Deletion
             </button>
-          } @empty {
-            <div class="empty-picker">
-              <p>No active curations detected.</p>
-              <p class="small">Visit 'Collections' to create an archive.</p>
-            </div>
-          }
+            <button (click)="cancelDelete()" class="cancel-text-btn">
+              Keep Item
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  }
-
-  <!-- Deletion Confirmation Modal -->
-  @if (deleteConfirmOpen()) {
-    <div class="modal-backdrop fade-in-fast">
-      <div class="picker-modal zoom-in delete-confirm-modal">
-        <button
-          (click)="cancelDelete()"
-          class="close-modal-btn"
-          aria-label="Close modal"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <div class="modal-header">
-          <span class="archival-overline text-error"
-            >Warning: irreversible action</span
-          >
-          <h3 class="picker-title">Confirm Deletion</h3>
-          <p class="picker-subtitle">
-            Are you sure you want to permanently remove
-            <strong>{{ item()?.name }}</strong> from the archive?
-          </p>
-        </div>
-
-        <div class="modal-actions">
-          <button (click)="confirmDelete()" class="confirm-delete-btn">
-            Confirm Deletion
-          </button>
-          <button (click)="cancelDelete()" class="cancel-text-btn">
-            Keep Item
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-</ng-container>
+    }</ng-container>

@@ -73,17 +73,31 @@ describe('CollectionsComponent', () => {
     expect(component.newCollectionTitle()).toBe('');
   });
 
-  it('should delete a collection', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
+  it('should open delete confirmation modal when deleteCollection is called', () => {
     component.deleteCollection('1');
-    expect(window.confirm).toHaveBeenCalled();
-    expect(mockArchiveService.deleteCollection).toHaveBeenCalledWith('1');
+    expect(component.deleteConfirmOpen()).toBe(true);
+    expect(component.collectionToDelete()?.id).toBe('1');
   });
 
-  it('should not delete a collection if confirm is false', () => {
-    spyOn(window, 'confirm').and.returnValue(false);
-    component.deleteCollection('1');
-    expect(window.confirm).toHaveBeenCalled();
+  it('should call archiveService.deleteCollection and close modal on confirmDelete', async () => {
+    component.collectionToDelete.set({ id: '1', title: 'Collection 1' });
+    component.deleteConfirmOpen.set(true);
+    
+    await component.confirmDelete();
+    
+    expect(mockArchiveService.deleteCollection).toHaveBeenCalledWith('1');
+    expect(component.deleteConfirmOpen()).toBe(false);
+    expect(component.collectionToDelete()).toBeNull();
+  });
+
+  it('should close the modal and not delete on closeDeleteModal', () => {
+    component.collectionToDelete.set({ id: '1', title: 'Collection 1' });
+    component.deleteConfirmOpen.set(true);
+    
+    component.closeDeleteModal();
+    
+    expect(component.deleteConfirmOpen()).toBe(false);
+    expect(component.collectionToDelete()).toBeNull();
     expect(mockArchiveService.deleteCollection).not.toHaveBeenCalled();
   });
 
