@@ -38,6 +38,36 @@
   }
 }
 
+.auth-error-box,
+.auth-success-box {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid;
+  font-size: 12px;
+}
+
+.auth-error-box {
+  background: rgba(colors.$error-red, 0.05);
+  border-color: rgba(colors.$error-red, 0.1);
+  color: colors.$error-red;
+}
+
+.auth-success-box {
+  background: rgba(colors.$success-green, 0.05);
+  border-color: rgba(colors.$success-green, 0.1);
+  color: colors.$success-green;
+}
+
+.auth-notice {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  opacity: 0.5;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;

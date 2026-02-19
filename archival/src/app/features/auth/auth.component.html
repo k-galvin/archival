@@ -8,10 +8,15 @@
       </h2>
     </header>
 
-    <!-- Error Messaging -->
+    <!-- Messaging -->
     @if (errorMessage()) {
       <div class="auth-error-box slide-down">
         <span class="error-text">{{ errorMessage() }}</span>
+      </div>
+    }
+    @if (successMessage()) {
+      <div class="auth-success-box slide-down">
+        <span class="success-text">{{ successMessage() }}</span>
       </div>
     }
 
@@ -19,13 +24,17 @@
     <form (ngSubmit)="handleSubmit()" class="auth-form">
       @if (!isLogin()) {
         <div class="field-group slide-down">
+          <p class="auth-notice">
+            Note: An email confirmation will be required to activate your
+            account.
+          </p>
           <label class="archival-overline" for="name">Identity</label>
           <input
             id="name"
             type="text"
             [(ngModel)]="authData.name"
             name="name"
-            placeholder="full name / identifier"
+            placeholder="name / identifier"
             required
             [disabled]="archive.isLoggingIn()"
           />
