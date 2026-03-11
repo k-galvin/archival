@@ -1,0 +1,106 @@
+
+Documentation Feedback ~ Deliverable #3
+Software Design Document ~ Architecture
+CMSI 4072 Spring 2026 ~
+=======================================
+
+6.1 INTRODUCTION SECTION:
+   System objectives section
+      Strengths:
+         Clearly lists feature-level objectives such as automated
+            acquisition, gallery browsing, timeline-based chronology,
+            analytics, and spatial mapping.
+         Demonstrates good coverage of both functional and experiential
+            goals, such as polymorphic category support across the platform.
+      Suggestions:
+         Split objectives into functional and non-functional sections for
+            better alignment with SDD expectations.
+         Add measurable targets such as acceptable latency for API
+            enrichment or maximum load for visualizations.
+         Include long-term extensibility and maintainability goals to
+            anchor future architectural decisions.
+
+   Hardware, software, and human interfaces section
+      Strengths:
+         Hardware interactions for workstations, mobile devices, input
+            methods, and recommended resolution are documented clearly.
+         Software interfaces are comprehensively listed, including
+            Supabase, Google Books, Discogs, ApexCharts, and Leaflet.
+         Human interface design principles (museum minimalist aesthetic,
+            UI component list) are well described.
+      Suggestions:
+         Add explicit performance or hardware requirements for large
+            datasets or heavy front-end visualizations.
+         Consider including accessibility standards such as keyboard
+            navigation or color-contrast compliance.
+         Provide a summarized table grouping hardware, software, and
+            human interfaces for readability.
+
+
+6.2 ARCHITECTURAL DESIGN SECTION:
+   Major softwre components section
+      Strengths:
+         Lists major CSCs such as Acquisitions, Vault/Gallery, Chronology,
+            Insights, Curation, and Blueprint with clear responsibilities.
+         Descriptions map directly to functional requirements, which
+            improves clarity and traceability.
+      Suggestions:
+         Add input/output definitions to each CSC to clarify inter-module
+            dependencies.
+         Identify non-functional expectations per component such as
+            update frequency, rendering load, or API request patterns.
+         Consider adding a subsystem-level diagram mapping all CSCs and
+            their interactions.
+
+   Major software interactions section
+      Strengths:
+         Provides a clear description of how the Angular frontend
+            interacts with Supabase, external APIs, and authentication.
+         Notes security mechanisms such as RLS and API proxying through
+            Edge Functions.
+      Suggestions:
+         Add sequence diagrams to illustrate complex flows such as
+            acquisition metadata retrieval or insight generation.
+         Clarify error handling, fallback behavior, and policies for
+            timeouts or rate-limited external API calls.
+         Describe concurrency expectations, especially for real-time UI
+            updates via signals.
+
+   Architectural design diagrams section
+      Strengths:
+         Includes Use Case, Component, and Deployment diagrams that
+            convey system structure and interactions.
+         Covers both behavioral and structural perspectives through
+            diagram diversity.
+      Suggestions:
+         Include a system context diagram to provide a top-level view of
+            the Archival ecosystem.
+         Add legends or annotations to ensure diagrams are readable in
+            isolation.
+         Consider including data-flow diagrams for key subsystems such as
+            Acquisitions and Insights.
+
+
+OVERALL ASSESSMENT:
+   INTRODUCTION                        1.0
+   System objectives                   1.0
+   H/W, S/W, Human I/F                 1.0
+
+   ARCHITECTURAL DESIGN SECTION:
+   Major softwre components            1.0
+   Major software interactions         1.0
+   Architectural design diagrams       5.0
+                                     ======
+   Subtotal                           10.0
+   ------------------------------------------------------
+   Total Percentage:  10/10 = 100% which is an A-plus
+
+
+Excellent job on this as usual Kate!  The SDD provides solid architectural
+coverage with strong component descriptions, clear subsystem roles, and
+well-defined interfaces.  To enhance completeness, consider adding system-level
+context, architectural rationale, and more explicit functional/non-functional
+structuring.  Overall, your diagrams are the best I've seen in this iteration
+of evaluations.  You really havd absorbed the software engineering concepts!
+Very nice work and keep it up...
+
