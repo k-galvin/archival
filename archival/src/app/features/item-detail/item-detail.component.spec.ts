@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { signal } from '@angular/core';
@@ -67,7 +67,7 @@ describe('ItemDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ItemDetailComponent, FormsModule],
+      imports: [ItemDetailComponent, FormsModule, RouterModule.forRoot([])],
       providers: [
         {
           provide: ActivatedRoute,
@@ -93,6 +93,54 @@ describe('ItemDetailComponent', () => {
   it('should create and fetch the correct item on init', () => {
     expect(component).toBeTruthy();
     expect(component.item()).toEqual(mockItem);
+  });
+
+  it('should identify formatted covers (books/albums)', () => {
+    component.item.set({ ...mockItem, image: 'https://books.google.com/test.jpg' });
+    expect(component.isFormattedCover()).toBe(true);
+
+    component.item.set({ ...mockItem, image: 'https://discogs.com/test.jpg' });
+    expect(component.isFormattedCover()).toBe(true);
+
+    component.item.set({ ...mockItem, image: 'https://other.com/photo.jpg' });
+    expect(component.isFormattedCover()).toBe(false);
+  });
+
+  it('should compute related items based on designer or movement', () => {
+    const item1: CollectionItem = {
+      ...mockItem,
+      id: '1',
+      designer: 'Designer A',
+      movementId: 'm1',
+    };
+    const item2: CollectionItem = {
+      ...mockItem,
+      id: '2',
+      designer: 'Designer A',
+      movementId: 'm2',
+    }; // Same designer
+    const item3: CollectionItem = {
+      ...mockItem,
+      id: '3',
+      designer: 'Designer B',
+      movementId: 'm1',
+    }; // Same movement
+    const item4: CollectionItem = {
+      ...mockItem,
+      id: '4',
+      designer: 'Designer C',
+      movementId: 'm3',
+    }; // Unrelated
+
+    archiveService.collection.set([item1, item2, item3, item4]);
+    component.item.set(item1);
+
+    const related = component.relatedItems();
+    expect(related.length).toBe(2);
+    expect(related).toContain(item2);
+    expect(related).toContain(item3);
+    expect(related).not.toContain(item1);
+    expect(related).not.toContain(item4);
   });
 
   it('should filter movements based on the item category', () => {
@@ -124,9 +172,9 @@ describe('ItemDetailComponent', () => {
     const testItem: CollectionItem = {
       ...mockItem,
       origin: 'paris', // Lowercase to test normalization
-      room_id: 'r1',
-      movement_id: 'm1'
-    } as any;
+      roomId: 'r1',
+      movementId: 'm1'
+    };
     component.item.set(testItem);
 
     component.startEdit();

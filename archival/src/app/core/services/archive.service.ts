@@ -176,14 +176,16 @@ export class ArchiveService {
       });
 
       this.collection.set(
-        itemsRes.data.map((i: CollectionItem) => ({
+        (itemsRes.data as CollectionItem[]).map((i) => ({
           ...i,
           image: i.image_url || '',
           year: i.year,
           room: i.room_id ? roomMap.get(i.room_id) || '' : '',
+          roomId: i.room_id || '',
           movementName: i.movement_id
             ? movementMap.get(i.movement_id) || ''
             : '',
+          movementId: i.movement_id || '',
         })),
       );
     }

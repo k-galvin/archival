@@ -24,6 +24,7 @@ export interface CollectionItem {
   year: number;
   origin: string;
   room: string;
+  roomId?: string;
   image: string;
   note: string;
   movementId: string;

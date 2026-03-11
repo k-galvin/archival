@@ -1,14 +1,14 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
 
 @Component({
   selector: 'app-item-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './item-detail.component.html',
   styleUrl: './item-detail.component.scss',
 })
@@ -22,6 +22,16 @@ export class ItemDetailComponent implements OnInit {
   isEditing = signal(false);
   collectionPickerOpen = signal(false);
   deleteConfirmOpen = signal(false);
+
+  // Helper for detecting book/album covers
+  isFormattedCover = computed(() => {
+    const current = this.item();
+    if (!current) return false;
+    return (
+      current.image.includes('books.google.com') ||
+      current.image.includes('discogs.com')
+    );
+  });
 
   // Filter movements based on the selected item's category
   filteredMovements = computed(() => {
@@ -42,6 +52,37 @@ export class ItemDetailComponent implements OnInit {
     if (category === 'books') return 'Author';
     if (category === 'music') return 'Artist';
     return 'Designer';
+  });
+
+  // Identify related items based on designer or movement
+  relatedItems = computed(() => {
+    const currentItem = this.item();
+    if (!currentItem) return [];
+
+    const allOtherItems = this.archive
+      .collection()
+      .filter((item) => item.id !== currentItem.id);
+
+    // 1. Prioritize same designer
+    const sameDesigner = allOtherItems.filter((item) => {
+      return (
+        currentItem.designer &&
+        item.designer &&
+        currentItem.designer.toLowerCase().trim() ===
+          item.designer.toLowerCase().trim()
+      );
+    });
+
+    // 2. Fallback to same movement (excluding those already matched by designer)
+    const sameMovement = allOtherItems.filter((item) => {
+      if (sameDesigner.some((d) => d.id === item.id)) return false;
+
+      const currentMoveId = currentItem.movementId || currentItem.movement_id;
+      const itemMoveId = item.movementId || item.movement_id;
+      return currentMoveId && itemMoveId && currentMoveId === itemMoveId;
+    });
+
+    return [...sameDesigner, ...sameMovement].slice(0, 3);
   });
 
   // Image Edit State
@@ -68,14 +109,13 @@ export class ItemDetailComponent implements OnInit {
       const itemId = params.get('id');
       if (itemId) {
         // Try to find the item in the collection signal
-        const foundItem = this.archive.collection().find((i) => i.id === itemId);
+        const foundItem = this.archive
+          .collection()
+          .find((i) => i.id === itemId);
         if (foundItem) {
           this.item.set(foundItem);
         } else {
           // If not found, it might be because the collection signal hasn't been populated yet.
-          // We can't reliably fetch a single item here without a dedicated service method.
-          // For now, we'll navigate away. A more robust solution would be to add a
-          // `getSingleItem(id)` method to the ArchiveService.
           this.router.navigate(['/gallery']);
         }
       }
@@ -87,20 +127,25 @@ export class ItemDetailComponent implements OnInit {
     if (!current) return;
 
     // Normalize origin to match the dropdown value (case-insensitive check)
-    const cityMatch = this.archive.cities().find(
-      (c) => c.name.toLowerCase() === (current.origin || '').toLowerCase(),
-    );
+    const cityMatch = this.archive
+      .cities()
+      .find(
+        (c) => c.name.toLowerCase() === (current.origin || '').toLowerCase(),
+      );
     const origin = cityMatch ? cityMatch.name : current.origin;
 
     // Use raw IDs from the database if available, otherwise find by name as a fallback
-    const rawItem = current as any;
     const roomId =
-      rawItem.room_id?.toString() ||
-      this.archive.rooms().find((r) => r.name === current.room)?.id?.toString() ||
+      current.roomId ||
+      this.archive
+        .rooms()
+        .find((r) => r.name === current.room)
+        ?.id?.toString() ||
       '';
     const movementId =
-      rawItem.movement_id ||
-      this.archive.movements().find((m) => m.name === current.movementName)?.id ||
+      current.movementId ||
+      this.archive.movements().find((m) => m.name === current.movementName)
+        ?.id ||
       '';
 
     // Create a mutable copy for editing
@@ -166,14 +211,13 @@ export class ItemDetailComponent implements OnInit {
       }
 
       // We only want to send properties that changed or are relevant
-      // ArchiveService.updateItem handles the mapping to DB columns.
       const updates: Partial<CollectionItem> = {
         name: editable.name,
         year: editable.year,
         designer: editable.designer,
         origin: editable.origin,
         note: editable.note,
-        room: editable.room, // Note: template was using room_id, fixing to use room (which stores ID)
+        room: editable.room,
         movementId: editable.movementId,
         image: imageUrl,
       };

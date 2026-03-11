@@ -5,10 +5,7 @@
         <!-- Left column for image -->
         <div
           class="item-image-wrapper"
-          [class.is-formatted-cover]="
-            currentItem.image.includes('books.google.com') ||
-            currentItem.image.includes('discogs.com')
-          "
+          [class.is-formatted-cover]="isFormattedCover()"
         >
           <img
             [src]="currentItem.image"
@@ -58,6 +55,41 @@
             </button>
           </div>
         </div>
+
+        <!-- Related Items Section (Sidebar on wide, below on narrow) -->
+        @if (relatedItems().length > 0) {
+          <div class="related-items-section slide-up">
+            <div class="section-header">
+              <span class="archival-overline text-accent">Related Records</span>
+            </div>
+
+            <div class="related-items-grid">
+              @for (related of relatedItems(); track related.id) {
+                <a [routerLink]="['/item', related.id]" class="related-item-card">
+                  <div
+                    class="related-image-wrapper"
+                    [class.is-formatted-cover]="
+                      related.image.includes('books.google.com') ||
+                      related.image.includes('discogs.com')
+                    "
+                  >
+                    <img
+                      [src]="related.image"
+                      [alt]="related.name"
+                      class="related-image"
+                    />
+                  </div>
+                  <div class="related-info">
+                    <h4 class="related-name">{{ related.name }}</h4>
+                    <span class="related-meta archival-overline">{{
+                      related.designer
+                    }}</span>
+                  </div>
+                </a>
+              }
+            </div>
+          </div>
+        }
       </div>
     } @else {
       <p>Loading item details...</p>
