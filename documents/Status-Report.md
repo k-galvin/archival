@@ -1,5 +1,20 @@
 # Status Report: Archival Project
 
+## March 11, 2026
+
+### Work Completed
+*   **Logging Items:** Added new items to the tests accounts to better observe functionality of app.
+*   **Related Items Implementation:** Added a related items feature to the items details page to show items with the same creator or movement.
+*   **Enhanced Test Coverage:** Added additional unit tests for new features.
+
+### Challenges & Observations
+*   **Writing Tests:** Ensuring tests are comprehensive can be difficult with the level of complexity in the app. Will improve by manually testing functionality and observing behavior that needs to be enforced.
+
+### Next Steps
+*   **Search Implementation:** Add text-based search to the Gallery component.
+*   **Improved Blueprints:** Make the blueprints UI more visual and meaningful to enhance spatial awareness.
+
+
 ## February 19, 2026
 
 ### Work Completed
