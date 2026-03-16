@@ -29,7 +29,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+/.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -37,6 +37,9 @@ yarn-error.log
 testem.log
 /typings
 
+# Supabase
+supabase/.branches/
+supabase/.temp/
 
 # System files
 .DS_Store
@@ -44,5 +47,7 @@ Thumbs.db
 
 # Secrets
 .env
+.env.*
+*.env
 src/environments/environment.ts
 src/environments/environment.prod.ts
