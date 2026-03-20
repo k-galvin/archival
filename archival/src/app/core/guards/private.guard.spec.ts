@@ -1,77 +1,78 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  CanActivateFn,
-  Router,
-  UrlTree,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-} from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { WritableSignal, signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { signal, Component } from '@angular/core';
 
 import { privateGuard } from './private.guard';
 import { ArchiveService } from '../services/archive.service';
 import { User } from '@supabase/supabase-js';
 
+// Mock page components for testing
+@Component({
+  standalone: true,
+  template: '<h1>Private Page</h1>',
+})
+class PrivateComponent {}
+
+@Component({
+  standalone: true,
+  template: '<h1>Landing Page</h1>',
+})
+class LandingComponent {}
+
 describe('privateGuard', () => {
-  let mockArchiveService: {
-    loading: WritableSignal<boolean>;
-    user: WritableSignal<User | null>;
-  };
-  let mockRouter: Router;
-
-  const executeGuard: CanActivateFn = (...guardParameters) =>
-    TestBed.runInInjectionContext(() => privateGuard(...guardParameters));
-
-  beforeEach(() => {
-    mockArchiveService = {
+  async function setup() {
+    const mockArchiveService = {
       loading: signal(false),
-      user: signal(null),
+      user: signal<User | null>(null),
     };
 
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([])],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      providers: [
+        { provide: ArchiveService, useValue: mockArchiveService },
+        provideRouter([
+          {
+            path: 'private',
+            component: PrivateComponent,
+            canActivate: [privateGuard],
+          },
+          { path: '', component: LandingComponent },
+        ]),
+      ],
     });
 
-    mockRouter = TestBed.inject(Router);
-    spyOn(mockRouter, 'createUrlTree').and.callThrough();
-  });
+    const harness = await RouterTestingHarness.create();
+    return { harness, mockArchiveService };
+  }
 
-  it('should return true if the user is logged in', async () => {
+  it('should allow navigation if the user is logged in', async () => {
+    const { harness, mockArchiveService } = await setup();
     mockArchiveService.user.set({ id: '123' } as User);
 
-    const canActivate = await executeGuard(
-      {} as ActivatedRouteSnapshot,
-      {} as RouterStateSnapshot,
-    );
-    expect(canActivate).toBe(true);
+    await harness.navigateByUrl('/private', PrivateComponent);
+    expect(harness.routeNativeElement?.textContent).toContain('Private Page');
   });
 
   it('should redirect to the landing page if the user is not logged in', async () => {
-    const canActivate = await executeGuard(
-      {} as ActivatedRouteSnapshot,
-      {} as RouterStateSnapshot,
-    );
-    expect(canActivate instanceof UrlTree).toBe(true);
-    expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['']);
+    const { harness, mockArchiveService } = await setup();
+    mockArchiveService.user.set(null);
+
+    await harness.navigateByUrl('/private', LandingComponent);
+    expect(harness.routeNativeElement?.textContent).toContain('Landing Page');
   });
 
   it('should wait for the auth state to be loaded', async () => {
+    const { harness, mockArchiveService } = await setup();
     mockArchiveService.loading.set(true);
     mockArchiveService.user.set(null);
 
-    const promise = executeGuard(
-      {} as ActivatedRouteSnapshot,
-      {} as RouterStateSnapshot,
-    );
+    const navigatePromise = harness.navigateByUrl('/private', LandingComponent);
 
-    setTimeout(() => {
-      mockArchiveService.loading.set(false);
-    }, 100);
+    // Wait a bit to ensure the guard is waiting, then resolve
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    mockArchiveService.loading.set(false);
 
-    const canActivate = await promise;
-    expect(canActivate instanceof UrlTree).toBe(true);
-    expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['']);
+    await navigatePromise;
+    expect(harness.routeNativeElement?.textContent).toContain('Landing Page');
   });
 });
