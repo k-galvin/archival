@@ -107,7 +107,6 @@ describe('BlueprintComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const gridCells = compiled.querySelectorAll('.grid-cell');
 
-    // Assuming a 2x2 grid for 2 rooms based on gridSize computed property
     expect(gridCells.length).toBe(4);
     expect(gridCells[0].querySelector('.cell-name')?.textContent).toContain(
       'rooma',

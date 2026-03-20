@@ -185,7 +185,8 @@
   padding-top: 2rem;
   border-top: 1px solid rgba(colors.$primary-black, 0.05);
 
-  .success-txt, .error-txt {
+  .success-txt,
+  .error-txt {
     font-size: 12px;
     font-style: italic;
     margin: 0;

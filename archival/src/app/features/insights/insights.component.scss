@@ -196,7 +196,9 @@
 
   &:focus {
     outline: none;
-    .bar-track { border-color: rgba(colors.$accent-blue, 0.3); }
+    .bar-track {
+      border-color: rgba(colors.$accent-blue, 0.3);
+    }
   }
 
   .creator-name {
@@ -209,13 +211,13 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    
+
     .creator-name {
       font-size: 12px;
       font-weight: 600;
       opacity: 1;
     }
-    
+
     .creator-count {
       font-family: ui-monospace, SFMono-Regular, monospace;
       font-size: 10px;
@@ -246,10 +248,19 @@
     bottom: 0;
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
-    &.bg-cat-decor { background-color: #a9d6e5; }
-    &.bg-cat-music { background-color: #6495ed; }
-    &.cat-books, &.bg-cat-books { background-color: #2563eb; }
-    &.bg-cat-fashion { background-color: #000080; }
+    &.bg-cat-decor {
+      background-color: #a9d6e5;
+    }
+    &.bg-cat-music {
+      background-color: #6495ed;
+    }
+    &.cat-books,
+    &.bg-cat-books {
+      background-color: #2563eb;
+    }
+    &.bg-cat-fashion {
+      background-color: #000080;
+    }
   }
 
   .creator-count {
@@ -299,22 +310,40 @@
     fill: none !important;
     transition: opacity 0.3s;
 
-    &.cat-decor { stroke: #a9d6e5; }
-    &.cat-music { stroke: #6495ed; }
-    &.cat-books { stroke: #2563eb; }
-    &.cat-fashion { stroke: #000080; }
+    &.cat-decor {
+      stroke: #a9d6e5;
+    }
+    &.cat-music {
+      stroke: #6495ed;
+    }
+    &.cat-books {
+      stroke: #2563eb;
+    }
+    &.cat-fashion {
+      stroke: #000080;
+    }
   }
 
   .chart-dot {
     transition: all 0.2s ease;
     cursor: pointer;
 
-    &.cat-decor { fill: #a9d6e5; }
-    &.cat-music { fill: #6495ed; }
-    &.cat-books { fill: #2563eb; }
-    &.cat-fashion { fill: #000080; }
+    &.cat-decor {
+      fill: #a9d6e5;
+    }
+    &.cat-music {
+      fill: #6495ed;
+    }
+    &.cat-books {
+      fill: #2563eb;
+    }
+    &.cat-fashion {
+      fill: #000080;
+    }
 
-    &:hover { r: 5; }
+    &:hover {
+      r: 5;
+    }
   }
 }
 
@@ -371,10 +400,18 @@
     height: 8px;
     border-radius: 50%;
 
-    &.bg-cat-decor { background-color: #a9d6e5; }
-    &.bg-cat-music { background-color: #6495ed; }
-    &.bg-cat-books { background-color: #2563eb; }
-    &.bg-cat-fashion { background-color: #000080; }
+    &.bg-cat-decor {
+      background-color: #a9d6e5;
+    }
+    &.bg-cat-music {
+      background-color: #6495ed;
+    }
+    &.bg-cat-books {
+      background-color: #2563eb;
+    }
+    &.bg-cat-fashion {
+      background-color: #000080;
+    }
   }
 
   .legend-label {

@@ -11,7 +11,10 @@
   <!-- Persistent Frame Borders-->
   @if (archiveService.user()) {
     <div class="frame-border-outer"></div>
-    <div class="frame-border-inner" [class.logged-in-frame-inner]="isUserLoggedIn()"></div>
+    <div
+      class="frame-border-inner"
+      [class.logged-in-frame-inner]="isUserLoggedIn()"
+    ></div>
   }
 
   <!-- Dynamic Feature Content Swapped by Router -->

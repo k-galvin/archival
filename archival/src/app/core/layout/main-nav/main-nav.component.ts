@@ -11,12 +11,10 @@ import { ArchiveService } from '../../services/archive.service';
   styleUrl: './main-nav.component.scss',
 })
 export class MainNavComponent {
-  // Inject the ArchiveService to handle user authentication state
   archive = inject(ArchiveService);
   user = this.archive.user;
   isMenuOpen = false;
 
-  // Navigation configuration
   navLinks = [
     { path: '/gallery', label: 'gallery' },
     { path: '/collections', label: 'collections' },

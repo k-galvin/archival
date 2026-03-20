@@ -58,12 +58,12 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
   // --- Local UI State ---
   hoveredMovement = signal<string | null>(null);
-  hoveredPoint = signal<{ 
-    decade: number; 
-    category: string; 
-    count: number; 
-    x: number; 
-    y: number 
+  hoveredPoint = signal<{
+    decade: number;
+    category: string;
+    count: number;
+    x: number;
+    y: number;
   } | null>(null);
 
   // --- Reference signals from central service ---
@@ -75,34 +75,37 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   pieOptions = computed<Partial<PieChartOptions>>(() => {
     const data = this.originCounts();
     return {
-      series: data.map(d => d.count),
-      labels: data.map(d => d.name),
+      series: data.map((d) => d.count),
+      labels: data.map((d) => d.name),
       chart: {
         type: 'pie' as ChartType,
         height: 280,
         fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-        toolbar: { show: false }
+        toolbar: { show: false },
       },
       stroke: { show: false },
       dataLabels: { enabled: false },
       legend: {
         position: 'bottom',
         fontSize: '10px',
-        markers: { 
+        markers: {
           width: 8,
-          height: 8
+          height: 8,
         },
-        formatter: (name: string, opts: { w: { globals: { series: number[] } }; seriesIndex: number }) => {
+        formatter: (
+          name: string,
+          opts: { w: { globals: { series: number[] } }; seriesIndex: number },
+        ) => {
           return `${name}: ${opts.w.globals.series[opts.seriesIndex]}`;
-        }
+        },
       },
-      colors: data.map(d => d.color),
+      colors: data.map((d) => d.color),
       tooltip: {
         enabled: true,
         fillSeriesColor: false,
         theme: 'light',
-        style: { fontSize: '10px' }
-      }
+        style: { fontSize: '10px' },
+      },
     };
   });
 
@@ -156,7 +159,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     const origins = this.mappedOrigins()
       .map((o) => ({ name: o.name, count: o.items.length }))
       .sort((a, b) => b.count - a.count);
-    
+
     const total = origins.reduce((acc, curr) => acc + curr.count, 0);
     let cumulativePercent = 0;
 
@@ -164,20 +167,18 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       const startPercent = cumulativePercent;
       const percent = (o.count / total) * 100;
       cumulativePercent += percent;
-      
-      // Revert to archival blue monochromatic palette
-      const hue = 210; // Archival blue base
-      const saturation = 30 + (i * 10) % 40;
-      const lightness = 35 + (i * 15) % 45;
+
+      const hue = 210;
+      const saturation = 30 + ((i * 10) % 40);
+      const lightness = 35 + ((i * 15) % 45);
       const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 
-      return { 
-        ...o, 
-        startPercent, 
+      return {
+        ...o,
+        startPercent,
         percent,
         color,
-        // Hard stops: color start% end%
-        gradientSegment: `${color} ${startPercent.toFixed(2)}% ${cumulativePercent.toFixed(2)}%`
+        gradientSegment: `${color} ${startPercent.toFixed(2)}% ${cumulativePercent.toFixed(2)}%`,
       };
     });
   });
@@ -185,12 +186,12 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   temporalData = computed(() => {
     const items = this.collection();
     const categories: string[] = ['decor', 'music', 'books', 'fashion'];
-    
+
     if (items.length === 0) {
       return { decades: [], categoryPaths: [], maxVal: 1 };
     }
 
-    const years = items.map(i => i.year).filter(y => !isNaN(y));
+    const years = items.map((i) => i.year).filter((y) => !isNaN(y));
     if (years.length === 0) {
       return { decades: [], categoryPaths: [], maxVal: 1 };
     }
@@ -204,12 +205,11 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     for (let d = startDecade; d <= endDecade; d += 10) {
       decades.push(d);
     }
-    
-    // Structure: { 1920: { decor: 0, music: 0, ... }, ... }
+
     const counts: Record<number, Record<string, number>> = {};
     decades.forEach((d) => {
       counts[d] = {};
-      categories.forEach(cat => counts[d][cat] = 0);
+      categories.forEach((cat) => (counts[d][cat] = 0));
     });
 
     items.forEach((item) => {
@@ -225,56 +225,64 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     const chartWidth = 1000;
     const baselineY = 100;
     const paddingTop = 10;
-    const paddingX = 5; // Minimal padding to fill width
+    const paddingX = 5;
     const effectiveWidth = chartWidth - paddingX * 2;
     const effectiveHeight = baselineY - paddingTop;
 
-    // Flatten to a more usable format for the template
     const decadeList = decades.map((decade, i) => ({
       decade,
-      x: paddingX + (decades.length > 1 ? (i / (decades.length - 1)) * effectiveWidth : effectiveWidth / 2),
-      counts: counts[decade]
+      x:
+        paddingX +
+        (decades.length > 1
+          ? (i / (decades.length - 1)) * effectiveWidth
+          : effectiveWidth / 2),
+      counts: counts[decade],
     }));
 
-    // Find overall max for scaling
     let maxVal = 1;
-    decades.forEach(d => {
-      categories.forEach(cat => {
+    decades.forEach((d) => {
+      categories.forEach((cat) => {
         if (counts[d][cat] > maxVal) maxVal = counts[d][cat];
       });
     });
 
     // Generate paths for each category
-    const categoryPaths = categories.map(cat => {
-      const points = decadeList.map(d => ({
+    const categoryPaths = categories.map((cat) => {
+      const points = decadeList.map((d) => ({
         x: d.x,
-        y: baselineY - (d.counts[cat] / maxVal) * effectiveHeight
+        y: baselineY - (d.counts[cat] / maxVal) * effectiveHeight,
       }));
-      
-      const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-      
+
+      const linePath = points
+        .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
+
       return {
         category: cat,
         path: linePath,
-        points // For drawing individual dots if needed
+        points,
       };
     });
 
     return {
       decades: decadeList,
       categoryPaths,
-      maxVal
+      maxVal,
     };
   });
 
   /**
-   * Provenance Leaderboard - Top Designers/Authors
+   * Provenance Leaderboard - Top Designers/Authors/Artists
    */
   topDesigners = computed(() => {
     const counts: Record<string, number> = {};
-    this.collection().forEach(item => {
+    this.collection().forEach((item) => {
       const name = item.designer?.trim();
-      if (name && name.toLowerCase() !== 'unknown' && name.toLowerCase() !== 'unknown artist') {
+      if (
+        name &&
+        name.toLowerCase() !== 'unknown' &&
+        name.toLowerCase() !== 'unknown artist'
+      ) {
         counts[name] = (counts[name] || 0) + 1;
       }
     });
@@ -407,18 +415,20 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
     const max = sorted.length > 0 ? sorted[0].count : 1;
 
-    return sorted.map(s => ({
+    return sorted.map((s) => ({
       ...s,
-      percent: (s.count / max) * 100
+      percent: (s.count / max) * 100,
     }));
   }
 
   getMovementDescription(name: string): string {
-    const movement = this.archive.movements().find(m => m.name.toLowerCase() === name.toLowerCase());
+    const movement = this.archive
+      .movements()
+      .find((m) => m.name.toLowerCase() === name.toLowerCase());
     if (movement && movement.description) {
       return movement.description;
     }
-    
+
     return (
       this.MOVEMENT_DESCRIPTIONS[name.toLowerCase()] ||
       'Archival movement defining a specific era of stylistic and structural innovation.'

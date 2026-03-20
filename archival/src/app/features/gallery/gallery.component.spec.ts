@@ -55,20 +55,16 @@ describe('GalleryComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockArchiveService = jasmine.createSpyObj(
-      'ArchiveService',
-      ['setFilter'],
-      {
-        collection: signal(mockItems),
-        loading: signal(false),
-      },
-    );
+    mockArchiveService = jasmine.createSpyObj('ArchiveService', ['setFilter'], {
+      collection: signal(mockItems),
+      loading: signal(false),
+    });
 
     await TestBed.configureTestingModule({
       imports: [GalleryComponent, HttpClientTestingModule],
       providers: [
         { provide: ArchiveService, useValue: mockArchiveService },
-        { provide: ActivatedRoute, useValue: { paramMap: of({}) } }
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
       ],
     }).compileComponents();
 

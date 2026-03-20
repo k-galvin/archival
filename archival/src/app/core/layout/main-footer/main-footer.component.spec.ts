@@ -4,7 +4,6 @@ import { MainFooterComponent } from './main-footer.component';
 import { ArchiveService } from '../../services/archive.service';
 import { signal } from '@angular/core';
 
-
 describe('MainFooterComponent', () => {
   let component: MainFooterComponent;
   let fixture: ComponentFixture<MainFooterComponent>;

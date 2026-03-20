@@ -45,6 +45,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   // Categories
   categories: CategoryType[] = ['decor', 'music', 'books', 'fashion'];
 
+  // Current year for validation
   currentYear = new Date().getFullYear();
 
   // Image Upload State
@@ -62,7 +63,6 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   private search$ = new Subject<string>();
   private searchSubscription?: Subscription;
 
-  // Archive signals for dropdowns
   rooms = this.archive.rooms;
   movements = this.archive.movements;
   cities = this.archive.cities;

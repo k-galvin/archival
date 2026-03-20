@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CollectionsComponent } from './collections.component';
 import { ArchiveService } from '../../core/services/archive.service';
-import { CollectionItem, UserCollection } from '../../shared/models/archive.models';
+import {
+  CollectionItem,
+  UserCollection,
+} from '../../shared/models/archive.models';
 import { FormsModule } from '@angular/forms';
 import { signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -14,8 +17,32 @@ describe('CollectionsComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   const mockItems: CollectionItem[] = [
-    { id: '1', name: 'Item 1', category: 'decor', origin: 'orig1', year: 2020, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
-    { id: '2', name: 'Item 2', category: 'music', origin: 'orig2', year: 1995, image: '', designer: '', note: '', movementId: '', room: '', movementName: '' },
+    {
+      id: '1',
+      name: 'Item 1',
+      category: 'decor',
+      origin: 'orig1',
+      year: 2020,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    },
+    {
+      id: '2',
+      name: 'Item 2',
+      category: 'music',
+      origin: 'orig2',
+      year: 1995,
+      image: '',
+      designer: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    },
   ];
 
   const mockUserCollections: UserCollection[] = [
@@ -31,17 +58,16 @@ describe('CollectionsComponent', () => {
         collection: signal(mockItems),
         userCollections: signal(mockUserCollections),
         loading: signal(false),
-      }
+      },
     );
 
     await TestBed.configureTestingModule({
       imports: [CollectionsComponent, HttpClientTestingModule, FormsModule],
       providers: [
         { provide: ArchiveService, useValue: mockArchiveService },
-        { provide: ActivatedRoute, useValue: { paramMap: of({}) } }
-      ]
-    })
-    .compileComponents();
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CollectionsComponent);
     component = fixture.componentInstance;
@@ -59,17 +85,27 @@ describe('CollectionsComponent', () => {
     expect(collectionElements.length).toBe(2);
 
     const firstCollection = collectionElements[0];
-    const firstCollectionItems = firstCollection.querySelectorAll('.item-thumb-wrapper');
+    const firstCollectionItems = firstCollection.querySelectorAll(
+      '.item-thumb-wrapper',
+    );
     expect(firstCollectionItems.length).toBe(2);
-    expect(firstCollection.querySelector('.col-title')?.textContent).toContain('Collection 1');
-    expect(firstCollectionItems[0].querySelector('.thumb-label')?.textContent).toContain('Item 1');
-    expect(firstCollectionItems[1].querySelector('.thumb-label')?.textContent).toContain('Item 2');
+    expect(firstCollection.querySelector('.col-title')?.textContent).toContain(
+      'Collection 1',
+    );
+    expect(
+      firstCollectionItems[0].querySelector('.thumb-label')?.textContent,
+    ).toContain('Item 1');
+    expect(
+      firstCollectionItems[1].querySelector('.thumb-label')?.textContent,
+    ).toContain('Item 2');
   });
 
   it('should add a new collection', () => {
     component.newCollectionTitle.set('New Collection');
     component.createCollection();
-    expect(mockArchiveService.addCollection).toHaveBeenCalledWith('New Collection');
+    expect(mockArchiveService.addCollection).toHaveBeenCalledWith(
+      'New Collection',
+    );
     expect(component.newCollectionTitle()).toBe('');
   });
 
@@ -82,9 +118,9 @@ describe('CollectionsComponent', () => {
   it('should call archiveService.deleteCollection and close modal on confirmDelete', async () => {
     component.collectionToDelete.set({ id: '1', title: 'Collection 1' });
     component.deleteConfirmOpen.set(true);
-    
+
     await component.confirmDelete();
-    
+
     expect(mockArchiveService.deleteCollection).toHaveBeenCalledWith('1');
     expect(component.deleteConfirmOpen()).toBe(false);
     expect(component.collectionToDelete()).toBeNull();
@@ -93,9 +129,9 @@ describe('CollectionsComponent', () => {
   it('should close the modal and not delete on closeDeleteModal', () => {
     component.collectionToDelete.set({ id: '1', title: 'Collection 1' });
     component.deleteConfirmOpen.set(true);
-    
+
     component.closeDeleteModal();
-    
+
     expect(component.deleteConfirmOpen()).toBe(false);
     expect(component.collectionToDelete()).toBeNull();
     expect(mockArchiveService.deleteCollection).not.toHaveBeenCalled();
@@ -103,6 +139,9 @@ describe('CollectionsComponent', () => {
 
   it('should remove an item from a collection', () => {
     component.removeFromCollection('1', '1');
-    expect(mockArchiveService.removeFromCollection).toHaveBeenCalledWith('1', '1');
+    expect(mockArchiveService.removeFromCollection).toHaveBeenCalledWith(
+      '1',
+      '1',
+    );
   });
 });

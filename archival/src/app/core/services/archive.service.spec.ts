@@ -6,7 +6,13 @@ import { SUPABASE_CLIENT } from './supabase-client.token';
 class MockSupabaseClient {
   auth = {
     getSession: () => Promise.resolve({ data: { session: null } }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { /* no-op */ } } } }),
+    onAuthStateChange: () => ({
+      data: {
+        subscription: {
+          unsubscribe: () => {},
+        },
+      },
+    }),
     signUp: () => Promise.resolve({}),
     signInWithPassword: () => Promise.resolve({}),
     signOut: () => Promise.resolve(),
@@ -33,8 +39,8 @@ class MockSupabaseClient {
       }),
     }),
     match: () => ({
-        error: null,
-    })
+      error: null,
+    }),
   });
 
   storage = {
@@ -51,9 +57,7 @@ describe('ArchiveService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        { provide: SUPABASE_CLIENT, useClass: MockSupabaseClient }
-      ]
+      providers: [{ provide: SUPABASE_CLIENT, useClass: MockSupabaseClient }],
     });
     service = TestBed.inject(ArchiveService);
   });

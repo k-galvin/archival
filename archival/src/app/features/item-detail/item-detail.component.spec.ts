@@ -96,7 +96,10 @@ describe('ItemDetailComponent', () => {
   });
 
   it('should identify formatted covers (books/albums)', () => {
-    component.item.set({ ...mockItem, image: 'https://books.google.com/test.jpg' });
+    component.item.set({
+      ...mockItem,
+      image: 'https://books.google.com/test.jpg',
+    });
     expect(component.isFormattedCover()).toBe(true);
 
     component.item.set({ ...mockItem, image: 'https://discogs.com/test.jpg' });
@@ -167,13 +170,15 @@ describe('ItemDetailComponent', () => {
 
   it('should start editing by creating a copy of the item and normalizing origin/IDs', () => {
     // cities signal has [{ name: 'Paris', ... }]
-    archiveService.cities.set([{ id: 1, name: 'Paris', country: 'France' } as City]);
+    archiveService.cities.set([
+      { id: 1, name: 'Paris', country: 'France' } as City,
+    ]);
 
     const testItem: CollectionItem = {
       ...mockItem,
       origin: 'paris', // Lowercase to test normalization
       roomId: 'r1',
-      movementId: 'm1'
+      movementId: 'm1',
     };
     component.item.set(testItem);
 

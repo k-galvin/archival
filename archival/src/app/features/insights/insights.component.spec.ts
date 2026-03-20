@@ -21,8 +21,20 @@ describe('InsightsComponent', () => {
   ];
 
   const mockMovements: Movement[] = [
-    { id: '1', category: 'decor', name: 'Bauhaus', era: '1920s', description: 'Rational design.' },
-    { id: '2', category: 'music', name: 'IDM', era: '1990s', description: 'Digital synthesis.' },
+    {
+      id: '1',
+      category: 'decor',
+      name: 'Bauhaus',
+      era: '1920s',
+      description: 'Rational design.',
+    },
+    {
+      id: '2',
+      category: 'music',
+      name: 'IDM',
+      era: '1990s',
+      description: 'Digital synthesis.',
+    },
   ];
 
   let mockCollection: CollectionItem[];
@@ -140,13 +152,13 @@ describe('InsightsComponent', () => {
   it('should correctly generate temporal distribution data', () => {
     const temporalData = component.temporalData();
     expect(temporalData.decades.length).toBeGreaterThan(0);
-    
+
     const d1920 = temporalData.decades.find((d) => d.decade === 1920);
     expect(d1920?.counts['decor']).toBe(2); // Item A and D
-    
+
     const d1990 = temporalData.decades.find((d) => d.decade === 1990);
     expect(d1990?.counts['music']).toBe(1); // Item B
-    
+
     const d1930 = temporalData.decades.find((d) => d.decade === 1930);
     expect(d1930?.counts['decor']).toBe(1); // Item C
   });
@@ -173,9 +185,9 @@ describe('InsightsComponent', () => {
     mockCollection[1].designer = 'Designer Y'; // Item B
     mockCollection[2].designer = 'Designer X'; // Item C
     // Item D stays empty
-    
+
     collectionSignal.set([...mockCollection]);
-    
+
     const topDesigners = component.topDesigners();
     expect(topDesigners.length).toBe(2);
     expect(topDesigners[0].name).toBe('Designer X');

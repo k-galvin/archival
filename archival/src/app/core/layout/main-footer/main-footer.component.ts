@@ -12,7 +12,6 @@ import { ArchiveService } from '../../services/archive.service';
 export class MainFooterComponent {
   private archive = inject(ArchiveService);
 
-  // Footer metadata
   itemCount = computed(() => this.archive.collection().length);
   collectionCount = computed(() => this.archive.userCollections().length);
 }

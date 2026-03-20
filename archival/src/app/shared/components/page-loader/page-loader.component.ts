@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './page-loader.component.html',
-  styleUrl: './page-loader.component.scss'
+  styleUrl: './page-loader.component.scss',
 })
 export class PageLoaderComponent {
   @Input() isLoading = false;

@@ -77,7 +77,8 @@ export class BlueprintComponent {
   getItemsInRoom(roomName: string) {
     return this.collection().filter(
       (item) =>
-        (item.room ?? '').toLowerCase().trim() === roomName.toLowerCase().trim(),
+        (item.room ?? '').toLowerCase().trim() ===
+        roomName.toLowerCase().trim(),
     );
   }
 }

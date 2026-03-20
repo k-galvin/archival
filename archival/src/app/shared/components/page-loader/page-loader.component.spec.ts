@@ -8,9 +8,8 @@ describe('PageLoaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PageLoaderComponent]
-    })
-    .compileComponents();
+      imports: [PageLoaderComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PageLoaderComponent);
     component = fixture.componentInstance;
@@ -26,7 +25,9 @@ describe('PageLoaderComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.loader-container')).not.toBeNull();
-    expect(compiled.querySelector('.loading-text')?.textContent).toContain('Loading');
+    expect(compiled.querySelector('.loading-text')?.textContent).toContain(
+      'Loading',
+    );
   });
 
   it('should not display the loader and text when isLoading is false', () => {
@@ -41,7 +42,8 @@ describe('PageLoaderComponent', () => {
     component.loadingText = 'Please wait...';
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.loading-text')?.textContent).toContain('Please wait...');
+    expect(compiled.querySelector('.loading-text')?.textContent).toContain(
+      'Please wait...',
+    );
   });
 });
-

@@ -26,7 +26,8 @@
         routerLinkActive="active"
         class="nav-link"
         (click)="closeMenu()"
-      >        {{ link.label }}
+      >
+        {{ link.label }}
         <div class="active-underline bg-accent"></div>
       </a>
     }
@@ -55,7 +56,6 @@
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
         </button>
-
       </div>
     } @else {
       <a routerLink="/auth" class="auth-link archival-overline">sign in</a>

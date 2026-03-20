@@ -1,5 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { CanActivateFn, Router, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  CanActivateFn,
+  Router,
+  UrlTree,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WritableSignal, signal } from '@angular/core';
 
@@ -35,12 +41,18 @@ describe('privateGuard', () => {
   it('should return true if the user is logged in', async () => {
     mockArchiveService.user.set({ id: '123' } as User);
 
-    const canActivate = await executeGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot);
+    const canActivate = await executeGuard(
+      {} as ActivatedRouteSnapshot,
+      {} as RouterStateSnapshot,
+    );
     expect(canActivate).toBe(true);
   });
 
   it('should redirect to the landing page if the user is not logged in', async () => {
-    const canActivate = await executeGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot);
+    const canActivate = await executeGuard(
+      {} as ActivatedRouteSnapshot,
+      {} as RouterStateSnapshot,
+    );
     expect(canActivate instanceof UrlTree).toBe(true);
     expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['']);
   });
@@ -49,9 +61,11 @@ describe('privateGuard', () => {
     mockArchiveService.loading.set(true);
     mockArchiveService.user.set(null);
 
-    const promise = executeGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot);
+    const promise = executeGuard(
+      {} as ActivatedRouteSnapshot,
+      {} as RouterStateSnapshot,
+    );
 
-    // Change the loading state after a short delay
     setTimeout(() => {
       mockArchiveService.loading.set(false);
     }, 100);

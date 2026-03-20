@@ -27,14 +27,12 @@ export class ArchiveService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  // Global Signals for Application State
   collection = signal<CollectionItem[]>([]);
   rooms = signal<Room[]>([]);
   userCollections = signal<UserCollection[]>([]);
   movements = signal<Movement[]>([]);
-  cities = signal<City[]>([]); // New signal for cities
+  cities = signal<City[]>([]);
 
-  // Auth state signals
   user = signal<User | null>(null);
   loading = signal(true);
   authError = signal<string | null>(null);
@@ -44,7 +42,6 @@ export class ArchiveService {
   constructor() {
     this.initAuth();
 
-    // Reactive synchronization: Fetch user data automatically when a session is active
     effect(() => {
       const currentUser = this.user();
       if (currentUser) {
@@ -149,20 +146,14 @@ export class ArchiveService {
       .select('*, collection_items(item_id)')
       .eq('user_id', userId);
     const movementsReq = this.supabase.from('movements').select('*');
-    const citiesReq = this.supabase.from('cities').select('*'); // New cities request
+    const citiesReq = this.supabase.from('cities').select('*');
 
     const [itemsRes, roomsRes, collectionsRes, movementsRes, citiesRes] =
-      await Promise.all([
-        itemsReq,
-        roomsReq,
-        colReq,
-        movementsReq,
-        citiesReq, // Add citiesReq to Promise.all
-      ]);
+      await Promise.all([itemsReq, roomsReq, colReq, movementsReq, citiesReq]);
 
     if (roomsRes.data) this.rooms.set(roomsRes.data);
     if (movementsRes.data) this.movements.set(movementsRes.data);
-    if (citiesRes.data) this.cities.set(citiesRes.data); // Populate cities signal
+    if (citiesRes.data) this.cities.set(citiesRes.data);
 
     if (itemsRes.data) {
       const roomMap = new Map<string, string>();
@@ -209,7 +200,7 @@ export class ArchiveService {
     this.collection.set([]);
     this.rooms.set([]);
     this.userCollections.set([]);
-    this.cities.set([]); // Clear cities signal
+    this.cities.set([]);
   }
 
   // --- Write Operations ---
@@ -335,7 +326,6 @@ export class ArchiveService {
       .single();
 
     if (data) {
-      // Optimistically update the local signal state
       this.userCollections.update((cols) => [
         ...cols,
         { id: data.id, title: data.title, itemIds: [] },
@@ -349,7 +339,6 @@ export class ArchiveService {
     const currentUser = this.user();
     if (!currentUser) return;
 
-    // First, delete all items in the junction table associated with this collection
     const { error: junctionError } = await this.supabase
       .from('collection_items')
       .delete()
@@ -357,10 +346,9 @@ export class ArchiveService {
 
     if (junctionError) {
       console.error('Error deleting collection items:', junctionError.message);
-      return; // Stop if we can't delete the children
+      return;
     }
 
-    // Then, delete the collection itself
     const { error: collectionError } = await this.supabase
       .from('collections')
       .delete()
@@ -369,7 +357,6 @@ export class ArchiveService {
     if (collectionError) {
       console.error('Error deleting collection:', collectionError.message);
     } else {
-      // Optimistically update the local signal
       this.userCollections.update((cols) => cols.filter((c) => c.id !== id));
     }
   }
@@ -383,7 +370,6 @@ export class ArchiveService {
     if (error) {
       console.error('Error removing item from collection:', error.message);
     } else {
-      // Optimistically update local state
       this.userCollections.update((cols) =>
         cols.map((c) => {
           if (c.id === colId) {
@@ -396,7 +382,6 @@ export class ArchiveService {
   }
 
   async addToUserCollection(colId: string, itemId: string) {
-    // Prevent adding duplicates
     const collection = this.userCollections().find((c) => c.id === colId);
     if (collection?.itemIds.includes(itemId)) {
       console.log('Item already in collection.');
@@ -469,13 +454,13 @@ export class ArchiveService {
   async updateItem(id: string, updates: Partial<CollectionItem>) {
     const dbUpdates: Record<string, unknown> = { ...updates };
 
-    // Map frontend properties to database columns
     if (updates.image !== undefined) {
       dbUpdates['image_url'] = updates.image;
       delete dbUpdates['image'];
     }
     if (updates.movementId !== undefined) {
-      dbUpdates['movement_id'] = updates.movementId === '' ? null : updates.movementId;
+      dbUpdates['movement_id'] =
+        updates.movementId === '' ? null : updates.movementId;
       delete dbUpdates['movementId'];
     }
     if (updates.room !== undefined) {
@@ -483,7 +468,6 @@ export class ArchiveService {
       delete dbUpdates['room'];
     }
 
-    // Remove read-only or non-db properties
     delete dbUpdates['movementName'];
     delete dbUpdates['id'];
 
@@ -504,7 +488,8 @@ export class ArchiveService {
         ? this.rooms().find((r: Room) => r.id === data.room_id)?.name || ''
         : '';
       const movementName = data.movement_id
-        ? this.movements().find((m: Movement) => m.id === data.movement_id)?.name || ''
+        ? this.movements().find((m: Movement) => m.id === data.movement_id)
+            ?.name || ''
         : '';
 
       const updatedFullItem = {
@@ -514,7 +499,6 @@ export class ArchiveService {
         movementName: movementName,
       };
 
-      // Update the local collection signal
       this.collection.update((prev) => {
         const index = prev.findIndex((i) => i.id === id);
         if (index > -1) {

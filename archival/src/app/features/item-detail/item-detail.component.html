@@ -65,7 +65,10 @@
 
             <div class="related-items-grid">
               @for (related of relatedItems(); track related.id) {
-                <a [routerLink]="['/item', related.id]" class="related-item-card">
+                <a
+                  [routerLink]="['/item', related.id]"
+                  class="related-item-card"
+                >
                   <div
                     class="related-image-wrapper"
                     [class.is-formatted-cover]="
@@ -177,7 +180,11 @@
           </div>
           <div class="form-field">
             <label for="edit-origin">Origin</label>
-            <select id="edit-origin" [(ngModel)]="editItem.origin" name="origin">
+            <select
+              id="edit-origin"
+              [(ngModel)]="editItem.origin"
+              name="origin"
+            >
               <option value="">Select a city</option>
               @for (city of cities(); track city.id) {
                 <option [value]="city.name">

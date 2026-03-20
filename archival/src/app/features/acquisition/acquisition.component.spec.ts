@@ -163,7 +163,6 @@ describe('AcquisitionComponent', () => {
   });
 
   it('should set up search subscription on ngOnInit', () => {
-    // Check if the searchSubscription is truthy, indicating it was created
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((component as any).searchSubscription).toBeTruthy();
   });
@@ -253,7 +252,7 @@ describe('AcquisitionComponent', () => {
 
       const event = { target: { value: 'Test Book' } } as unknown as Event;
       component.onNomenclatureChange(event);
-      tick(600); // Debounce time
+      tick(600);
 
       expect(mockArchiveService.searchBooks).toHaveBeenCalledWith('Test Book');
       expect(component.isSearchingBooks()).toBeFalse();
@@ -267,15 +266,15 @@ describe('AcquisitionComponent', () => {
           totalItems: 0,
           items: [],
         } as GoogleBooksResponse).pipe(delay(100)),
-      ); // Simulate async operation
+      );
 
       const event = { target: { value: 'Test Book' } } as unknown as Event;
       component.onNomenclatureChange(event);
-      tick(599); // Before searchBooks is called
-      expect(component.isSearchingBooks()).toBeFalse(); // Still debouncing
-      tick(1); // SearchBooks is now called
+      tick(599);
+      expect(component.isSearchingBooks()).toBeFalse();
+      tick(1);
       expect(component.isSearchingBooks()).toBeTrue();
-      tick(100); // Search completes
+      tick(100);
       expect(component.isSearchingBooks()).toBeFalse();
     }));
 
@@ -310,7 +309,6 @@ describe('AcquisitionComponent', () => {
 
   describe('Search Functionality (Music)', () => {
     beforeEach(() => {
-      // Ensure category is set to 'music' for these tests
       component.onCategoryChange('music');
       fixture.detectChanges();
     });
@@ -329,7 +327,7 @@ describe('AcquisitionComponent', () => {
 
       const event = { target: { value: 'Test Album' } } as unknown as Event;
       component.onNomenclatureChange(event);
-      tick(600); // Debounce time
+      tick(600);
 
       expect(mockArchiveService.searchDiscogs).toHaveBeenCalledWith(
         'Test Album',
@@ -345,15 +343,15 @@ describe('AcquisitionComponent', () => {
           error: null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as FunctionsResponse<any>).pipe(delay(100)),
-      ); // Simulate async operation
+      );
 
       const event = { target: { value: 'Test Album' } } as unknown as Event;
       component.onNomenclatureChange(event);
-      tick(599); // Before searchDiscogs is called
-      expect(component.isSearchingMusic()).toBeFalse(); // Still debouncing
-      tick(1); // SearchDiscogs is now called
+      tick(599);
+      expect(component.isSearchingMusic()).toBeFalse();
+      tick(1);
       expect(component.isSearchingMusic()).toBeTrue();
-      tick(100); // Search completes
+      tick(100);
       expect(component.isSearchingMusic()).toBeFalse();
     }));
 
@@ -361,7 +359,7 @@ describe('AcquisitionComponent', () => {
       mockArchiveService.searchDiscogs.and.returnValue(
         throwError(() => new Error('Discogs search failed')),
       );
-      spyOn(console, 'error'); // Suppress console error during test
+      spyOn(console, 'error');
 
       const event = { target: { value: 'Bad Album' } } as unknown as Event;
       component.onNomenclatureChange(event);
@@ -391,7 +389,6 @@ describe('AcquisitionComponent', () => {
     };
 
     beforeEach(() => {
-      // Clear any existing search results/selected files
       component.bookSearchResults.set([mockBook]);
       component.selectedFile.set(new File([], 'test.jpg'));
     });
@@ -442,7 +439,7 @@ describe('AcquisitionComponent', () => {
         volumeInfo: {
           title: 'No Date Book',
           authors: ['Author'],
-          publishedDate: '', // Simulate missing publishedDate
+          publishedDate: '',
           imageLinks: {
             thumbnail: 'http://noimage.jpg',
             smallThumbnail: 'http://noimage_small.jpg',
@@ -535,16 +532,13 @@ describe('AcquisitionComponent', () => {
     let mockFileReader: jasmine.SpyObj<FileReader>;
 
     beforeEach(() => {
-      // Create a mock FileReader instance that we control
       const fileReaderInstance: Partial<FileReader> = {
         result: '',
         onload: null,
         onerror: null,
-        // Mock readAsDataURL to immediately trigger onload with a fake result
         readAsDataURL: jasmine
           .createSpy('readAsDataURL')
           .and.callFake(function (this: FileReader) {
-            // Simulate async behavior, trigger onload after a microtask
             Promise.resolve().then(() => {
               Object.defineProperty(this, 'result', {
                 value: 'data:image/png;base64,mockedbase64',
@@ -552,20 +546,17 @@ describe('AcquisitionComponent', () => {
                 configurable: true,
               });
               if (this.onload) {
-                this.onload({ target: this } as ProgressEvent<FileReader>); // Call the captured onload
+                this.onload({ target: this } as ProgressEvent<FileReader>);
               }
             });
           }),
       } as Partial<FileReader>;
 
-      // Spy on the FileReader constructor and return our mock instance
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(window as any, 'FileReader').and.returnValue(fileReaderInstance);
 
-      // We still need mockFileReader as a spyObj for other expectations, e.g., toHaveBeenCalledWith
       mockFileReader = fileReaderInstance as jasmine.SpyObj<FileReader>;
 
-      // Pre-set an image URL in newItem to ensure it gets cleared
       component.newItem.set({
         ...component.newItem(),
         image: 'http://existing.com/image.jpg',
@@ -592,10 +583,10 @@ describe('AcquisitionComponent', () => {
       const event = {
         target: { files: mockFileList.files } as HTMLInputElement,
       } as unknown as Event;
-      const mockDataUrl = 'data:image/png;base64,mockedbase64'; // This will now be set by the fake FileReader
+      const mockDataUrl = 'data:image/png;base64,mockedbase64';
 
       component.onFileSelected(event as Event);
-      tick(); // Flush the promise from readAsDataURL
+      tick();
 
       expect(mockFileReader.readAsDataURL).toHaveBeenCalledWith(testFile);
       expect(component.imagePreview()).toBe(mockDataUrl);
@@ -649,11 +640,11 @@ describe('AcquisitionComponent', () => {
     };
 
     beforeEach(() => {
-      component.newItem.set(mockNewItem); // Set a valid item for submission
+      component.newItem.set(mockNewItem);
       mockArchiveService.uploadImage.and.resolveTo(mockUploadedImageUrl);
       mockArchiveService.addItem.and.resolveTo(mockAddedItem);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      spyOn(component as any, 'resetForm').and.callThrough(); // Spy on resetForm
+      spyOn(component as any, 'resetForm').and.callThrough();
     });
 
     it('should not submit if newItem.name is empty', async () => {
@@ -678,7 +669,7 @@ describe('AcquisitionComponent', () => {
     it('should call archive.uploadImage if selectedFile is present and no image URL in newItem', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update((item) => ({ ...item, image: '' })); // Ensure no image URL is present
+      component.newItem.update((item) => ({ ...item, image: '' }));
 
       await component.handleSubmit();
 
@@ -708,7 +699,7 @@ describe('AcquisitionComponent', () => {
 
     it('should not call archive.uploadImage if no selectedFile', async () => {
       component.selectedFile.set(null);
-      component.newItem.update((item) => ({ ...item, image: '' })); // Ensure no image URL is present
+      component.newItem.update((item) => ({ ...item, image: '' }));
 
       await component.handleSubmit();
 
@@ -716,7 +707,7 @@ describe('AcquisitionComponent', () => {
       expect(mockArchiveService.addItem).toHaveBeenCalledWith({
         ...mockNewItem,
         image:
-          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800', // Default image URL
+          'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800',
       } as CollectionItem);
     });
 
@@ -768,7 +759,6 @@ describe('AcquisitionComponent', () => {
 
     beforeEach(() => {
       component.newItem.set(mockNewItem);
-      // Ensure other mocks don't interfere
       mockArchiveService.uploadImage.and.resolveTo(
         'http://uploaded.com/image.jpg',
       );
@@ -779,8 +769,8 @@ describe('AcquisitionComponent', () => {
         movementName: '',
       } as CollectionItem);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      spyOn(component as any, 'resetForm'); // Spy on resetForm, but expect it not to be called
-      spyOn(console, 'error'); // Suppress console error during test
+      spyOn(component as any, 'resetForm');
+      spyOn(console, 'error');
     });
 
     it('should handle error during image upload', async () => {
@@ -792,7 +782,7 @@ describe('AcquisitionComponent', () => {
       await component.handleSubmit();
 
       expect(mockArchiveService.uploadImage).toHaveBeenCalled();
-      expect(mockArchiveService.addItem).not.toHaveBeenCalled(); // addItem should not be called
+      expect(mockArchiveService.addItem).not.toHaveBeenCalled();
       expect(component.isSubmitting()).toBeFalse();
       expect(component.successMessage()).toBeNull();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -823,7 +813,7 @@ describe('AcquisitionComponent', () => {
       mockArchiveService.addItem.and.rejectWith(new Error('Test error'));
 
       const promise = component.handleSubmit();
-      expect(component.isSubmitting()).toBeTrue(); // Should be true while awaiting
+      expect(component.isSubmitting()).toBeTrue();
       await promise;
       expect(component.isSubmitting()).toBeFalse();
     });
@@ -833,7 +823,6 @@ describe('AcquisitionComponent', () => {
     let submitButton: HTMLButtonElement;
 
     beforeEach(() => {
-      // Set a default valid state
       component.newItem.set({
         category: 'decor',
         name: 'Valid Name',
@@ -879,7 +868,6 @@ describe('AcquisitionComponent', () => {
 
   describe('resetForm', () => {
     beforeEach(() => {
-      // Set some non-default values to ensure they are reset
       component.newItem.set({
         category: 'music',
         name: 'Existing Name',
@@ -901,7 +889,6 @@ describe('AcquisitionComponent', () => {
       component.isSearchingMusic.set(true);
       component.successMessage.set('Success!');
 
-      // Call the private resetForm method
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (component as any).resetForm();
     });
@@ -953,7 +940,6 @@ describe('AcquisitionComponent', () => {
     let searchSubject: Subject<string>;
 
     beforeEach(() => {
-      // Access the private search$ subject
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       searchSubject = (component as any).search$;
       spyOn(searchSubject, 'next').and.callThrough();
