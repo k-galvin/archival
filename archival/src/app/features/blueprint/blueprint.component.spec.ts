@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BlueprintComponent } from './blueprint.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem, Room } from '../../shared/models/archive.models';
@@ -69,8 +70,12 @@ describe('BlueprintComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [BlueprintComponent, HttpClientTestingModule, FormsModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [BlueprintComponent, FormsModule],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BlueprintComponent);

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MainFooterComponent } from './main-footer.component';
 import { ArchiveService } from '../../services/archive.service';
 import { signal } from '@angular/core';
@@ -17,8 +18,12 @@ describe('MainFooterComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [MainFooterComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [MainFooterComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MainFooterComponent);

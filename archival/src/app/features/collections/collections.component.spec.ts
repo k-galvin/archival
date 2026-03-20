@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CollectionsComponent } from './collections.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import {
@@ -62,8 +63,10 @@ describe('CollectionsComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [CollectionsComponent, HttpClientTestingModule, FormsModule],
+      imports: [CollectionsComponent, FormsModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ArchiveService, useValue: mockArchiveService },
         { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
       ],

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { GalleryComponent } from './gallery.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
@@ -61,8 +62,10 @@ describe('GalleryComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [GalleryComponent, HttpClientTestingModule],
+      imports: [GalleryComponent],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ArchiveService, useValue: mockArchiveService },
         { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
       ],

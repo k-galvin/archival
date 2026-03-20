@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ChronologyComponent } from './chronology.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal } from '@angular/core';
@@ -90,8 +91,10 @@ describe('ChronologyComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [ChronologyComponent, HttpClientTestingModule],
+      imports: [ChronologyComponent],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ArchiveService, useValue: mockArchiveService },
         { provide: ActivatedRoute, useValue: { paramMap: of({}) } },
       ],

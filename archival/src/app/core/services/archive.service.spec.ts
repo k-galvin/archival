@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ArchiveService } from './archive.service';
 import { SUPABASE_CLIENT } from './supabase-client.token';
 
@@ -56,8 +57,12 @@ describe('ArchiveService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [{ provide: SUPABASE_CLIENT, useClass: MockSupabaseClient }],
+      providers: [
+        ArchiveService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SUPABASE_CLIENT, useClass: MockSupabaseClient },
+      ],
     });
     service = TestBed.inject(ArchiveService);
   });

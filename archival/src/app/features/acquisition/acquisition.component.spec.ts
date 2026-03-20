@@ -4,7 +4,8 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AcquisitionComponent } from './acquisition.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal } from '@angular/core';
@@ -83,8 +84,12 @@ describe('AcquisitionComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [AcquisitionComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [AcquisitionComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AcquisitionComponent);

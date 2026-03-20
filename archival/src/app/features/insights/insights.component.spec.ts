@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { InsightsComponent } from './insights.component';
 import { ArchiveService } from '../../core/services/archive.service';
 import { signal, WritableSignal } from '@angular/core';
@@ -114,8 +115,12 @@ describe('InsightsComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [InsightsComponent, HttpClientTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [InsightsComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(InsightsComponent);

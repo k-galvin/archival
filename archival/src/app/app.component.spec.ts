@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
 import { ArchiveService } from './core/services/archive.service';
 import { signal } from '@angular/core';
@@ -17,8 +18,13 @@ describe('AppComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [AppComponent, HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [AppComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
   });
 

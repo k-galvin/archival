@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { MainNavComponent } from './main-nav.component';
 import { ArchiveService } from '../../services/archive.service';
 import { signal } from '@angular/core';
@@ -21,8 +22,13 @@ describe('MainNavComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [MainNavComponent, HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: ArchiveService, useValue: mockArchiveService }],
+      imports: [MainNavComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: ArchiveService, useValue: mockArchiveService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MainNavComponent);
