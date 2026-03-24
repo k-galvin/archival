@@ -193,6 +193,25 @@ describe('AcquisitionComponent', () => {
       expect(component.albumSearchResults()).toEqual([]);
     });
 
+    it('should clear the room field when switching to a non-decor category', () => {
+      component.newItem.update((item) => ({
+        ...item,
+        category: 'decor',
+        room: 'living',
+      }));
+
+      component.onCategoryChange('music');
+      expect(component.newItem().room).toBe('');
+
+      component.onCategoryChange('decor');
+      expect(component.newItem().room).toBe('');
+
+      component.newItem.update((item) => ({ ...item, room: 'bedroom' }));
+
+      component.onCategoryChange('books');
+      expect(component.newItem().room).toBe('');
+    });
+
     it('should update filteredMovements based on the new category', () => {
       component.onCategoryChange('music');
       expect(component.filteredMovements()).toEqual([

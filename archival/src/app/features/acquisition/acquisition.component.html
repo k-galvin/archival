@@ -201,15 +201,17 @@
         </div>
 
         <!-- Room Selection -->
-        <div class="field-group">
-          <label class="archival-overline" for="room">Assign Room</label>
-          <select id="room" [(ngModel)]="newItem().room" name="room">
-            <option value="">Select Room</option>
-            @for (room of rooms(); track room.id) {
-              <option [value]="room.id">{{ room.name }}</option>
-            }
-          </select>
-        </div>
+        @if (newItem().category === "decor") {
+          <div class="field-group">
+            <label class="archival-overline" for="room">Assign Room</label>
+            <select id="room" [(ngModel)]="newItem().room" name="room">
+              <option value="">Select Room</option>
+              @for (room of rooms(); track room.id) {
+                <option [value]="room.id">{{ room.name }}</option>
+              }
+            </select>
+          </div>
+        }
 
         <!-- Movement Selection -->
         <div class="field-group">

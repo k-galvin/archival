@@ -12,6 +12,7 @@ import {
   UserCollection,
   Movement,
   City,
+  CategoryType,
 } from '../../shared/models/archive.models';
 
 // --- Mocks ---
@@ -216,6 +217,33 @@ describe('ItemDetailComponent', () => {
       expectedUpdates,
     );
     expect(component.isEditing()).toBe(false);
+  });
+
+  it('should clear the room field during saveEdit for non-decor items', async () => {
+    // mockItem is 'decor' initially, so we need to set it to 'music'
+    const musicItem = {
+      ...mockItem,
+      id: '2',
+      category: 'music' as CategoryType,
+      room: '',
+    };
+    archiveService.collection.set([musicItem]);
+    component.item.set(musicItem);
+
+    component.startEdit();
+    // Manually set a room ID in editableItem as if the user somehow tried to assign one (shouldn't happen in UI)
+    const editedItem = { ...component.editableItem(), room: 'r1' };
+    component.editableItem.set(editedItem);
+
+    await component.saveEdit();
+
+    // The component should send room as empty string for music category
+    expect(archiveService.updateItem).toHaveBeenCalledWith(
+      '2',
+      jasmine.objectContaining({
+        room: '',
+      }),
+    );
   });
 
   it('should call uploadImage in saveEdit if a new file is selected', async () => {

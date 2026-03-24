@@ -217,7 +217,7 @@ export class ItemDetailComponent implements OnInit {
         designer: editable.designer,
         origin: editable.origin,
         note: editable.note,
-        room: editable.room,
+        room: original.category === 'decor' ? editable.room : '',
         movementId: editable.movementId,
         image: imageUrl,
       };

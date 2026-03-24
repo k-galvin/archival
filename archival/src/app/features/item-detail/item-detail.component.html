@@ -34,10 +34,12 @@
               <span class="label-caption">{{ movementLabel() }}</span>
               <p>{{ currentItem.movementName }}</p>
             </div>
-            <div>
-              <span class="label-caption">Room</span>
-              <p>{{ currentItem.room || "Unassigned" }}</p>
-            </div>
+            @if (currentItem.category === "decor") {
+              <div>
+                <span class="label-caption">Room</span>
+                <p>{{ currentItem.room || "Unassigned" }}</p>
+              </div>
+            }
           </div>
 
           <div class="notes-section">
@@ -201,15 +203,17 @@
               rows="4"
             ></textarea>
           </div>
-          <div class="form-field">
-            <label for="edit-room">Room</label>
-            <select id="edit-room" [(ngModel)]="editItem.room" name="room">
-              <option value="">Unassigned</option>
-              @for (room of rooms(); track room.id) {
-                <option [value]="room.id">{{ room.name }}</option>
-              }
-            </select>
-          </div>
+          @if (editItem.category === "decor") {
+            <div class="form-field">
+              <label for="edit-room">Room</label>
+              <select id="edit-room" [(ngModel)]="editItem.room" name="room">
+                <option value="">Unassigned</option>
+                @for (room of rooms(); track room.id) {
+                  <option [value]="room.id">{{ room.name }}</option>
+                }
+              </select>
+            </div>
+          }
           <div class="form-field">
             <label for="edit-movement">{{ movementLabel() }}</label>
             <select

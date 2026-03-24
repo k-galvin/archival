@@ -235,6 +235,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
       ...item,
       category: newCategory,
       movementId: '',
+      room: newCategory === 'decor' ? item.room : '',
     }));
     this.bookSearchResults.set([]);
     this.albumSearchResults.set([]);
