@@ -32,6 +32,7 @@ export interface CollectionItem {
   image_url?: string;
   room_id?: string;
   movement_id?: string;
+  updated_at?: string;
 }
 
 export interface UserCollection {

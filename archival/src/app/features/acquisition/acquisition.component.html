@@ -244,6 +244,11 @@
 
       <!-- Action Footer -->
       <footer class="form-footer">
+        @if (!isOnline()) {
+          <p class="error-txt offline-banner">
+            System is currently offline. Record integration is paused.
+          </p>
+        }
         @if (errorMessage()) {
           <p class="error-txt slide-down">{{ errorMessage() }}</p>
         }
@@ -254,11 +259,57 @@
         <button
           type="submit"
           class="submit-btn bg-accent"
-          [disabled]="isSubmitting() || !newItem().name"
+          [disabled]="isSubmitting() || !newItem().name || !isOnline()"
         >
           {{ isSubmitting() ? "Integrating..." : "Register Record" }}
         </button>
       </footer>
     </form>
   </div>
+
+  <!-- Duplicate Record Warning Modal -->
+  @if (showDuplicateWarning()) {
+    <div class="archival-modal-overlay fade-in-fast">
+      <div class="archival-modal zoom-in warning-modal">
+        <button
+          (click)="cancelDuplicate()"
+          class="close-modal-btn"
+          aria-label="Close modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="modal-header">
+          <span class="archival-overline text-accent">Potential Redundancy</span>
+          <h3 class="modal-title">Duplicate Record Detected</h3>
+          <p class="modal-subtitle">
+            An item with the name <strong>{{ newItem().name }}</strong> and
+            creator <strong>{{ newItem().designer }}</strong> already exists in
+            your archive. Do you wish to proceed with a secondary integration?
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button (click)="confirmDuplicate()" class="confirm-btn">
+            Proceed with Integration
+          </button>
+          <button (click)="cancelDuplicate()" class="cancel-text-btn">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

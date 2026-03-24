@@ -59,6 +59,7 @@ describe('GalleryComponent', () => {
     mockArchiveService = jasmine.createSpyObj('ArchiveService', ['setFilter'], {
       collection: signal(mockItems),
       loading: signal(false),
+      isOnline: signal(true),
     });
 
     await TestBed.configureTestingModule({
@@ -118,6 +119,66 @@ describe('GalleryComponent', () => {
     expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
       'Item 2',
     );
+  });
+
+  it('should filter items by movement', () => {
+    // Add movement name to one of the items
+    const items = [...mockItems];
+    items[1].movementName = 'Bauhaus';
+    mockArchiveService.collection.set(items);
+    fixture.detectChanges();
+
+    component.setFilter('movement', 'Bauhaus');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const itemElements = compiled.querySelectorAll('.record-card');
+    expect(itemElements.length).toBe(1);
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 2',
+    );
+  });
+
+  it('should filter items by search query (name)', () => {
+    component.searchQuery.set('Item 3');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const itemElements = compiled.querySelectorAll('.record-card');
+    expect(itemElements.length).toBe(1);
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 3',
+    );
+  });
+
+  it('should filter items by search query (designer)', () => {
+    const items = [...mockItems];
+    items[0].designer = 'Famous Designer';
+    mockArchiveService.collection.set(items);
+    fixture.detectChanges();
+
+    component.searchQuery.set('Famous');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const itemElements = compiled.querySelectorAll('.record-card');
+    expect(itemElements.length).toBe(1);
+    expect(itemElements[0].querySelector('.item-name')?.textContent).toContain(
+      'Item 1',
+    );
+  });
+
+  it('should show no items if search query has no match', () => {
+    component.searchQuery.set('Non-existent');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const itemElements = compiled.querySelectorAll('.record-card');
+    expect(itemElements.length).toBe(0);
+  });
+
+  it('should update searchQuery on input event', () => {
+    const event = {
+      target: { value: 'test query' } as HTMLInputElement,
+    } as unknown as Event;
+    component.onSearchChange(event);
+    expect(component.searchQuery()).toBe('test query');
   });
 
   it('should show no items if no filter match', () => {

@@ -2,6 +2,13 @@ import { Routes } from '@angular/router';
 import { privateGuard } from './core/guards/private.guard';
 import { publicGuard } from './core/guards/public.guard';
 import { LandingComponent } from './features/landing/landing.component';
+import { GalleryComponent } from './features/gallery/gallery.component';
+import { AcquisitionComponent } from './features/acquisition/acquisition.component';
+import { CollectionsComponent } from './features/collections/collections.component';
+import { BlueprintComponent } from './features/blueprint/blueprint.component';
+import { InsightsComponent } from './features/insights/insights.component';
+import { ChronologyComponent } from './features/chronology/chronology.component';
+import { ItemDetailComponent } from './features/item-detail/item-detail.component';
 
 export const routes: Routes = [
   {
@@ -15,52 +22,31 @@ export const routes: Routes = [
     children: [
       {
         path: 'gallery',
-        loadComponent: () =>
-          import('./features/gallery/gallery.component').then(
-            (m) => m.GalleryComponent,
-          ),
-      },
-      {
-        path: 'blueprint',
-        loadComponent: () =>
-          import('./features/blueprint/blueprint.component').then(
-            (m) => m.BlueprintComponent,
-          ),
-      },
-      {
-        path: 'chronology',
-        loadComponent: () =>
-          import('./features/chronology/chronology.component').then(
-            (m) => m.ChronologyComponent,
-          ),
-      },
-      {
-        path: 'insights',
-        loadComponent: () =>
-          import('./features/insights/insights.component').then(
-            (m) => m.InsightsComponent,
-          ),
-      },
-      {
-        path: 'collections',
-        loadComponent: () =>
-          import('./features/collections/collections.component').then(
-            (m) => m.CollectionsComponent,
-          ),
+        component: GalleryComponent,
       },
       {
         path: 'acquire',
-        loadComponent: () =>
-          import('./features/acquisition/acquisition.component').then(
-            (m) => m.AcquisitionComponent,
-          ),
+        component: AcquisitionComponent,
+      },
+      {
+        path: 'collections',
+        component: CollectionsComponent,
+      },
+      {
+        path: 'blueprint',
+        component: BlueprintComponent,
+      },
+      {
+        path: 'insights',
+        component: InsightsComponent,
+      },
+      {
+        path: 'chronology',
+        component: ChronologyComponent,
       },
       {
         path: 'item/:id',
-        loadComponent: () =>
-          import('./features/item-detail/item-detail.component').then(
-            (m) => m.ItemDetailComponent,
-          ),
+        component: ItemDetailComponent,
       },
     ],
   },
@@ -71,3 +57,4 @@ export const routes: Routes = [
     canActivate: [publicGuard],
   },
 ];
+

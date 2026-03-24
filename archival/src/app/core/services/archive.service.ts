@@ -38,9 +38,11 @@ export class ArchiveService {
   authError = signal<string | null>(null);
   isLoggingOut = signal(false);
   isLoggingIn = signal(false);
+  isOnline = signal(navigator.onLine);
 
   constructor() {
     this.initAuth();
+    this.initOnlineStatus();
 
     effect(() => {
       const currentUser = this.user();
@@ -50,6 +52,11 @@ export class ArchiveService {
         this.clearState();
       }
     });
+  }
+
+  private initOnlineStatus() {
+    window.addEventListener('online', () => this.isOnline.set(true));
+    window.addEventListener('offline', () => this.isOnline.set(false));
   }
 
   /**
@@ -131,69 +138,80 @@ export class ArchiveService {
   // --- Data Fetching ---
 
   private async fetchUserData(userId: string) {
+    if (!this.isOnline()) {
+      this.loading.set(false);
+      console.warn('System is offline. Displaying cached session data.');
+      return;
+    }
+
     this.loading.set(true);
 
-    const itemsReq = this.supabase
-      .from('items')
-      .select('*')
-      .eq('user_id', userId);
-    const roomsReq = this.supabase
-      .from('rooms')
-      .select('*')
-      .eq('user_id', userId);
-    const colReq = this.supabase
-      .from('collections')
-      .select('*, collection_items(item_id)')
-      .eq('user_id', userId);
-    const movementsReq = this.supabase.from('movements').select('*');
-    const citiesReq = this.supabase.from('cities').select('*');
+    try {
+      const itemsReq = this.supabase
+        .from('items')
+        .select('*')
+        .eq('user_id', userId);
+      const roomsReq = this.supabase
+        .from('rooms')
+        .select('*')
+        .eq('user_id', userId);
+      const colReq = this.supabase
+        .from('collections')
+        .select('*, collection_items(item_id)')
+        .eq('user_id', userId);
+      const movementsReq = this.supabase.from('movements').select('*');
+      const citiesReq = this.supabase.from('cities').select('*');
 
-    const [itemsRes, roomsRes, collectionsRes, movementsRes, citiesRes] =
-      await Promise.all([itemsReq, roomsReq, colReq, movementsReq, citiesReq]);
+      const [itemsRes, roomsRes, collectionsRes, movementsRes, citiesRes] =
+        await Promise.all([itemsReq, roomsReq, colReq, movementsReq, citiesReq]);
 
-    if (roomsRes.data) this.rooms.set(roomsRes.data);
-    if (movementsRes.data) this.movements.set(movementsRes.data);
-    if (citiesRes.data) this.cities.set(citiesRes.data);
+      if (roomsRes.data) this.rooms.set(roomsRes.data);
+      if (movementsRes.data) this.movements.set(movementsRes.data);
+      if (citiesRes.data) this.cities.set(citiesRes.data);
 
-    if (itemsRes.data) {
-      const roomMap = new Map<string, string>();
-      this.rooms().forEach((room) => {
-        roomMap.set(room.id as string, room.name);
-      });
+      if (itemsRes.data) {
+        const roomMap = new Map<string, string>();
+        this.rooms().forEach((room) => {
+          roomMap.set(room.id as string, room.name);
+        });
 
-      const movementMap = new Map<string, string>();
-      this.movements().forEach((movement) => {
-        movementMap.set(movement.id, movement.name);
-      });
+        const movementMap = new Map<string, string>();
+        this.movements().forEach((movement) => {
+          movementMap.set(movement.id, movement.name);
+        });
 
-      this.collection.set(
-        (itemsRes.data as CollectionItem[]).map((i) => ({
-          ...i,
-          image: i.image_url || '',
-          year: i.year,
-          room: i.room_id ? roomMap.get(i.room_id) || '' : '',
-          roomId: i.room_id || '',
-          movementName: i.movement_id
-            ? movementMap.get(i.movement_id) || ''
-            : '',
-          movementId: i.movement_id || '',
-        })),
-      );
+        this.collection.set(
+          (itemsRes.data as CollectionItem[]).map((i) => ({
+            ...i,
+            image: i.image_url || '',
+            year: i.year,
+            room: i.room_id ? roomMap.get(i.room_id) || '' : '',
+            roomId: i.room_id || '',
+            movementName: i.movement_id
+              ? movementMap.get(i.movement_id) || ''
+              : '',
+            movementId: i.movement_id || '',
+            updated_at: i.updated_at,
+          })),
+        );
+      }
+
+      if (collectionsRes.data) {
+        this.userCollections.set(
+          collectionsRes.data.map((c: UserCollection) => ({
+            id: c.id,
+            title: c.title,
+            itemIds: (c.collection_items || []).map(
+              (ci: { item_id: string }) => ci.item_id,
+            ),
+          })),
+        );
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data while online:', error);
+    } finally {
+      this.loading.set(false);
     }
-
-    if (collectionsRes.data) {
-      this.userCollections.set(
-        collectionsRes.data.map((c: UserCollection) => ({
-          id: c.id,
-          title: c.title,
-          itemIds: (c.collection_items || []).map(
-            (ci: { item_id: string }) => ci.item_id,
-          ),
-        })),
-      );
-    }
-
-    this.loading.set(false);
   }
 
   private clearState() {
@@ -440,10 +458,17 @@ export class ArchiveService {
           image: data.image_url,
           room: roomName,
           movementName: movementName,
+          updated_at: data.updated_at,
         },
         ...prev,
       ]);
-      return { ...data, room: roomName, movementName: movementName };
+      return {
+        ...data,
+        image: data.image_url,
+        room: roomName,
+        movementName: movementName,
+        updated_at: data.updated_at,
+      };
     } else if (error) {
       console.error('Record Registration Error:', error.message);
       return null;
@@ -497,6 +522,7 @@ export class ArchiveService {
         image: data.image_url,
         room: roomName,
         movementName: movementName,
+        updated_at: data.updated_at,
       };
 
       this.collection.update((prev) => {

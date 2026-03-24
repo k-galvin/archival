@@ -17,7 +17,12 @@
         <!-- Right column for details and actions -->
         <div class="item-details-wrapper">
           <header class="item-header">
-            <h2 class="item-name">{{ currentItem.name }}</h2>
+            <div class="header-main">
+              <h2 class="item-name">{{ currentItem.name }}</h2>
+              @if (!isOnline()) {
+                <span class="archival-overline text-error">Offline</span>
+              }
+            </div>
             <span class="item-year">{{ currentItem.year }}</span>
           </header>
 
@@ -34,6 +39,12 @@
               <span class="label-caption">{{ movementLabel() }}</span>
               <p>{{ currentItem.movementName }}</p>
             </div>
+            @if (currentItem.updated_at) {
+              <div>
+                <span class="label-caption">Last Synchronized</span>
+                <p>{{ currentItem.updated_at | date: "MMM dd, yyyy HH:mm" }}</p>
+              </div>
+            }
             @if (currentItem.category === "decor") {
               <div>
                 <span class="label-caption">Room</span>
@@ -48,11 +59,25 @@
           </div>
 
           <div class="actions-panel">
-            <button (click)="startEdit()" class="action-btn">Edit</button>
-            <button (click)="openCollectionPicker()" class="action-btn">
+            <button
+              (click)="startEdit()"
+              class="action-btn"
+              [disabled]="!isOnline()"
+            >
+              Edit
+            </button>
+            <button
+              (click)="openCollectionPicker()"
+              class="action-btn"
+              [disabled]="!isOnline()"
+            >
               Add to Collection
             </button>
-            <button (click)="deleteItem()" class="action-btn danger">
+            <button
+              (click)="deleteItem()"
+              class="action-btn danger"
+              [disabled]="!isOnline()"
+            >
               Delete
             </button>
           </div>
@@ -236,7 +261,7 @@
           <button
             (click)="saveEdit()"
             class="submit-btn"
-            [disabled]="isSubmitting()"
+            [disabled]="isSubmitting() || !isOnline()"
           >
             {{ isSubmitting() ? "Updating..." : "Save Changes" }}
           </button>
@@ -335,6 +360,52 @@
           </button>
           <button (click)="cancelDelete()" class="cancel-text-btn">
             Keep Item
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Duplicate Record Warning Modal -->
+  @if (showDuplicateWarning()) {
+    <div class="archival-modal-overlay fade-in-fast">
+      <div class="archival-modal zoom-in warning-modal">
+        <button
+          (click)="cancelDuplicate()"
+          class="close-modal-btn"
+          aria-label="Close modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="modal-header">
+          <span class="archival-overline text-accent">Potential Redundancy</span>
+          <h3 class="modal-title">Duplicate Record Detected</h3>
+          <p class="modal-subtitle">
+            An item with the name <strong>{{ editableItem()?.name }}</strong> and
+            creator <strong>{{ editableItem()?.designer }}</strong> already exists in
+            your archive. Do you wish to proceed with this modification?
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button (click)="confirmDuplicate()" class="confirm-btn">
+            Proceed with Save
+          </button>
+          <button (click)="cancelDuplicate()" class="cancel-text-btn">
+            Cancel
           </button>
         </div>
       </div>

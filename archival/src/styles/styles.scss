@@ -266,6 +266,58 @@ button.mobile-toggle {
     margin-bottom: 2rem;
     max-width: 35ch;
   }
+
+  // Warning Modal Actions
+  .modal-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem;
+
+    .confirm-btn,
+    .confirm-delete-btn {
+      flex: 1;
+      padding: 1rem;
+      background: colors.$accent-blue;
+      color: colors.$white;
+      border: none;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: color.adjust(colors.$accent-blue, $lightness: -10%);
+      }
+    }
+
+    .confirm-delete-btn {
+      background: colors.$error-red;
+      &:hover {
+        background: color.adjust(colors.$error-red, $lightness: -10%);
+      }
+    }
+
+    .cancel-text-btn {
+      background: none;
+      border: 1px solid rgba(colors.$primary-black, 0.1);
+      padding: 1rem 1.5rem;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 1;
+        border-color: colors.$primary-black;
+      }
+    }
+  }
 }
 
 // Generic image loading shimmer/swipe effect

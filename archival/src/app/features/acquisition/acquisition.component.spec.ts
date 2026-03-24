@@ -26,10 +26,13 @@ describe('AcquisitionComponent', () => {
   let mockArchiveService: jasmine.SpyObj<ArchiveService>;
 
   beforeEach(async () => {
+    localStorage.clear();
     mockArchiveService = jasmine.createSpyObj(
       'ArchiveService',
       ['searchBooks', 'searchDiscogs', 'uploadImage', 'addItem'],
       {
+        collection: signal<CollectionItem[]>([]),
+        isOnline: signal(true),
         movements: signal<Movement[]>([
           {
             id: '1',
@@ -616,6 +619,22 @@ describe('AcquisitionComponent', () => {
       expect(component.imagePreview()).toBe(mockDataUrl);
     }));
 
+    it('should set an error message if the file exceeds 5MB', () => {
+      const largeFile = new File([''], 'large.png', { type: 'image/png' });
+      Object.defineProperty(largeFile, 'size', { value: 6 * 1024 * 1024 }); // 6MB
+
+      const event = {
+        target: { files: [largeFile] } as unknown as HTMLInputElement,
+      } as unknown as Event;
+
+      component.onFileSelected(event);
+
+      expect(component.errorMessage()).toBe(
+        'Archival photographs must be less than 5MB.',
+      );
+      expect(component.selectedFile()).toBeNull();
+    });
+
     it('should clear newItem.image when a file is selected', () => {
       const testFile = new File([''], 'test.png', { type: 'image/png' });
       const mockFileList = new DataTransfer();
@@ -887,6 +906,97 @@ describe('AcquisitionComponent', () => {
       component.newItem.update((item) => ({ ...item, name: 'Some Name' }));
       fixture.detectChanges();
       expect(submitButton.disabled).toBeFalse();
+    });
+    it('should disable submit button when isOnline is false', () => {
+      mockArchiveService.isOnline.set(false);
+      fixture.detectChanges();
+      expect(submitButton.disabled).toBeTrue();
+    });
+  });
+
+  describe('Duplicate Record Handling', () => {
+    const duplicateItem: CollectionItem = {
+      id: 'existing',
+      name: 'Existing Item',
+      designer: 'Existing Designer',
+      category: 'decor',
+      year: 2020,
+      image: '',
+      origin: '',
+      note: '',
+      movementId: '',
+      room: '',
+      movementName: '',
+    };
+
+    beforeEach(() => {
+      mockArchiveService.collection.set([duplicateItem]);
+      component.newItem.set({
+        name: 'Existing Item',
+        designer: 'Existing Designer',
+        category: 'decor',
+      });
+    });
+
+    it('should show duplicate warning and not process submission immediately if duplicate detected', async () => {
+      await component.handleSubmit();
+
+      expect(component.showDuplicateWarning()).toBeTrue();
+      expect(mockArchiveService.addItem).not.toHaveBeenCalled();
+    });
+
+    it('should process submission after confirmDuplicate is called', async () => {
+      await component.handleSubmit();
+      expect(component.showDuplicateWarning()).toBeTrue();
+
+      mockArchiveService.addItem.and.resolveTo({ ...duplicateItem, id: 'new' });
+      await component.confirmDuplicate();
+
+      expect(component.showDuplicateWarning()).toBeFalse();
+      expect(mockArchiveService.addItem).toHaveBeenCalled();
+    });
+
+    it('should close warning and not process submission on cancelDuplicate', async () => {
+      await component.handleSubmit();
+      expect(component.showDuplicateWarning()).toBeTrue();
+
+      component.cancelDuplicate();
+
+      expect(component.showDuplicateWarning()).toBeFalse();
+      expect(mockArchiveService.addItem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Partial Saves (localStorage)', () => {
+    it('should save to localStorage when newItem changes', fakeAsync(() => {
+      const storageSpy = spyOn(localStorage, 'setItem');
+      component.newItem.update((item) => ({ ...item, name: 'Saved Name' }));
+      fixture.detectChanges();
+      tick(); // Let the effect run
+
+      expect(storageSpy).toHaveBeenCalledWith(
+        'archival_pending_acquisition',
+        jasmine.stringMatching('Saved Name'),
+      );
+    }));
+
+    it('should restore from localStorage on init if data exists', () => {
+      const savedData = { name: 'Restored Item', category: 'music' };
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(savedData));
+      
+      // We need to re-initialize the component to trigger the constructor logic
+      const newFixture = TestBed.createComponent(AcquisitionComponent);
+      const newComponent = newFixture.componentInstance;
+      
+      expect(newComponent.newItem().name).toBe('Restored Item');
+      expect(newComponent.newItem().category).toBe('music');
+    });
+
+    it('should clear localStorage on resetForm', () => {
+      const storageSpy = spyOn(localStorage, 'removeItem');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (component as any).resetForm();
+      expect(storageSpy).toHaveBeenCalledWith('archival_pending_acquisition');
     });
   });
 

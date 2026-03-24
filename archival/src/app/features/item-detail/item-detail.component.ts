@@ -90,6 +90,8 @@ export class ItemDetailComponent implements OnInit {
   imagePreview = signal<string | null>(null);
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
+  isOnline = this.archive.isOnline;
+  showDuplicateWarning = signal(false);
 
   currentYear = new Date().getFullYear();
 
@@ -165,6 +167,12 @@ export class ItemDetailComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (file) {
+      // Enforce 5MB size limit
+      if (file.size > 5 * 1024 * 1024) {
+        this.errorMessage.set('Archival photographs must be less than 5MB.');
+        return;
+      }
+      this.errorMessage.set(null);
       this.selectedFile.set(file);
 
       // Generate a local preview for immediate visual feedback
@@ -202,6 +210,50 @@ export class ItemDetailComponent implements OnInit {
     this.isSubmitting.set(true);
 
     try {
+      // Duplicate Item Check (Error Handling)
+      const isDuplicate = this.archive
+        .collection()
+        .some(
+          (item) =>
+            item.id !== original.id &&
+            item.name.toLowerCase().trim() ===
+              editable.name?.toLowerCase().trim() &&
+            item.designer.toLowerCase().trim() ===
+              editable.designer?.toLowerCase().trim(),
+        );
+
+      if (isDuplicate) {
+        this.showDuplicateWarning.set(true);
+        this.isSubmitting.set(false);
+        return;
+      }
+
+      await this.processUpdate();
+    } catch (err) {
+      console.error('Update failed:', err);
+      this.errorMessage.set(
+        'An error occurred while updating the record. Please try again.',
+      );
+      this.isSubmitting.set(false);
+    }
+  }
+
+  async confirmDuplicate(): Promise<void> {
+    this.showDuplicateWarning.set(false);
+    this.isSubmitting.set(true);
+    await this.processUpdate();
+  }
+
+  cancelDuplicate(): void {
+    this.showDuplicateWarning.set(false);
+  }
+
+  private async processUpdate(): Promise<void> {
+    const editable = this.editableItem();
+    const original = this.item();
+    if (!editable || !original) return;
+
+    try {
       let imageUrl = original.image;
 
       const file = this.selectedFile();
@@ -231,7 +283,7 @@ export class ItemDetailComponent implements OnInit {
       this.selectedFile.set(null);
       this.imagePreview.set(null);
     } catch (err) {
-      console.error('Update failed:', err);
+      console.error('Update processing failed:', err);
       this.errorMessage.set(
         'An error occurred while updating the record. Please try again.',
       );

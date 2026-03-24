@@ -45,6 +45,7 @@ class MockArchiveService {
     },
   ]);
   cities = signal<City[]>([]);
+  isOnline = signal(true);
 
   updateItem = jasmine.createSpy('updateItem').and.resolveTo(mockItem);
   deleteItem = jasmine.createSpy('deleteItem').and.resolveTo(undefined);
@@ -305,6 +306,65 @@ describe('ItemDetailComponent', () => {
   it('should open the collection picker modal', () => {
     component.openCollectionPicker();
     expect(component.collectionPickerOpen()).toBe(true);
+  });
+
+  it('should set an error message if the file exceeds 5MB', () => {
+    const largeFile = new File([''], 'large.png', { type: 'image/png' });
+    Object.defineProperty(largeFile, 'size', { value: 6 * 1024 * 1024 }); // 6MB
+
+    const event = {
+      target: { files: [largeFile] } as unknown as HTMLInputElement,
+    } as unknown as Event;
+
+    component.onFileSelected(event);
+
+    expect(component.errorMessage()).toBe(
+      'Archival photographs must be less than 5MB.',
+    );
+    expect(component.selectedFile()).toBeNull();
+  });
+
+  it('should show duplicate warning and not save immediately if duplicate detected', async () => {
+    const duplicateItem = { ...mockItem, id: '2', name: 'New Name', designer: 'New Designer' };
+    archiveService.collection.set([mockItem, duplicateItem]);
+    
+    component.startEdit();
+    component.editableItem.set({ ...component.editableItem()!, name: 'New Name', designer: 'New Designer' });
+
+    await component.saveEdit();
+
+    expect(component.showDuplicateWarning()).toBeTrue();
+    expect(archiveService.updateItem).not.toHaveBeenCalled();
+  });
+
+  it('should save edit after confirmDuplicate is called', async () => {
+    const duplicateItem = { ...mockItem, id: '2', name: 'New Name', designer: 'New Designer' };
+    archiveService.collection.set([mockItem, duplicateItem]);
+    
+    component.startEdit();
+    component.editableItem.set({ ...component.editableItem()!, name: 'New Name', designer: 'New Designer' });
+
+    await component.saveEdit();
+    expect(component.showDuplicateWarning()).toBeTrue();
+
+    await component.confirmDuplicate();
+
+    expect(component.showDuplicateWarning()).toBeFalse();
+    expect(archiveService.updateItem).toHaveBeenCalled();
+  });
+
+  it('should disable action buttons and show offline status when isOnline is false', () => {
+    archiveService.isOnline.set(false);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const actionButtons = compiled.querySelectorAll('.action-btn') as NodeListOf<HTMLButtonElement>;
+    
+    actionButtons.forEach(btn => {
+      expect(btn.disabled).toBeTrue();
+    });
+
+    expect(compiled.querySelector('.text-error')?.textContent).toContain('Offline');
   });
 
   it('should add item to collection and close the picker', () => {

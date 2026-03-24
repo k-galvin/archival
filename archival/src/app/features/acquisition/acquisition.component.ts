@@ -5,6 +5,7 @@ import {
   computed,
   OnInit,
   OnDestroy,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +42,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
+  showDuplicateWarning = signal(false);
 
   // Categories
   categories: CategoryType[] = ['decor', 'music', 'books', 'fashion'];
@@ -66,6 +68,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   rooms = this.archive.rooms;
   movements = this.archive.movements;
   cities = this.archive.cities;
+  isOnline = this.archive.isOnline;
 
   // Form data as a signal
   newItem = signal<Partial<CollectionItem>>({
@@ -79,6 +82,29 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     movementId: '',
     image: '', // For book/album cover URL
   });
+
+  private STORAGE_KEY = 'archival_pending_acquisition';
+
+  constructor() {
+    // Restore partial save (Error Handling)
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        this.newItem.set(parsed);
+        if (parsed.image) {
+          this.imagePreview.set(parsed.image);
+        }
+      } catch (e) {
+        console.error('Failed to restore partial save', e);
+      }
+    }
+
+    // Persist changes to localStorage (Error Handling)
+    effect(() => {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.newItem()));
+    });
+  }
 
   // Filter movements based on the selected category from the signal
   filteredMovements = computed(() => {
@@ -245,6 +271,12 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (file) {
+      // Enforce 5MB size limit
+      if (file.size > 5 * 1024 * 1024) {
+        this.errorMessage.set('Archival photographs must be less than 5MB.');
+        return;
+      }
+      this.errorMessage.set(null);
       this.selectedFile.set(file);
 
       // Generate a local preview for immediate visual feedback
@@ -283,6 +315,44 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
 
     try {
+      // Duplicate Item Check (Error Handling)
+      const isDuplicate = this.archive.collection().some(
+        (item) =>
+          item.name.toLowerCase().trim() ===
+            currentItem.name?.toLowerCase().trim() &&
+          item.designer.toLowerCase().trim() ===
+            currentItem.designer?.toLowerCase().trim(),
+      );
+
+      if (isDuplicate) {
+        this.showDuplicateWarning.set(true);
+        this.isSubmitting.set(false);
+        return;
+      }
+
+      await this.processSubmission();
+    } catch (err) {
+      console.error('Acquisition failed:', err);
+      this.errorMessage.set(
+        'An error occurred while integrating the record. Please try again.',
+      );
+      this.isSubmitting.set(false);
+    }
+  }
+
+  async confirmDuplicate(): Promise<void> {
+    this.showDuplicateWarning.set(false);
+    this.isSubmitting.set(true);
+    await this.processSubmission();
+  }
+
+  cancelDuplicate(): void {
+    this.showDuplicateWarning.set(false);
+  }
+
+  private async processSubmission(): Promise<void> {
+    const currentItem = this.newItem();
+    try {
       let imageUrl = currentItem.image || '';
 
       const file = this.selectedFile();
@@ -313,6 +383,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   }
 
   private resetForm(): void {
+    localStorage.removeItem(this.STORAGE_KEY);
     this.newItem.set({
       category: 'decor',
       name: '',

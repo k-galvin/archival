@@ -50,6 +50,48 @@
       color: colors.$accent-blue;
     }
   }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .gallery-search {
+      background: none;
+      border: 1px solid rgba(colors.$primary-black, 0.1);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11px;
+      width: 240px;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: colors.$accent-blue;
+        width: 300px;
+      }
+
+      &::placeholder {
+        opacity: 0.3;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+    }
+  }
 }
 
 // Filter Drawer
@@ -62,9 +104,13 @@
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   padding-bottom: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
