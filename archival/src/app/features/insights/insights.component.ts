@@ -382,7 +382,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
       const content = `
         <div style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; color: #0047AB; margin-bottom: 6px; font-weight: bold;">${origin.name}</div>
-        <ul style="margin: 0; padding: 0; list-style: none; font-size: 11px; color: #1A1A1A;">
+        <ul style="margin: 0; padding: 0; list-style: none; font-size: 11px; color: #1A1A1A; max-height: 240px; overflow-y: auto; padding-right: 4px;">
           ${origin.items.map((i) => `<li style="border-bottom: 1px solid #f0f0f0; padding: 4px 0;">${i.name}</li>`).join('')}
         </ul>
       `;
