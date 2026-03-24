@@ -10,7 +10,9 @@ class MockSupabaseClient {
     onAuthStateChange: () => ({
       data: {
         subscription: {
-          unsubscribe: () => {},
+          unsubscribe: () => {
+            /* no-op */
+          },
         },
       },
     }),
