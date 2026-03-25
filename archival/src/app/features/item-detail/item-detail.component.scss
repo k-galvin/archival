@@ -55,6 +55,12 @@
     justify-content: space-between;
     align-items: flex-end;
 
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
     .header-main {
       display: flex;
       flex-direction: column;
@@ -66,6 +72,10 @@
       font-weight: 800;
       margin: 0;
       letter-spacing: -0.02em;
+
+      @media (max-width: 640px) {
+        font-size: 2rem;
+      }
     }
 
     .text-error {
@@ -85,6 +95,11 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 
   .label-caption {
     font-family: ui-monospace, SFMono-Regular, monospace;
@@ -129,6 +144,10 @@
   gap: 1rem;
   border-top: 1px solid rgba(colors.$primary-black, 0.05);
   padding-top: 2rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 
   .action-btn {
     padding: 0.75rem 1.5rem;

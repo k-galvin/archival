@@ -9,6 +9,12 @@
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
   .header-left {
     display: flex;
     flex-direction: column;
@@ -19,6 +25,12 @@
     display: flex;
     align-items: baseline;
     gap: 1.5rem;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
   }
 
   .view-title {
@@ -45,6 +57,7 @@
     letter-spacing: 0.2em;
     cursor: pointer;
     transition: color 0.2s;
+    white-space: nowrap;
 
     &:hover {
       color: colors.$accent-blue;
@@ -55,12 +68,22 @@
     display: flex;
     align-items: center;
     gap: 2rem;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: space-between;
+      gap: 1rem;
+    }
   }
 
   .search-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+      flex: 1;
+    }
 
     .search-icon {
       position: absolute;
@@ -79,10 +102,18 @@
       width: 240px;
       transition: all 0.2s ease;
 
+      @media (max-width: 768px) {
+        width: 100%;
+      }
+
       &:focus {
         outline: none;
         border-color: colors.$accent-blue;
         width: 300px;
+
+        @media (max-width: 768px) {
+          width: 100%;
+        }
       }
 
       &::placeholder {
