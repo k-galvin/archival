@@ -5,58 +5,61 @@ This document presents the architecture and detailed design for the software for
 
 ### 6.1.1 System Objectives Section
 The objective of this application is to provide a sophisticated interface for personal collection management that mimics the experience of a digital museum. 
-* The system aims to automate the "Acquisition" input process by retrieving metadata and high-resolution imagery from Google Books and Discogs.
-* The application provides a "Gallery" view (The Vault) to browse and filter curated items in a high-contrast grid.
-* The "Chronology" view allows users to visualize the historical weight and evolution of a collection over time.
-* The "Insights" dashboard provides data-driven analytics into aesthetic preferences, identifying correlations between items and historical design movements using interactive charts and provenance maps.
-* The "Blueprint" feature enables users to map their items to specific rooms, providing a spatial dimension to their collection using a virtual floor plan.
-* The system is designed to be polymorphic, supporting diverse item categories—Books, Records, Decor, and Fashion—within a unified interface.
+* **Automated Discovery:** Automate the "Acquisition" process by retrieving metadata and imagery from Google Books and Discogs.
+* **Curation & Vaulting:** Provide a high-fidelity "Gallery" view to browse and filter curated items in a high-contrast grid.
+* **Temporal Analysis:** Visualize the historical weight and evolution of a collection over time via an interactive timeline.
+* **Data-Driven Insights:** Provide analytics into aesthetic preferences, identifying correlations between items and historical design movements.
+* **Spatial Context:** Map items to physical locations using a virtual floor plan ("Blueprint") to provide a 2D topographical context.
+* **System Resilience:** Ensure stable operation through offline-ready navigation and local persistence of partial saves.
 
 ### 6.1.2 Hardware, Software, and Human Interfaces Section
 
 #### 6.1.2.1 Hardware Interfaces
-The application is a web-based platform designed to be accessed via standard workstations and mobile devices.
-* **Workstation/Mobile:** Modern devices capable of running Evergreen browsers (Chrome, Firefox, Safari).
-* **Input:** Keyboard and mouse/trackpad for data entry; touch support for mobile navigation.
-* **Display:** A minimum resolution of 1024x768 is recommended for the best experience with the data-dense dashboard and chronology views.
+1. **Workstations & Mobile Devices:** The system is a web-based platform designed for modern desktop and mobile hardware capable of running evergreen browsers.
+2. **Input Peripherals:** Standard interface support for Keyboard (data entry), Mouse/Trackpad (navigation and spatial mapping), and Touchscreens (mobile interactions).
+3. **Display:** Recommended minimum resolution of 1024x768 to accommodate data-dense visualizations and the wide-grid "Museum View."
+4. **Networking:** Requires an active internet connection for real-time Supabase synchronization, though the system implements an offline "Read-Only" mode for local browsing.
 
 #### 6.1.2.2 Software Interfaces
-The application utilizes a "Backend-as-a-Service" (BaaS) model via Supabase.
-* **Supabase Client (v2.x):** Interfaces with the PostgreSQL database. It manages all CRUD operations and handles Row Level Security (RLS).
-* **Google Books API:** A RESTful interface used to retrieve book metadata and covers directly from the client.
-* **Discogs API:** Used for music record artwork and metadata, accessed via a Supabase Edge Function to protect API credentials and handle server-side requests.
-* **ApexCharts:** A third-party library used for rendering the origin distribution (Pie Chart) in the Insights dashboard.
-* **Leaflet:** A mapping library used in the Insights view to visualize the global provenance of items on an interactive world map.
+1. **Supabase Client (v2.93.2):** The primary interface for PostgreSQL data management, Auth (JWT-based), and Object Storage.
+2. **Angular Framework (v19.2.0):** The core client-side engine using Signals for reactive state management.
+3. **Google Books API:** RESTful interface for retrieving literary metadata directly from the client.
+4. **Discogs API:** Metadata source for music records, accessed via a server-side Supabase Edge Function to protect credentials.
+5. **ApexCharts (v5.6.0):** Used for rendering data distribution and temporal intensity graphs.
+6. **Leaflet (v1.9.4):** Open-source mapping library used for the global provenance visualization.
+7. **Web Storage API (localStorage):** Used for client-side persistence of the Acquisition form to prevent data loss.
 
 #### 6.1.2.3 Human Interfaces
-The Graphical User Interface (GUI) follows a "Museum Minimalist" design language. 
-* **Design Tokens:** High-contrast monochrome palette with specialized accent colors for categories, geometric typography, and a rigid grid system.
-* **Components:** The GUI consists of an "Acquisitions" form, a "Gallery" grid, a "Chronology" timeline, an "Insights" dashboard, and a "Blueprint" floor plan.
+1. **Graphical User Interface (GUI):** A "Museum Minimalist" interface utilizing high-contrast monochrome palettes, wide grid spacing, and geometric typography.
+2. **Acquisition Form:** A polymorphic data-entry interface that adapts fields based on the item category.
+3. **The Vault:** A grid-based discovery interface with real-time, multi-dimensional filtering.
+4. **Interactive Map:** A zoomable world map used to explore the geographical clusters of the collection.
 
 ---
 
 ## 6.2 Architectural Design Section
-The architectural design for Archival is based on a Two-Tier BaaS pattern, connecting a rich Angular frontend directly to a managed Supabase backend.
+The architectural design for Archival is based on a Two-Tier Backend-as-a-Service (BaaS) pattern, connecting a rich Angular frontend directly to a managed Supabase backend.
 
 ### 6.2.1 Major Software Components Section
-* **Acquisitions CSC:** Relates to FR 1-5. Handles item intake, API discovery logic for Books and Music, and image uploads to Supabase Storage.
-* **Vault/Gallery CSC:** Relates to FR 6-7. Manages the archival grid, filtering logic by category and era, and item retrieval.
-* **Chronology CSC:** Relates to FR 9-10. Processes temporal data and manages the interactive timeline state.
-* **Insights CSC:** Relates to FR 11-12. Performs data aggregation for origin distribution (ApexCharts) and provenance mapping (Leaflet), alongside custom temporal intensity visualizations.
-* **Curation/Collections CSC:** Relates to FR 13-14. Manages user-defined collections and item relationships.
-* **Blueprint CSC:** Manages the spatial mapping of items to rooms using a custom CSS grid-based virtual floor plan.
+1. **Acquisitions CSC:** (FR 1, 2, 3, 4). Handles automated metadata discovery, polymorphic form logic, metadata refinement, and 5MB archival photograph uploads.
+2. **Vault/Gallery CSC:** (FR 5, 6, 7). Manages the high-fidelity archival grid, multi-dimensional filtering, and real-time internal search.
+3. **Chronology CSC:** (FR 8, 9). Processes temporal data to render vertical timeline visualizations.
+4. **Insights CSC:** (FR 10, 11, 12). Performs analytical data aggregation for style correlation charts, temporal intensity, and the global provenance map.
+5. **Curation/Collections CSC:** (FR 13, 14). Manages thematic collections, spatial assignments, and relational discovery.
+6. **Blueprint CSC:** (FR 15, 16). Manages spatial mapping and virtual room topography.
+7. **Identity CSC:** (FR 17). Manages secure user authentication and programmatic data isolation.
 
 ### 6.2.2 Major Software Interactions Section
-The Angular frontend communicates with Supabase via the `supabase-js` client. All data requests are sent as HTTPS REST calls. External APIs (Google Books) are called directly from the frontend, while Discogs is accessed via a Supabase Edge Function. Authentication is handled by Supabase Auth, and the user's session is synchronized using Angular Signals. Database security is enforced via PostgreSQL Row Level Security (RLS) policies.
+The Angular frontend communicates with Supabase via the `supabase-js` client using HTTPS REST calls. Authentication state is tracked using a global `isOnline` signal and session signals. Data flow is unidirectional: components trigger service methods, which update centralized signals, triggering reactive UI updates across the entire application bundle.
 
 ### 6.2.3 Architectural Design Diagrams Section
-1. **Use Case Diagram:** Defines the interactions between the "Curator" (User) and the Acquisition, Gallery, and Insights subsystems.
+1. **Use Case Diagram:** Defines interactions between the "Curator" and the core subsystems.
 ![Use Case Diagram](diagrams/Use-Case-Diagram.png)
 
-2. **Component Diagram:** Illustrates the Angular frontend's dependency on the Supabase Client and external REST APIs.
+2. **Component Diagram:** Illustrates dependencies on Supabase and external REST APIs.
 ![Component Diagram](diagrams/Component-Diagram.png)
 
-3. **Deployment Diagram:** Shows the frontend hosted on Vercel communicating with Supabase infrastructure (Database, Storage, Auth, Functions).
+3. **Deployment Diagram:** Shows Vercel hosting and Supabase infrastructure connectivity.
 ![Deployment Diagram](diagrams/Deployment-Diagram.png)
 
 ---
@@ -64,63 +67,78 @@ The Angular frontend communicates with Supabase via the `supabase-js` client. Al
 ## 6.3 CSC and CSU Descriptions Section
 
 ### 6.3.1 Detailed Class Descriptions
+The following sections provide the details of all core classes used in the Archival application, ordered from support units to complex orchestrators.
 
-#### 6.3.1.1 ArchiveService (CSU)
-* **Purpose:** The central service for managing application state, authentication, and database interactions using Supabase and Angular Signals.
+#### 6.3.1.1 GalleryComponent (CSU)
+Manages the primary visualization of the user's collection with advanced filtering capabilities.
 * **Fields:**
-    * `collection`: Signal holding the current list of archival items.
-    * `rooms`: Signal holding the user's defined rooms.
-    * `userCollections`: Signal holding user-defined groupings of items.
-    * `movements`: Signal holding design movement metadata.
-    * `cities`: Signal holding geographical coordinates for provenance mapping.
-    * `user`: Signal tracking the currently authenticated Supabase user.
+    * `showFilters`: Signal (boolean) toggling the visibility of the filter drawer.
+    * `searchQuery`: Signal (string) holding the current user-entered search term.
+    * `activeFilters`: Signal (Record) tracking current category, origin, era, and movement selections.
 * **Methods:**
-    * `signIn(email, password)` / `signUp(email, password, name)`: Handles user authentication.
-    * `addItem(item)` / `updateItem(id, updates)` / `deleteItem(id)`: CRUD operations for archival items.
-    * `addRoom(name)` / `deleteRoom(id)`: Manages room metadata for the Blueprint view.
-    * `searchBooks(query)`: Interfaces with Google Books API.
-    * `searchDiscogs(query)`: Interfaces with Discogs via Supabase Functions.
-    * `uploadImage(file)`: Uploads archival photographs to Supabase Storage.
+    * `filteredItems()`: Computed signal applying search and metadata filters to the collection.
+    * `filterOptions()`: Computed signal generating unique filter choices based on current data.
+    * `onSearchChange(event)`: Updates the `searchQuery` signal with debounced input.
 
-#### 6.3.1.2 AcquisitionComponent (CSU)
-* **Purpose:** Manages the multi-step form for entering new items, including category-specific fields and API-driven auto-suggestion.
+#### 6.3.1.2 BlueprintComponent (CSU)
+Manages the 2D spatial context of the collection using a virtual floor plan.
+* **Fields:**
+    * `newRoomName`: Signal (string) for the room creation input field.
+    * `hoveredRoomId`: Signal tracking the room currently under the user's cursor.
 * **Methods:**
-    * `onSearch()`: Triggers external API calls based on user input.
-    * `onSelectSuggestion(item)`: Populates the form with metadata from a search result.
-    * `handleSubmit()`: Saves the item via `ArchiveService`, including local file uploads.
+    * `gridSize()`: Computed signal defining the dynamic cells and dimensions of the CSS grid.
+    * `addRoom()`: Triggers the global service to register a new spatial volume.
+    * `getItemsInRoom(name)`: Filters the collection to return items assigned to a specific room.
 
-#### 6.3.1.3 GalleryComponent (CSU)
-* **Purpose:** Renders "The Vault" grid, allowing users to browse and filter their collection.
+#### 6.3.1.3 InsightsComponent (CSU)
+Orchestrates analytical visualizations including provenance mapping and temporal intensity.
+* **Fields:**
+    * `hoveredMovement`: Signal tracking stylistic metadata for overlay descriptions.
+    * `mapElement`: ElementRef targeting the Leaflet container in the DOM.
 * **Methods:**
-    * `filteredItems`: Computed signal that applies category, origin, and era filters.
-    * `setFilter(tray, value)`: Updates the active filter state.
+    * `originCounts()`: Computes distribution data for the ApexCharts pie chart.
+    * `temporalData()`: Computes decade-specific paths for the intensity SVG.
+    * `initMap()`: Asynchronous method to initialize the world map and plot provenance markers.
 
-#### 6.3.1.4 InsightsComponent (CSU)
-* **Purpose:** Orchestrates data analytics including origin distribution (ApexCharts), provenance mapping (Leaflet), and temporal density.
+#### 6.3.1.4 AcquisitionComponent (CSU)
+Manages the complex, polymorphic intake flow for new archival items.
+* **Fields:**
+    * `newItem`: Signal (Partial Item) holding the current draft state of the record.
+    * `showDuplicateWarning`: Signal (boolean) controlling the redundancy confirmation modal.
+    * `searchError`: Signal (string) providing fallback notifications for API failures.
+    * `STORAGE_KEY`: Constant for `localStorage` persistence of partial saves.
 * **Methods:**
-    * `originCounts`: Computed data for the ApexCharts pie chart.
-    * `initMap()`: Initializes the Leaflet world map with GeoJSON and item markers.
-    * `temporalData`: Computes SVG path data for the category-specific timeline visualization.
+    * `onNomenclatureChange(event)`: Debounced method triggering API discovery.
+    * `selectBook(book)` / `selectDiscogsRelease(release)`: Maps external metadata to the internal item model.
+    * `handleSubmit()`: Main submission logic with duplicate detection and error handling.
+    * `confirmDuplicate()`: User confirmation method to bypass redundancy warnings.
 
-#### 6.3.1.5 BlueprintComponent (CSU)
-* **Purpose:** Manages a spatial floor plan visualization using a CSS grid layout to map items to rooms.
+#### 6.3.1.5 ArchiveService (CSU)
+The central configuration item managing global state and backend synchronization.
+* **Fields:**
+    * `collection`: Signal holding the validated list of all archival items.
+    * `isOnline`: Signal (boolean) tracking the browser's connectivity status.
+    * `user`: Signal tracking the authenticated Supabase GoTrue session.
+    * `movements` / `rooms` / `cities`: Metadata signals for discovery and mapping.
 * **Methods:**
-    * `gridSize`: Computed signal defining the dimensions of the virtual floor plan.
-    * `addRoom()` / `deleteRoom()`: Interface methods for managing spatial volumes.
+    * `fetchUserData(userId)`: Central data fetcher with offline protection and relational mapping.
+    * `addItem(item)` / `updateItem(id, updates)`: Methods for persisting records to Supabase.
+    * `uploadImage(file)`: Service for processing and storing 5MB archival photographs.
+    * `initOnlineStatus()`: Sets up event listeners for browser connectivity changes.
 
 ### 6.3.2 Detailed Interface Descriptions
-* **CollectionItem:** Defines the core data structure for an archival item (id, name, designer, year, origin, category, image_url, note, movement_id, room_id).
-* **Movement:** Represents a design era or movement (Bauhaus, Mid-Century Modern) with its description.
-* **Room:** Defines a spatial location with x/y grid coordinates and a name.
-* **City:** Stores geographical coordinates (lat/lng) for cities used in provenance mapping.
-* **UserCollection:** Represents a named grouping of items (many-to-many relationship).
+Subsystems transmit data via standardized JSON objects mapped to the following TypeScript interfaces:
+* **Subsystem Handoff:** Components transmit "Partial" records to the `ArchiveService`, which validates and augments them with user-specific metadata before transmission to Supabase.
+* **Control Flow:** Interaction signals (e.g., `isSubmitting`) are used to lock UI elements across different CSCs during asynchronous handshakes with external APIs.
 
 ### 6.3.3 Detailed Data Structure Descriptions
-* **CategoryType:** A union type ('decor' | 'music' | 'books' | 'fashion') ensuring type safety across the application.
-* **Signal-based State:** Use of Angular Signals for reactive synchronization of collection data and authentication state.
+* **Database Query Results:** Data is returned from Supabase as a `PostgrestResponse`, which is mapped into local item signals including `updated_at` and `roomId` for UI-friendly consumption.
+* **localStorage State:** Partial saves are stored as serialized JSON strings indexed by `STORAGE_KEY`, ensuring form persistence without server-side overhead.
 
 ### 6.3.4 Detailed Design Diagrams Section
 ![State Management Diagram](diagrams/State-Management-Diagram.png)
+*(Note: Detailed Sequence Diagrams for the Acquisition and Search flows are included in the Technical Design Addendum.)*
+
 ---
 
 ## 6.4 Database Design and Description
@@ -129,9 +147,9 @@ The Angular frontend communicates with Supabase via the `supabase-js` client. Al
 ![Database Diagram](diagrams/Database-Diagram.png)
 
 ### 6.4.2 Database Access
-Database access is managed via the Supabase PostgREST API. The `ArchiveService` uses the `supabase-js` client to perform authenticated queries. All queries are scoped to the `user_id` of the currently logged-in user, ensuring data isolation.
+Database access is managed via the Supabase PostgREST API using the `supabase-js` client. Authenticated queries are automatically scoped by the server to the user's `auth.uid()`, preventing cross-user data leakage.
 
 ### 6.4.3 Database Security
-* **Row Level Security (RLS):** Enabled on all tables. Policies ensure that users can only view, create, update, or delete records where the `user_id` matches their own authenticated ID (`auth.uid()`).
-* **Storage Policies:** The `item-photos` bucket is protected by RLS policies that restrict file uploads and public URL access to folders matching the user's ID.
-* **Edge Functions:** Secure access to the Discogs API is handled via a server-side Supabase Edge Function (`discogs-search`), preventing the exposure of API secrets in the frontend.
+* **Row Level Security (RLS):** Enabled on all tables. Policies strictly enforce `user_id` ownership for all CRUD operations.
+* **PostgreSQL Triggers:** An `update_updated_at` trigger is implemented on the `items` table to automate the audit trail required by FR 4.
+* **Storage RLS:** Restricts photo access to the authenticated owner via folder-path verification.
