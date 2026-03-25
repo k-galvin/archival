@@ -260,6 +260,13 @@
     padding: 0.75rem 1rem;
     font-size: 14px;
     color: colors.$text-medium-gray;
+
+    &.error-msg {
+      color: colors.$error-red;
+      font-size: 11px;
+      line-height: 1.4;
+      font-style: italic;
+    }
   }
 
   .book-result {

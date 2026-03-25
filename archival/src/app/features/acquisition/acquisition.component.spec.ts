@@ -320,7 +320,7 @@ describe('AcquisitionComponent', () => {
       expect(component.isSearchingBooks()).toBeFalse();
     }));
 
-    it('should handle searchBooks error gracefully', fakeAsync(() => {
+    it('should handle searchBooks error gracefully and set searchError', fakeAsync(() => {
       mockArchiveService.searchBooks.and.returnValue(
         throwError(() => new Error('Search failed')),
       );
@@ -331,6 +331,26 @@ describe('AcquisitionComponent', () => {
 
       expect(mockArchiveService.searchBooks).toHaveBeenCalledWith('Bad Book');
       expect(component.isSearchingBooks()).toBeFalse();
+      expect(component.searchError()).toBe(
+        'External discovery service unreachable. Manual entry enabled.',
+      );
+    }));
+
+    it('should handle searchBooks timeout gracefully', fakeAsync(() => {
+      // Return a delay longer than 1000ms to trigger RxJS timeout
+      mockArchiveService.searchBooks.and.returnValue(
+        of({ items: [] } as any).pipe(delay(1100)),
+      );
+
+      const event = { target: { value: 'Slow Book' } } as unknown as Event;
+      component.onNomenclatureChange(event);
+      tick(600); // Trigger debounce
+      tick(1001); // Trigger timeout
+
+      expect(component.isSearchingBooks()).toBeFalse();
+      expect(component.searchError()).toBe(
+        'API response exceeded 1.0 second threshold. Please proceed with manual entry.',
+      );
     }));
   });
 
@@ -382,7 +402,7 @@ describe('AcquisitionComponent', () => {
       expect(component.isSearchingMusic()).toBeFalse();
     }));
 
-    it('should handle searchDiscogs error gracefully', fakeAsync(() => {
+    it('should handle searchDiscogs error gracefully and set searchError', fakeAsync(() => {
       mockArchiveService.searchDiscogs.and.returnValue(
         throwError(() => new Error('Discogs search failed')),
       );
@@ -397,6 +417,25 @@ describe('AcquisitionComponent', () => {
       );
       expect(component.isSearchingMusic()).toBeFalse();
       expect(component.albumSearchResults()).toEqual([]);
+      expect(component.searchError()).toBe(
+        'External discovery service unreachable. Manual entry enabled.',
+      );
+    }));
+
+    it('should handle searchDiscogs timeout gracefully', fakeAsync(() => {
+      mockArchiveService.searchDiscogs.and.returnValue(
+        of({ data: null, error: null } as any).pipe(delay(1100)),
+      );
+
+      const event = { target: { value: 'Slow Album' } } as unknown as Event;
+      component.onNomenclatureChange(event);
+      tick(600); // Trigger debounce
+      tick(1001); // Trigger timeout
+
+      expect(component.isSearchingMusic()).toBeFalse();
+      expect(component.searchError()).toBe(
+        'API response exceeded 1.0 second threshold. Please proceed with manual entry.',
+      );
     }));
   });
 

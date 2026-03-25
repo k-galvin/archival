@@ -26,6 +26,7 @@ import {
   catchError,
   of,
   map,
+  timeout,
 } from 'rxjs';
 
 @Component({
@@ -42,6 +43,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
+  searchError = signal<string | null>(null);
   showDuplicateWarning = signal(false);
 
   // Categories
@@ -138,6 +140,7 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
 
           this.isSearchingBooks.set(false);
           this.isSearchingMusic.set(false);
+          this.searchError.set(null);
 
           if (!query) {
             this.bookSearchResults.set([]);
@@ -149,16 +152,25 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
             // If the category is books, search Google Books API
             this.isSearchingBooks.set(true);
             return this.archive.searchBooks(query).pipe(
+              timeout(1000),
               map((results) => ({
                 data: results?.items || [],
                 category: 'books',
               })),
-              catchError(() => of({ data: [], category: 'books' })),
+              catchError((err) => {
+                const msg =
+                  err.name === 'TimeoutError'
+                    ? 'API response exceeded 1.0 second threshold. Please proceed with manual entry.'
+                    : 'External discovery service unreachable. Manual entry enabled.';
+                this.searchError.set(msg);
+                return of({ data: [], category: 'books' });
+              }),
             );
           } else if (category === 'music') {
             // If the category is music, search Discogs API
             this.isSearchingMusic.set(true);
             return this.archive.searchDiscogs(query).pipe(
+              timeout(1000),
               map(
                 (response: {
                   data: DiscogsResponse | null;
@@ -172,7 +184,11 @@ export class AcquisitionComponent implements OnInit, OnDestroy {
                 },
               ),
               catchError((err) => {
-                console.error('Discogs search failed:', err);
+                const msg =
+                  err.name === 'TimeoutError'
+                    ? 'API response exceeded 1.0 second threshold. Please proceed with manual entry.'
+                    : 'External discovery service unreachable. Manual entry enabled.';
+                this.searchError.set(msg);
                 return of({ data: [], category: 'music' });
               }),
             );

@@ -106,7 +106,7 @@ The remainder of this document is structured as follows. The Functional Requirem
 - **PR 2 (Interface Responsiveness):** The initial load of the **Vault** and **Dashboard** views shall not exceed **2.0 seconds** at the p95 level on broadband connections (>=10Mbps download) and **4.0 seconds** on 3G connections.
 - **PR 3 (Data Processing Latency):** Local filtering and searching operations shall refresh the interface within **300ms** at p95. Server-side operations requiring a round-trip to Supabase (e.g., adding an item) shall complete within **700ms** at p95.
 - **PR 4 (Temporal Visualization Rendering):** The **Chronology** timeline shall render up to 2,000 archival items within **1.0 second**.
-- **PR 5 (Network Error Resilience):** If external APIs (Google, Discogs) fail to respond within **200ms**, the system shall implement a fallback logic that notifies the user and allows manual input without blocking the main thread.
+- **PR 5 (Network Error Resilience):** If external APIs (Google, Discogs) fail to respond within **1s**, the system shall implement a fallback logic that notifies the user and allows manual input without blocking the main thread.
 - **PR 6 (Image Loading Optimization):** The system shall utilize lazy-loading for all gallery images, ensuring a **Largest Contentful Paint (LCP)** of under **2.5 seconds**.
 
 ---

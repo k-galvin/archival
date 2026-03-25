@@ -88,10 +88,16 @@
               autocomplete="off"
             />
             <!-- Book Search Results Dropdown -->
-            @if (isSearchingBooks() || bookSearchResults().length > 0) {
+            @if (
+              isSearchingBooks() ||
+              bookSearchResults().length > 0 ||
+              (newItem().category === "books" && searchError())
+            ) {
               <div class="search-results custom-scrollbar">
                 @if (isSearchingBooks()) {
                   <div class="result-item">Searching Books...</div>
+                } @else if (newItem().category === "books" && searchError()) {
+                  <div class="result-item error-msg">{{ searchError() }}</div>
                 } @else {
                   @for (book of bookSearchResults(); track $index) {
                     <div
@@ -125,10 +131,16 @@
               </div>
             }
             <!-- Album Search Results Dropdown -->
-            @if (isSearchingMusic() || albumSearchResults().length > 0) {
+            @if (
+              isSearchingMusic() ||
+              albumSearchResults().length > 0 ||
+              (newItem().category === "music" && searchError())
+            ) {
               <div class="search-results custom-scrollbar">
                 @if (isSearchingMusic()) {
                   <div class="result-item">Searching Music...</div>
+                } @else if (newItem().category === "music" && searchError()) {
+                  <div class="result-item error-msg">{{ searchError() }}</div>
                 } @else {
                   @for (album of albumSearchResults(); track album.id) {
                     <div
