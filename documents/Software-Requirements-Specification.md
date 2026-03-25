@@ -4,17 +4,17 @@
 
 ### Project Description
 
-Archival is a specialized curation platform designed for intentional collectors who wish to move beyond simple inventory tracking toward a deep, analytical understanding of their personal belongings. By treating furniture, fashion, and literature as interconnected data points, the system allows users to document the "aesthetic DNA" of their environment, linking physical objects to historical design movements—such as Bauhaus or Mid-Century Modern—that define them.
+Archival is a specialized curation platform designed for intentional collectors who wish to move beyond simple inventory tracking toward a deeper understanding of their personal belongings. By treating furniture, fashion, and literature as interconnected data points, the system allows users to document the "aesthetic DNA" of their environment, linking physical objects to historical design movements—such as Bauhaus or Mid-Century Modern—that define them.
 
-The application utilizes an Angular-based "Museum View" to visualize the chronological density of a collection, leveraging a Supabase-managed PostgreSQL database to identify hidden common threads across disparate items. Through this sophisticated logic engine, users can analyze the historical evolution of their lifestyle and curate their surroundings with the rigor of a professional archivist.
+The application utilizes an Angular-based gallery display to visualize the chronological density of a collection, leveraging a Supabase-managed PostgreSQL database to identify hidden common threads across disparate items. Through this highly visual system, users can analyze the historical evolution of their belongings and curate their surroundings with the intentionality of a professional archivist.
 
 ### Glossary
 
-- **Museum View:** The primary architectural layout characterized by high-contrast monochrome aesthetics, wide grid spacing, and museum-grade typography.
-- **Chronology:** An interactive temporal visualization that plots archival items on a linear timeline based on their creation or publication year.
+- **Gallery View:** The primary architectural layout characterized by high-contrast monochrome aesthetics, wide grid spacing, and museum-grade typography.
+- **Chronology:** An interactive temporal visualization that plots archival items on a linear timeline based on their year of release or acquisition.
 - **Design Movement:** A specific historical era or stylistic trend (e.g., Bauhaus, Brutalism) used to categorize the aesthetic lineage of an item.
-- **The Vault:** The secure, high-fidelity gallery grid where curated items are stored and filtered.
-- **Style Correlations:** Analytical insights derived from data that identify common design movements across different categories of items (e.g., a connection between a Brutalist chair and an experimental electronic record).
+- **The Gallery:** The secure, high-fidelity gallery grid where curated items are displayed and filtered.
+- **Insights:** Data visualizations of item locations, movements, creators, and temporal distribution.
 
 ### Assumptions
 
@@ -61,7 +61,7 @@ The remainder of this document is structured as follows. The Functional Requirem
   - **Acceptance Criteria:** Changes must be persisted immediately to the database, and deleted items must be removed from the gallery view.
   - **Audit Trail:** The system will track the `last_updated_at` timestamp for every item.
 
-### Epic 2: The Vault (Vault CSC)
+### Epic 2: The Gallery (Gallery CSC)
 
 - **FR 5 (Gallery Visualization):** The system shall display archival items in a high-contrast grid characterized by significant whitespace and museum-grade typography.
 - **FR 6 (Multi-Dimensional Filtering):** The system shall allow a user to filter the collection by **Design Movement**, **Category**, and **Year/Era**.
@@ -79,12 +79,23 @@ The remainder of this document is structured as follows. The Functional Requirem
 
 - **FR 10 (Style Correlation Analysis):** The system shall generate interactive charts showing movements and genres in different item categories.
 - **FR 11 (Temporal Intensity):** The system shall display a "Temporal Distribution" graph identifying the decades most represented in the collection.
+- **FR 12 (Global Provenance Mapping):** The system shall visualize the geographical origins of items on an interactive world map using coordinates derived from the 'City' metadata.
 
 ### Epic 5: Collections & Curation (Curation CSC)
 
-- **FR 12 (Spatial & Thematic Collections):** The system shall allow a user to create named collections (e.g., "Living Room Exhibition") and link items to them in a many-to-many relationship.
-- **FR 13 (Relational Discovery):** The system shall identify and suggest "Related Items" based on shared design movements or creators.
+- **FR 13 (Spatial & Thematic Collections):** The system shall allow a user to create named collections (e.g., "Living Room Exhibition") and link items to them in a many-to-many relationship.
+- **FR 14 (Relational Discovery):** The system shall identify and suggest "Related Items" based on shared design movements or creators.
   - **Edge Case:** If an item has no shared metadata with others, the system shall not suggest any related items.
+
+### Epic 6: Spatial Mapping (Blueprint CSC)
+
+- **FR 15 (Blueprint Visualization):** The system shall provide a virtual floor plan view ("Blueprint") that allows users to visualize their collection within a spatial 2D grid.
+- **FR 16 (Room Management):** The system shall allow users to create, name, and delete virtual 'Rooms' to define the topographical structure of their archive.
+
+### Epic 7: Identity & Security
+
+- **FR 17 (Secure Authentication):** The system shall provide a secure gateway for users to sign up, sign in, and maintain an active session.
+  - **Data Isolation:** All archival data must be programmatically restricted to the authenticated owner's ID.
 
 ### Authorization Roles
 
@@ -103,10 +114,10 @@ The remainder of this document is structured as follows. The Functional Requirem
 ## Performance Requirements
 
 - **PR 1 (Data Privacy & Security):** The system shall ensure data isolation using Supabase RLS policies; an authenticated user shall only be able to access their own collection records.
-- **PR 2 (Interface Responsiveness):** The initial load of the **Vault** and **Dashboard** views shall not exceed **2.0 seconds** at the p95 level on broadband connections (>=10Mbps download) and **4.0 seconds** on 3G connections.
+- **PR 2 (Interface Responsiveness):** The initial load of the **Gallery** view shall not exceed **2.0 seconds** at the p95 level on broadband connections (>=10Mbps download) and **4.0 seconds** on 3G connections.
 - **PR 3 (Data Processing Latency):** Local filtering and searching operations shall refresh the interface within **300ms** at p95. Server-side operations requiring a round-trip to Supabase (e.g., adding an item) shall complete within **700ms** at p95.
 - **PR 4 (Temporal Visualization Rendering):** The **Chronology** timeline shall render up to 2,000 archival items within **1.0 second**.
-- **PR 5 (Network Error Resilience):** If external APIs (Google, Discogs) fail to respond within **1s**, the system shall implement a fallback logic that notifies the user and allows manual input without blocking the main thread.
+- **PR 5 (Network Error Resilience):** If external APIs (Google, Discogs) fail to respond within **1.0 seconds**, the system shall implement a fallback logic that notifies the user and allows manual input without blocking the main thread.
 - **PR 6 (Image Loading Optimization):** The system shall utilize lazy-loading for all gallery images, ensuring a **Largest Contentful Paint (LCP)** of under **2.5 seconds**.
 
 ---
