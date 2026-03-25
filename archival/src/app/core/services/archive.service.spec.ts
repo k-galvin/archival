@@ -100,6 +100,7 @@ describe('ArchiveService', () => {
           // Chain for collections select which uses collection_items(item_id)
           match: () => ({ error: null }),
         }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       // @ts-expect-error accessing private method for test

@@ -18,6 +18,7 @@ import {
   City,
   GoogleBooksResponse,
   FunctionsResponse,
+  DiscogsResponse,
 } from '../../shared/models/archive.models';
 
 describe('AcquisitionComponent', () => {
@@ -339,7 +340,11 @@ describe('AcquisitionComponent', () => {
     it('should handle searchBooks timeout gracefully', fakeAsync(() => {
       // Return a delay longer than 1000ms to trigger RxJS timeout
       mockArchiveService.searchBooks.and.returnValue(
-        of({ items: [] } as any).pipe(delay(1100)),
+        of<GoogleBooksResponse>({
+          kind: 'books#volumes',
+          totalItems: 0,
+          items: [],
+        }).pipe(delay(1100)),
       );
 
       const event = { target: { value: 'Slow Book' } } as unknown as Event;
@@ -424,7 +429,11 @@ describe('AcquisitionComponent', () => {
 
     it('should handle searchDiscogs timeout gracefully', fakeAsync(() => {
       mockArchiveService.searchDiscogs.and.returnValue(
-        of({ data: null, error: null } as any).pipe(delay(1100)),
+        of<FunctionsResponse<DiscogsResponse>>({
+          data: null,
+          error: null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }).pipe(delay(1100)) as any,
       );
 
       const event = { target: { value: 'Slow Album' } } as unknown as Event;
