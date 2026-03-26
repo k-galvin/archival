@@ -106,14 +106,15 @@
 .action-icon-btn {
   background: none;
   border: none;
-  opacity: 0.3;
+  color: rgba(colors.$primary-black, 0.4);
   cursor: pointer;
   padding: 0;
   display: flex;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
-    opacity: 1;
+    color: colors.$primary-black;
   }
 }
 

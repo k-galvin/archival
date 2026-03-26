@@ -191,9 +191,10 @@ app-root {
 button.mobile-toggle {
   border: none;
   background: none;
-  opacity: 0.6;
+  color: rgba(colors.$primary-black, 0.4);
   cursor: pointer;
   display: flex;
+  -webkit-tap-highlight-color: transparent;
 
   @media (min-width: 768px) {
     display: none;

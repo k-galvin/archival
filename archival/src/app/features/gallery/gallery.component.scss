@@ -255,8 +255,14 @@
 .image-wrapper.is-formatted-cover {
   background-color: colors.$white;
   padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   .record-image {
     object-fit: contain;
+    max-height: 100%;
+    max-width: 100%;
   }
 }
 

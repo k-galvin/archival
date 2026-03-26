@@ -73,6 +73,13 @@
   }
 }
 
+.spine-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .meta-label {
   writing-mode: vertical-lr;
   transform: rotate(180deg);

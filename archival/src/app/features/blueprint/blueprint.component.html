@@ -42,9 +42,13 @@
         @for (r of rooms(); track r.id) {
           <div
             class="room-list-item"
-            (mouseenter)="hoveredRoomId.set(r.id)"
-            (mouseleave)="hoveredRoomId.set(null)"
+            (mouseenter)="setHoveredRoom(r.id)"
+            (mouseleave)="setHoveredRoom(null)"
+            (click)="toggleRoomOverlay(r.id); $event.stopPropagation()"
+            (keydown.enter)="toggleRoomOverlay(r.id); $event.stopPropagation()"
             [class.is-hovered]="hoveredRoomId() === r.id"
+            role="button"
+            tabindex="0"
           >
             <div class="room-info">
               <span class="room-label">{{ r.name }}</span>
@@ -53,7 +57,7 @@
               >
             </div>
             <button
-              (click)="deleteRoom(r.id)"
+              (click)="deleteRoom(r.id); $event.stopPropagation()"
               class="room-delete"
               title="Decommission room"
             >
@@ -65,7 +69,14 @@
     </aside>
 
     <!-- Main View: Blueprint Canvas - Restricted to 50% width via SCSS -->
-    <div class="blueprint-canvas-wrapper">
+    <div
+      class="blueprint-canvas-wrapper"
+      (click)="setHoveredRoom(null)"
+      (keydown.escape)="setHoveredRoom(null)"
+      role="button"
+      tabindex="0"
+      aria-label="clear selection"
+    >
       <div class="blueprint-canvas hide-scrollbar">
         <!-- Drafting paper pattern background -->
         <div class="blueprint-pattern"></div>
@@ -79,8 +90,12 @@
             @let room = getRoomAt(cell.x, cell.y);
             <div
               class="grid-cell"
-              (mouseenter)="room && hoveredRoomId.set(room.id)"
-              (mouseleave)="hoveredRoomId.set(null)"
+              (mouseenter)="room && setHoveredRoom(room.id)"
+              (mouseleave)="setHoveredRoom(null)"
+              (click)="room && toggleRoomOverlay(room.id); $event.stopPropagation()"
+              (keydown.enter)="room && toggleRoomOverlay(room.id); $event.stopPropagation()"
+              role="button"
+              [tabindex]="room ? 0 : -1"
             >
               @if (room) {
                 <div class="cell-content">

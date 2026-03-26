@@ -24,6 +24,29 @@ export class BlueprintComponent {
   // Local UI State for form inputs and hover interactions
   newRoomName = signal('');
   hoveredRoomId = signal<string | number | null>(null);
+  private lastSetTime = 0;
+
+  /**
+   * Sets the hovered room ID and tracks the timing to prevent mobile race conditions
+   */
+  setHoveredRoom(id: string | number | null): void {
+    this.hoveredRoomId.set(id);
+    this.lastSetTime = Date.now();
+  }
+
+  /**
+   * Toggles the active room overlay for mobile compatibility
+   */
+  toggleRoomOverlay(id: string | number | null): void {
+    const now = Date.now();
+    const isRecentlySet = now - this.lastSetTime < 250;
+
+    if (this.hoveredRoomId() === id && !isRecentlySet) {
+      this.hoveredRoomId.set(null);
+    } else {
+      this.setHoveredRoom(id);
+    }
+  }
 
   // Reference signals from the global Archive Service
   rooms = this.archive.rooms;

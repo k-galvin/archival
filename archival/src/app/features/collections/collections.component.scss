@@ -167,8 +167,14 @@
   .thumb-box.is-formatted-cover {
     background-color: colors.$white;
     padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     .thumb-img {
       object-fit: contain;
+      max-height: 100%;
+      max-width: 100%;
     }
   }
 
