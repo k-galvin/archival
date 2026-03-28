@@ -6,12 +6,13 @@
   flex-direction: column;
   position: relative;
   background: colors.$white;
+  overflow-x: hidden;
 }
 
 .frame-border-outer {
   position: fixed;
   inset: 0;
-  border: 40px solid colors.$white;
+  border: 20px solid colors.$white;
   pointer-events: none;
   z-index: 50;
 
@@ -29,30 +30,32 @@
 }
 
 .logged-in-frame-inner {
-  margin-left: 6rem;
+  left: 6rem;
 
   @media (max-width: 768px) {
-    margin-left: 3rem;
+    left: 3rem;
   }
 }
 
 .content-area {
   flex: 1;
   padding: 0 4rem;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
   }
 }
 
 .logged-in-content {
-  margin-top: 12rem;
-  margin-left: 8rem;
-  margin-bottom: 8rem;
+  padding-left: 9rem;
+  padding-right: 4rem;
+  padding-top: 10rem;
+  padding-bottom: 2rem;
 
   @media (max-width: 768px) {
-    margin-left: 4rem;
-    margin-right: 1.5rem;
-    margin-top: 8rem;
+    padding-left: 4rem;
+    padding-right: 1.5rem;
+    padding-top: 7.5rem;
   }
 }
