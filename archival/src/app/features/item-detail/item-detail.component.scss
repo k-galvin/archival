@@ -40,13 +40,13 @@
   }
 
   &.is-formatted-cover {
-    padding: 0.75rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
 
     @media (max-width: 768px) {
-      padding: 0.5rem;
+      padding: 1.25rem;
     }
 
     .item-image {
