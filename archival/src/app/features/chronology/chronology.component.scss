@@ -116,15 +116,21 @@
 
   .card-img-wrapper.is-formatted-cover {
     background-color: colors.$white;
-    padding: 1rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 768px) {
+      padding: 1.25rem;
+    }
 
     .card-img {
       object-fit: contain;
       max-height: 100%;
       max-width: 100%;
+      width: auto;
+      height: auto;
     }
   }
   .card-meta {

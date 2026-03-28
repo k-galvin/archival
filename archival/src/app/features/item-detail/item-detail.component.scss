@@ -248,7 +248,7 @@
     }
 
     &.is-formatted-cover {
-      padding: 0.35rem;
+      padding: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -257,6 +257,8 @@
         object-fit: contain;
         max-height: 100%;
         max-width: 100%;
+        width: auto;
+        height: auto;
       }
     }
   }
@@ -503,6 +505,13 @@
     cursor: pointer;
     font-size: 12px;
     transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+;
 
     &:hover {
       opacity: 0.9;
