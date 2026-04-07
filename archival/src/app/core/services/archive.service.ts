@@ -19,31 +19,50 @@ import {
 import { environment } from '../../../environments/environment';
 import { SUPABASE_CLIENT } from './supabase-client.token';
 
+/**
+ * The central service for managing archival data, authentication, and external API integrations.
+ * Provides signals for real-time state management of collections, rooms, and user status.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class ArchiveService {
+  /** The Supabase client instance. */
   supabase: SupabaseClient = inject(SUPABASE_CLIENT);
   private http = inject(HttpClient);
   private router = inject(Router);
 
+  // --- Data Signals ---
+  /** Signal containing the full collection of archival items. */
   collection = signal<CollectionItem[]>([]);
+  /** Signal containing the list of defined archival rooms. */
   rooms = signal<Room[]>([]);
+  /** Signal containing the user's custom curated collections. */
   userCollections = signal<UserCollection[]>([]);
+  /** Signal containing the master list of historical movements. */
   movements = signal<Movement[]>([]);
+  /** Signal containing geographic city data. */
   cities = signal<City[]>([]);
 
+  // --- Auth & UI State Signals ---
+  /** Signal containing the currently authenticated Supabase user. */
   user = signal<User | null>(null);
+  /** Signal indicating if global data loading is in progress. */
   loading = signal(true);
+  /** Signal containing the latest authentication error message, if any. */
   authError = signal<string | null>(null);
+  /** Signal indicating if a logout operation is in progress. */
   isLoggingOut = signal(false);
+  /** Signal indicating if a login operation is in progress. */
   isLoggingIn = signal(false);
+  /** Signal tracking the browser's online/offline status. */
   isOnline = signal(navigator.onLine);
 
   constructor() {
     this.initAuth();
     this.initOnlineStatus();
 
+    // Automatically fetch user data when the user signal changes.
     effect(() => {
       const currentUser = this.user();
       if (currentUser) {
@@ -54,13 +73,16 @@ export class ArchiveService {
     });
   }
 
+  /**
+   * Listens for browser online/offline events to update the isOnline signal.
+   */
   private initOnlineStatus() {
     window.addEventListener('online', () => this.isOnline.set(true));
     window.addEventListener('offline', () => this.isOnline.set(false));
   }
 
   /**
-   * Initializes the session listener.
+   * Initializes the Supabase session and sets up an auth state change listener.
    */
   private async initAuth() {
     try {
@@ -84,6 +106,13 @@ export class ArchiveService {
 
   // --- Authentication Flow ---
 
+  /**
+   * Registers a new user with Supabase.
+   * @param email The user's email address.
+   * @param password The user's chosen password.
+   * @param name The user's display name (stored in user metadata).
+   * @returns A promise that resolves to the Supabase AuthResponse data.
+   */
   async signUp(email: string, password: string, name: string) {
     this.authError.set(null);
     const { data, error } = await this.supabase.auth.signUp({
@@ -98,6 +127,13 @@ export class ArchiveService {
     return data;
   }
 
+  /**
+   * Authenticates a user with email and password.
+   * Navigates to the gallery on success.
+   * @param email The user's email address.
+   * @param password The user's password.
+   * @returns A promise that resolves to the Supabase AuthResponse data.
+   */
   async signIn(email: string, password: string) {
     this.isLoggingIn.set(true);
     this.authError.set(null);
@@ -122,6 +158,10 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Signs out the current user and clears local state.
+   * Navigates back to the landing page.
+   */
   async signOut() {
     this.isLoggingOut.set(true);
     try {
@@ -137,6 +177,11 @@ export class ArchiveService {
 
   // --- Data Fetching ---
 
+  /**
+   * Fetches all archival data for a specific user from Supabase.
+   * Includes items, rooms, collections, movements, and cities.
+   * @param userId The unique ID of the user whose data is being fetched.
+   */
   private async fetchUserData(userId: string) {
     if (!this.isOnline()) {
       this.loading.set(false);
@@ -214,6 +259,9 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Clears all archival data from signals. Used on logout.
+   */
   private clearState() {
     this.collection.set([]);
     this.rooms.set([]);
@@ -239,9 +287,9 @@ export class ArchiveService {
   }
 
   /**
-   * Searches the Discogs API for a given release (album) query.
+   * Searches the Discogs API via a Supabase Edge Function.
    * @param query The search term, e.g., an album title.
-   * @returns An Observable of the API response.
+   * @returns A promise that resolves to the function's response.
    */
   searchDiscogs(query: string) {
     return from(
@@ -253,6 +301,9 @@ export class ArchiveService {
 
   /**
    * Uploads an archival photograph to Supabase Storage.
+   * Organizes files by user ID and acquisition date.
+   * @param file The image file to upload.
+   * @returns A promise resolving to the public URL of the uploaded image, or null if failed.
    */
   async uploadImage(file: File): Promise<string | null> {
     const currentUser = this.user();
@@ -280,6 +331,10 @@ export class ArchiveService {
     return data.publicUrl;
   }
 
+  /**
+   * Deletes a specific item from the archive.
+   * @param id The unique ID of the item to delete.
+   */
   async deleteItem(id: string) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -293,6 +348,10 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Creates a new archival room with an automatic grid-based position.
+   * @param name The display name of the room.
+   */
   async addRoom(name: string) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -317,6 +376,10 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Deletes a room from the archive.
+   * @param id The unique identifier of the room to delete.
+   */
   async deleteRoom(id: string | number) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -330,6 +393,10 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Creates a new custom collection.
+   * @param title The title of the new collection.
+   */
   async addCollection(title: string) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -353,6 +420,10 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Deletes a collection and all its associated item mappings (junction records).
+   * @param id The unique ID of the collection to delete.
+   */
   async deleteCollection(id: string) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -379,6 +450,11 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Removes a specific item from a curated collection.
+   * @param colId The ID of the collection.
+   * @param itemId The ID of the item to remove.
+   */
   async removeFromCollection(colId: string, itemId: string) {
     const { error } = await this.supabase
       .from('collection_items')
@@ -399,6 +475,11 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Adds an archival item to a specific curated collection.
+   * @param colId The ID of the destination collection.
+   * @param itemId The ID of the item to add.
+   */
   async addToUserCollection(colId: string, itemId: string) {
     const collection = this.userCollections().find((c) => c.id === colId);
     if (collection?.itemIds.includes(itemId)) {
@@ -423,6 +504,12 @@ export class ArchiveService {
     }
   }
 
+  /**
+   * Registers a new item in the archive.
+   * Maps local signal-friendly field names to database-friendly column names.
+   * @param item The item data to persist.
+   * @returns A promise resolving to the newly created item with all IDs and timestamps.
+   */
   async addItem(item: CollectionItem) {
     const currentUser = this.user();
     if (!currentUser) return;
@@ -476,6 +563,13 @@ export class ArchiveService {
     return null;
   }
 
+  /**
+   * Updates an existing archival item.
+   * Only provides changed fields to the database.
+   * @param id The unique ID of the item to update.
+   * @param updates Partial item data containing changed fields.
+   * @returns A promise resolving to the fully updated item record.
+   */
   async updateItem(id: string, updates: Partial<CollectionItem>) {
     const dbUpdates: Record<string, unknown> = { ...updates };
 

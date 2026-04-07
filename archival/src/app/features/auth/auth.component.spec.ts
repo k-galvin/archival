@@ -5,6 +5,7 @@ import { signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User, Session } from '@supabase/supabase-js';
 import { of } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
 
 class MockArchiveService {
   user = signal<User | null>(null);
@@ -44,7 +45,7 @@ describe('AuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthComponent], // Removed HttpClientTestingModule
+      imports: [AuthComponent, ReactiveFormsModule], // Added ReactiveFormsModule
       providers: [
         { provide: ArchiveService, useClass: MockArchiveService },
         { provide: Router, useClass: MockRouter },
@@ -91,11 +92,11 @@ describe('AuthComponent', () => {
 
   it('should handle successful login via handleSubmit()', async () => {
     component.isLogin.set(true);
-    component.authData = {
+    component.authForm.setValue({
       email: 'test@example.com',
       password: 'password123',
       name: '',
-    };
+    });
     signInSpy.and.returnValue(
       Promise.resolve({
         user: { id: '123', email: 'test@example.com' } as User,
@@ -116,11 +117,11 @@ describe('AuthComponent', () => {
   it('should handle login error via handleSubmit()', async () => {
     spyOn(console, 'error'); // Suppress noise from expected error
     component.isLogin.set(true);
-    component.authData = {
+    component.authForm.setValue({
       email: 'test@example.com',
       password: 'password123',
       name: '',
-    };
+    });
     const error = new Error('Login failed');
     signInSpy.and.callFake(() => {
       mockArchiveService.authError.set('Login failed');
@@ -140,11 +141,11 @@ describe('AuthComponent', () => {
 
   it('should handle successful sign-up (with session) via handleSubmit()', async () => {
     component.isLogin.set(false); // Switch to sign-up mode
-    component.authData = {
+    component.authForm.setValue({
       email: 'new@example.com',
       password: 'password123',
       name: 'New User',
-    };
+    });
     signUpSpy.and.returnValue(
       Promise.resolve({
         user: { id: '456', email: 'new@example.com' } as User,
@@ -168,11 +169,11 @@ describe('AuthComponent', () => {
 
   it('should handle successful sign-up (no session, email confirmation) via handleSubmit()', async () => {
     component.isLogin.set(false); // Switch to sign-up mode
-    component.authData = {
+    component.authForm.setValue({
       email: 'confirm@example.com',
       password: 'password123',
       name: 'Confirm User',
-    };
+    });
     signUpSpy.and.returnValue(
       Promise.resolve({
         user: { id: '789', email: 'confirm@example.com' } as User,
@@ -198,11 +199,11 @@ describe('AuthComponent', () => {
   it('should handle sign-up error via handleSubmit()', async () => {
     spyOn(console, 'error'); // Suppress noise from expected error
     component.isLogin.set(false); // Switch to sign-up mode
-    component.authData = {
+    component.authForm.setValue({
       email: 'fail@example.com',
       password: 'password123',
       name: 'Fail User',
-    };
+    });
     const error = new Error('Sign-up failed');
     signUpSpy.and.callFake(() => {
       mockArchiveService.authError.set('Sign-up failed');

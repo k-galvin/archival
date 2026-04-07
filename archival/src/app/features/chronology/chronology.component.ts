@@ -9,6 +9,11 @@ import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
 import { RouterLink } from '@angular/router';
 
+/**
+ * ChronologyComponent
+ * Organizes archival items by their production or acquisition year,
+ * displaying them in a vertical timeline with proportional spacing.
+ */
 @Component({
   selector: 'app-chronology',
   standalone: true,
@@ -20,14 +25,21 @@ import { RouterLink } from '@angular/router';
 export class ChronologyComponent {
   private archive = inject(ArchiveService);
 
+  /** Reference to the global loading state from the ArchiveService. */
   isLoading = this.archive.loading;
+
   private collection = this.archive.collection;
 
+  /**
+   * Internal computed signal that returns the collection sorted chronologically by year.
+   */
   private sortedCollection = computed(() => {
     return [...this.collection()].sort((a, b) => (a.year || 0) - (b.year || 0));
   });
 
-  // Group items by year to handle multiple items in the same year
+  /**
+   * Groups items by year to handle multiple items in the same year and calculates gaps between years.
+   */
   groupedByYear = computed(() => {
     const groups: { year: number; items: CollectionItem[]; gap: number }[] = [];
     const yearMap = new Map<number, CollectionItem[]>();
@@ -50,6 +62,11 @@ export class ChronologyComponent {
     return groups;
   });
 
+  /**
+   * Determines the visual spacing (gap) between chronological entries based on the time elapsed.
+   * @param gap The number of years between the current entry and the previous one.
+   * @returns A numeric value representing the rem units for the CSS margin-top.
+   */
   calculateGap(gap: number): number {
     if (gap === 0) {
       // Remove space above first year

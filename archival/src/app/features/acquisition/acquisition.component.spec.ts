@@ -105,10 +105,10 @@ describe('AcquisitionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with default newItem values', () => {
-    expect(component.newItem().category).toBe('decor');
-    expect(component.newItem().name).toBe('');
-    expect(component.newItem().year).toBe(2024);
+  it('should initialize with default form values', () => {
+    expect(component.acquisitionForm.get('category')?.value).toBe('decor');
+    expect(component.acquisitionForm.get('name')?.value).toBe('');
+    expect(component.acquisitionForm.get('year')?.value).toBe(new Date().getFullYear());
   });
 
   it('should initialize with correct rooms, movements, and cities from archive service', () => {
@@ -171,15 +171,15 @@ describe('AcquisitionComponent', () => {
     ]);
   });
 
-  it('should set up search subscription on ngOnInit', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((component as any).searchSubscription).toBeTruthy();
+  it('should set up search stream on ngOnInit', () => {
+    // searchSubscription was removed in favor of takeUntilDestroyed
+    expect((component as unknown as { search$: unknown }).search$).toBeTruthy();
   });
 
   describe('onCategoryChange', () => {
-    it('should update the category in newItem signal', () => {
+    it('should update the category in acquisitionForm', () => {
       component.onCategoryChange('music');
-      expect(component.newItem().category).toBe('music');
+      expect(component.acquisitionForm.get('category')?.value).toBe('music');
     });
 
     it('should clear bookSearchResults and albumSearchResults', () => {
@@ -198,22 +198,21 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should clear the room field when switching to a non-decor category', () => {
-      component.newItem.update((item) => ({
-        ...item,
+      component.acquisitionForm.patchValue({
         category: 'decor',
         room: 'living',
-      }));
+      });
 
       component.onCategoryChange('music');
-      expect(component.newItem().room).toBe('');
+      expect(component.acquisitionForm.get('room')?.value).toBe('');
 
       component.onCategoryChange('decor');
-      expect(component.newItem().room).toBe('');
+      expect(component.acquisitionForm.get('room')?.value).toBe('');
 
-      component.newItem.update((item) => ({ ...item, room: 'bedroom' }));
+      component.acquisitionForm.patchValue({ room: 'bedroom' });
 
       component.onCategoryChange('books');
-      expect(component.newItem().room).toBe('');
+      expect(component.acquisitionForm.get('room')?.value).toBe('');
     });
 
     it('should update filteredMovements based on the new category', () => {
@@ -344,17 +343,17 @@ describe('AcquisitionComponent', () => {
           kind: 'books#volumes',
           totalItems: 0,
           items: [],
-        }).pipe(delay(1100)),
+        }).pipe(delay(1600)),
       );
 
       const event = { target: { value: 'Slow Book' } } as unknown as Event;
       component.onNomenclatureChange(event);
       tick(600); // Trigger debounce
-      tick(1001); // Trigger timeout
+      tick(1501); // Trigger timeout
 
       expect(component.isSearchingBooks()).toBeFalse();
       expect(component.searchError()).toBe(
-        'API response exceeded 1.0 second threshold. Please proceed with manual entry.',
+        'API response exceeded 1.5s threshold. Please proceed with manual entry.',
       );
     }));
   });
@@ -433,17 +432,17 @@ describe('AcquisitionComponent', () => {
           data: null,
           error: null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }).pipe(delay(1100)) as any,
+        }).pipe(delay(1600)) as any,
       );
 
       const event = { target: { value: 'Slow Album' } } as unknown as Event;
       component.onNomenclatureChange(event);
       tick(600); // Trigger debounce
-      tick(1001); // Trigger timeout
+      tick(1501); // Trigger timeout
 
       expect(component.isSearchingMusic()).toBeFalse();
       expect(component.searchError()).toBe(
-        'API response exceeded 1.0 second threshold. Please proceed with manual entry.',
+        'API response exceeded 1.5s threshold. Please proceed with manual entry.',
       );
     }));
   });
@@ -468,14 +467,14 @@ describe('AcquisitionComponent', () => {
       component.selectedFile.set(new File([], 'test.jpg'));
     });
 
-    it('should update newItem with book details', () => {
+    it('should update acquisitionForm with book details', () => {
       component.selectBook(mockBook);
 
-      expect(component.newItem().name).toBe('The Great Gatsby');
-      expect(component.newItem().designer).toBe('F. Scott Fitzgerald');
-      expect(component.newItem().year).toBe(1925);
-      expect(component.newItem().image).toBe('https://example.com/gatsby.jpg');
-      expect(component.newItem().note).toBe('A classic novel.');
+      expect(component.acquisitionForm.get('name')?.value).toBe('The Great Gatsby');
+      expect(component.acquisitionForm.get('designer')?.value).toBe('F. Scott Fitzgerald');
+      expect(component.acquisitionForm.get('year')?.value).toBe(1925);
+      expect(component.acquisitionForm.get('image')?.value).toBe('https://example.com/gatsby.jpg');
+      expect(component.acquisitionForm.get('note')?.value).toBe('A classic novel.');
     });
 
     it('should set imagePreview', () => {
@@ -504,7 +503,7 @@ describe('AcquisitionComponent', () => {
         },
       };
       component.selectBook(bookWithoutImage);
-      expect(component.newItem().image).toBe('');
+      expect(component.acquisitionForm.get('image')?.value).toBe('');
       expect(component.imagePreview()).toBeNull();
     });
 
@@ -523,7 +522,7 @@ describe('AcquisitionComponent', () => {
         },
       };
       component.selectBook(bookWithoutDate);
-      expect(component.newItem().year).toBe(2024); // Year defaults to 2024 if not parsed from publishedDate
+      expect(component.acquisitionForm.get('year')?.value).toBe(new Date().getFullYear()); // Year defaults to current year if not parsed from publishedDate
     });
   });
 
@@ -542,15 +541,15 @@ describe('AcquisitionComponent', () => {
       component.selectedFile.set(new File([], 'test.jpg'));
     });
 
-    it('should update newItem with album details', () => {
+    it('should update acquisitionForm with album details', () => {
       component.selectDiscogsRelease(mockRelease);
 
-      expect(component.newItem().name).toBe('Album Title');
-      expect(component.newItem().designer).toBe('Artist Name');
-      expect(component.newItem().year).toBe(2000);
-      expect(component.newItem().image).toBe('http://example.com/album.jpg');
-      expect(component.newItem().note).toContain('Format: Vinyl, LP');
-      expect(component.newItem().note).toContain('Label: Awesome Records');
+      expect(component.acquisitionForm.get('name')?.value).toBe('Album Title');
+      expect(component.acquisitionForm.get('designer')?.value).toBe('Artist Name');
+      expect(component.acquisitionForm.get('year')?.value).toBe(2000);
+      expect(component.acquisitionForm.get('image')?.value).toBe('http://example.com/album.jpg');
+      expect(component.acquisitionForm.get('note')?.value).toContain('Format: Vinyl, LP');
+      expect(component.acquisitionForm.get('note')?.value).toContain('Label: Awesome Records');
     });
 
     it('should set imagePreview', () => {
@@ -571,7 +570,7 @@ describe('AcquisitionComponent', () => {
     it('should handle missing year gracefully', () => {
       const releaseWithoutYear: DiscogsRelease = { ...mockRelease, year: '' };
       component.selectDiscogsRelease(releaseWithoutYear);
-      expect(component.newItem().year).toBeUndefined();
+      expect(component.acquisitionForm.get('year')?.value).toBeUndefined();
     });
 
     it('should handle missing format/label gracefully', () => {
@@ -584,8 +583,8 @@ describe('AcquisitionComponent', () => {
         label: [],
       };
       component.selectDiscogsRelease(releaseMinimal);
-      expect(component.newItem().note).toContain('Format: N/A');
-      expect(component.newItem().note).toContain('Label: N/A');
+      expect(component.acquisitionForm.get('note')?.value).toContain('Format: N/A');
+      expect(component.acquisitionForm.get('note')?.value).toContain('Label: N/A');
     });
 
     it('should handle title without " - " separator', () => {
@@ -598,8 +597,8 @@ describe('AcquisitionComponent', () => {
         label: [],
       };
       component.selectDiscogsRelease(releaseSimpleTitle);
-      expect(component.newItem().name).toBe('Simple Album');
-      expect(component.newItem().designer).toBe('Unknown Artist');
+      expect(component.acquisitionForm.get('name')?.value).toBe('Simple Album');
+      expect(component.acquisitionForm.get('designer')?.value).toBe('Unknown Artist');
     });
   });
 
@@ -632,8 +631,7 @@ describe('AcquisitionComponent', () => {
 
       mockFileReader = fileReaderInstance as jasmine.SpyObj<FileReader>;
 
-      component.newItem.set({
-        ...component.newItem(),
+      component.acquisitionForm.patchValue({
         image: 'http://existing.com/image.jpg',
       });
     });
@@ -683,7 +681,7 @@ describe('AcquisitionComponent', () => {
       expect(component.selectedFile()).toBeNull();
     });
 
-    it('should clear newItem.image when a file is selected', () => {
+    it('should clear form image when a file is selected', () => {
       const testFile = new File([''], 'test.png', { type: 'image/png' });
       const mockFileList = new DataTransfer();
       mockFileList.items.add(testFile);
@@ -693,7 +691,7 @@ describe('AcquisitionComponent', () => {
 
       component.onFileSelected(event as Event);
 
-      expect(component.newItem().image).toBe('');
+      expect(component.acquisitionForm.get('image')?.value).toBe('');
     });
 
     it('should not do anything if no file is selected', () => {
@@ -706,12 +704,12 @@ describe('AcquisitionComponent', () => {
 
       expect(component.selectedFile()).toBeNull();
       expect(component.imagePreview()).toBeNull();
-      expect(component.newItem().image).toBe('http://existing.com/image.jpg'); // Should remain unchanged
+      expect(component.acquisitionForm.get('image')?.value).toBe('http://existing.com/image.jpg'); // Should remain unchanged
     });
   });
 
   describe('handleSubmit (Success Path)', () => {
-    const mockNewItem: Partial<CollectionItem> = {
+    const mockFormValue: Partial<CollectionItem> = {
       category: 'decor',
       name: 'Test Item',
       designer: 'Test Designer',
@@ -724,22 +722,22 @@ describe('AcquisitionComponent', () => {
     };
     const mockUploadedImageUrl = 'http://uploaded.com/image.jpg';
     const mockAddedItem: Partial<CollectionItem> = {
-      ...mockNewItem,
+      ...mockFormValue,
       id: '123',
       room: '',
       movementName: '',
     };
 
     beforeEach(() => {
-      component.newItem.set(mockNewItem);
+      component.acquisitionForm.patchValue(mockFormValue);
       mockArchiveService.uploadImage.and.resolveTo(mockUploadedImageUrl);
       mockArchiveService.addItem.and.resolveTo(mockAddedItem);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       spyOn(component as any, 'resetForm').and.callThrough();
     });
 
-    it('should not submit if newItem.name is empty', async () => {
-      component.newItem.set({ ...mockNewItem, name: '' });
+    it('should not submit if name is empty', async () => {
+      component.acquisitionForm.patchValue({ name: '' });
       await component.handleSubmit();
 
       expect(component.isSubmitting()).toBeFalse();
@@ -757,25 +755,22 @@ describe('AcquisitionComponent', () => {
       expect(component.isSubmitting()).toBeFalse();
     });
 
-    it('should call archive.uploadImage if selectedFile is present and no image URL in newItem', async () => {
+    it('should call archive.uploadImage if selectedFile is present and no image URL in form', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update((item) => ({ ...item, image: '' }));
+      component.acquisitionForm.patchValue({ image: '' });
 
       await component.handleSubmit();
 
       expect(mockArchiveService.uploadImage).toHaveBeenCalledWith(testFile);
       expect(mockArchiveService.addItem).toHaveBeenCalledWith({
-        ...mockNewItem,
+        ...mockFormValue,
         image: mockUploadedImageUrl,
       } as CollectionItem);
     });
 
-    it('should not call archive.uploadImage if newItem already has an image URL', async () => {
-      component.newItem.set({
-        ...mockNewItem,
-        image: 'http://existing.com/image.jpg',
-      });
+    it('should not call archive.uploadImage if form already has an image URL', async () => {
+      component.acquisitionForm.patchValue({ image: 'http://existing.com/image.jpg' });
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
 
@@ -783,20 +778,20 @@ describe('AcquisitionComponent', () => {
 
       expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
       expect(mockArchiveService.addItem).toHaveBeenCalledWith({
-        ...mockNewItem,
+        ...mockFormValue,
         image: 'http://existing.com/image.jpg',
       } as CollectionItem);
     });
 
     it('should not call archive.uploadImage if no selectedFile', async () => {
       component.selectedFile.set(null);
-      component.newItem.update((item) => ({ ...item, image: '' }));
+      component.acquisitionForm.patchValue({ image: '' });
 
       await component.handleSubmit();
 
       expect(mockArchiveService.uploadImage).not.toHaveBeenCalled();
       expect(mockArchiveService.addItem).toHaveBeenCalledWith({
-        ...mockNewItem,
+        ...mockFormValue,
         image:
           'https://images.unsplash.com/photo-1581553676106-de07185c7097?q=80&w=800',
       } as CollectionItem);
@@ -805,7 +800,7 @@ describe('AcquisitionComponent', () => {
     it('should call archive.addItem with the correct data (with uploaded image)', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update((item) => ({ ...item, image: '' }));
+      component.acquisitionForm.patchValue({ image: '' });
 
       await component.handleSubmit();
 
@@ -815,7 +810,7 @@ describe('AcquisitionComponent', () => {
 
     it('should call archive.addItem with the correct data (with existing image)', async () => {
       const existingImageUrl = 'http://existing.com/image.jpg';
-      component.newItem.set({ ...mockNewItem, image: existingImageUrl });
+      component.acquisitionForm.patchValue({ image: existingImageUrl });
       component.selectedFile.set(null);
 
       await component.handleSubmit();
@@ -825,7 +820,7 @@ describe('AcquisitionComponent', () => {
     });
 
     it('should call archive.addItem with default image if no image source', async () => {
-      component.newItem.update((item) => ({ ...item, image: '' }));
+      component.acquisitionForm.patchValue({ image: '' });
       component.selectedFile.set(null);
 
       await component.handleSubmit();
@@ -836,7 +831,7 @@ describe('AcquisitionComponent', () => {
   });
 
   describe('handleSubmit (Error Path)', () => {
-    const mockNewItem: Partial<CollectionItem> = {
+    const mockFormValue: Partial<CollectionItem> = {
       category: 'decor',
       name: 'Test Item',
       designer: 'Test Designer',
@@ -849,12 +844,12 @@ describe('AcquisitionComponent', () => {
     };
 
     beforeEach(() => {
-      component.newItem.set(mockNewItem);
+      component.acquisitionForm.patchValue(mockFormValue);
       mockArchiveService.uploadImage.and.resolveTo(
         'http://uploaded.com/image.jpg',
       );
       mockArchiveService.addItem.and.resolveTo({
-        ...mockNewItem,
+        ...mockFormValue,
         id: '123',
         room: '',
         movementName: '',
@@ -867,7 +862,7 @@ describe('AcquisitionComponent', () => {
     it('should handle error during image upload', async () => {
       const testFile = new File([''], 'upload.png', { type: 'image/png' });
       component.selectedFile.set(testFile);
-      component.newItem.update((item) => ({ ...item, image: '' }));
+      component.acquisitionForm.patchValue({ image: '' });
       mockArchiveService.uploadImage.and.rejectWith(new Error('Upload failed'));
 
       await component.handleSubmit();
@@ -914,7 +909,7 @@ describe('AcquisitionComponent', () => {
     let submitButton: HTMLButtonElement;
 
     beforeEach(() => {
-      component.newItem.set({
+      component.acquisitionForm.patchValue({
         category: 'decor',
         name: 'Valid Name',
         designer: 'Designer',
@@ -931,14 +926,14 @@ describe('AcquisitionComponent', () => {
       );
     });
 
-    it('should disable submit button when newItem.name is empty', () => {
-      component.newItem.update((item) => ({ ...item, name: '' }));
+    it('should disable submit button when name is empty', () => {
+      component.acquisitionForm.patchValue({ name: '' });
       fixture.detectChanges();
       expect(submitButton.disabled).toBeTrue();
     });
 
-    it('should enable submit button when newItem.name is not empty', () => {
-      component.newItem.update((item) => ({ ...item, name: 'Some Name' }));
+    it('should enable submit button when name is not empty', () => {
+      component.acquisitionForm.patchValue({ name: 'Some Name' });
       fixture.detectChanges();
       expect(submitButton.disabled).toBeFalse();
     });
@@ -949,9 +944,9 @@ describe('AcquisitionComponent', () => {
       expect(submitButton.disabled).toBeTrue();
     });
 
-    it('should enable submit button when isSubmitting is false and newItem.name is not empty', () => {
+    it('should enable submit button when isSubmitting is false and name is not empty', () => {
       component.isSubmitting.set(false);
-      component.newItem.update((item) => ({ ...item, name: 'Some Name' }));
+      component.acquisitionForm.patchValue({ name: 'Some Name' });
       fixture.detectChanges();
       expect(submitButton.disabled).toBeFalse();
     });
@@ -979,7 +974,7 @@ describe('AcquisitionComponent', () => {
 
     beforeEach(() => {
       mockArchiveService.collection.set([duplicateItem]);
-      component.newItem.set({
+      component.acquisitionForm.patchValue({
         name: 'Existing Item',
         designer: 'Existing Designer',
         category: 'decor',
@@ -1016,9 +1011,9 @@ describe('AcquisitionComponent', () => {
   });
 
   describe('Partial Saves (localStorage)', () => {
-    it('should save to localStorage when newItem changes', fakeAsync(() => {
+    it('should save to localStorage when form changes', fakeAsync(() => {
       const storageSpy = spyOn(localStorage, 'setItem');
-      component.newItem.update((item) => ({ ...item, name: 'Saved Name' }));
+      component.acquisitionForm.patchValue({ name: 'Saved Name' });
       fixture.detectChanges();
       tick(); // Let the effect run
 
@@ -1036,8 +1031,8 @@ describe('AcquisitionComponent', () => {
       const newFixture = TestBed.createComponent(AcquisitionComponent);
       const newComponent = newFixture.componentInstance;
       
-      expect(newComponent.newItem().name).toBe('Restored Item');
-      expect(newComponent.newItem().category).toBe('music');
+      expect(newComponent.acquisitionForm.get('name')?.value).toBe('Restored Item');
+      expect(newComponent.acquisitionForm.get('category')?.value).toBe('music');
     });
 
     it('should clear localStorage on resetForm', () => {
@@ -1050,7 +1045,7 @@ describe('AcquisitionComponent', () => {
 
   describe('resetForm', () => {
     beforeEach(() => {
-      component.newItem.set({
+      component.acquisitionForm.patchValue({
         category: 'music',
         name: 'Existing Name',
         designer: 'Existing Designer',
@@ -1075,8 +1070,8 @@ describe('AcquisitionComponent', () => {
       (component as any).resetForm();
     });
 
-    it('should reset newItem signal to default values', () => {
-      expect(component.newItem()).toEqual({
+    it('should reset acquisitionForm to default values', () => {
+      expect(component.acquisitionForm.getRawValue()).toEqual({
         category: 'decor',
         name: '',
         designer: '',
@@ -1127,10 +1122,10 @@ describe('AcquisitionComponent', () => {
       spyOn(searchSubject, 'next').and.callThrough();
     });
 
-    it('should update newItem name', () => {
+    it('should update name in form', () => {
       const event = { target: { value: 'Test Name' } } as unknown as Event;
       component.onNomenclatureChange(event);
-      expect(component.newItem().name).toBe('Test Name');
+      expect(component.acquisitionForm.get('name')?.value).toBe('Test Name');
     });
 
     it('should call search$.next with the query', fakeAsync(() => {

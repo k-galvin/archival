@@ -1,3 +1,14 @@
+/**
+ * Supabase Edge Function: Discogs Search
+ * 
+ * Provides a secure proxy to the Discogs API for music release searches.
+ * This function bypasses CORS restrictions and hides the Discogs API token from the client.
+ * 
+ * @request_body { "title": string } - The search query for the music release.
+ * @env_vars DISCOGS_TOKEN - Mandatory secret containing the Discogs API Personal Access Token.
+ * @returns {DiscogsResponse} - Array of search results directly from Discogs.
+ */
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
@@ -6,7 +17,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
-  // 2. Handle the browser's "preflight" OPTIONS request
+  // Handle the browser's "preflight" OPTIONS request
   if (req.method === 'OPTIONS') {
     return new Response('ok', {
       status: 200,
@@ -15,25 +26,23 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // 3. Extract the search term from the body
-    // Note: Angular must send { "title": "search-term" }
+    // Extract the search term from the body
     const { title } = await req.json();
     console.log(`Received search request for: "${title}"`);
 
-    // 4. Get your Discogs token from Supabase Secrets
+    // Retrieve Discogs token from Supabase Secrets
     const token = Deno.env.get('DISCOGS_TOKEN');
     if (!token) {
       console.error('Missing DISCOGS_TOKEN secret!');
       throw new Error('Server configuration error: Missing API Token.');
     }
 
-    // 5. Construct the Discogs API URL
-    // We limit to 5 results to keep the response fast for the Acquisition page
+    // Construct the Discogs API URL (limited to 5 results for UI performance)
     const url = `https://api.discogs.com/database/search?q=${encodeURIComponent(title)}&type=release&per_page=5`;
 
     console.log(`Fetching from Discogs: ${url}`);
 
-    // 6. Execute the fetch with mandatory Discogs headers
+    // Execute the fetch with mandatory Discogs headers (User-Agent is required by Discogs)
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'KateArchivalApp/1.0 (LMU Student Project)',
@@ -54,7 +63,7 @@ Deno.serve(async (req) => {
       `Discogs search successful. Found ${data.results?.length || 0} results.`,
     );
 
-    // 7. Return the data to Angular
+    // Return the data to the Angular client
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

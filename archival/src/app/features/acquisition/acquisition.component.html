@@ -8,7 +8,7 @@
     <div class="category-tabs">
       @for (category of categories; track category) {
         <button
-          [class.active]="newItem().category === category"
+          [class.active]="formValue()?.category === category"
           (click)="onCategoryChange(category)"
         >
           {{ category }}
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Form Details -->
-    <form (ngSubmit)="handleSubmit()" class="acquisition-form">
+    <form [formGroup]="acquisitionForm" (ngSubmit)="handleSubmit()" class="acquisition-form">
       <div class="form-grid">
         <!-- Identification Group -->
         <div class="field-group full-width">
@@ -80,9 +80,8 @@
             <input
               id="name"
               type="text"
-              [value]="newItem().name"
+              formControlName="name"
               (input)="onNomenclatureChange($event)"
-              name="name"
               placeholder="e.g. The Sun Also Rises"
               required
               autocomplete="off"
@@ -91,12 +90,12 @@
             @if (
               isSearchingBooks() ||
               bookSearchResults().length > 0 ||
-              (newItem().category === "books" && searchError())
+              (formValue()?.category === "books" && searchError())
             ) {
               <div class="search-results custom-scrollbar">
                 @if (isSearchingBooks()) {
                   <div class="result-item">Searching Books...</div>
-                } @else if (newItem().category === "books" && searchError()) {
+                } @else if (formValue()?.category === "books" && searchError()) {
                   <div class="result-item error-msg">{{ searchError() }}</div>
                 } @else {
                   @for (book of bookSearchResults(); track $index) {
@@ -123,7 +122,7 @@
                       </div>
                     </div>
                   } @empty {
-                    @if (newItem().name && newItem().category === "books") {
+                    @if (formValue()?.name && formValue()?.category === "books") {
                       <div class="result-item">No books found.</div>
                     }
                   }
@@ -134,12 +133,12 @@
             @if (
               isSearchingMusic() ||
               albumSearchResults().length > 0 ||
-              (newItem().category === "music" && searchError())
+              (formValue()?.category === "music" && searchError())
             ) {
               <div class="search-results custom-scrollbar">
                 @if (isSearchingMusic()) {
                   <div class="result-item">Searching Music...</div>
-                } @else if (newItem().category === "music" && searchError()) {
+                } @else if (formValue()?.category === "music" && searchError()) {
                   <div class="result-item error-msg">{{ searchError() }}</div>
                 } @else {
                   @for (album of albumSearchResults(); track album.id) {
@@ -161,7 +160,7 @@
                       </div>
                     </div>
                   } @empty {
-                    @if (newItem().name && newItem().category === "music") {
+                    @if (formValue()?.name && formValue()?.category === "music") {
                       <div class="result-item">
                         No albums found. Please check your Discogs token in the
                         environment file.
@@ -179,8 +178,7 @@
           <input
             id="year"
             type="number"
-            [(ngModel)]="newItem().year"
-            name="year"
+            formControlName="year"
             placeholder="1925"
             min="1000"
             [max]="currentYear"
@@ -194,15 +192,14 @@
           <input
             id="designer"
             type="text"
-            [(ngModel)]="newItem().designer"
-            name="designer"
+            formControlName="designer"
             placeholder="Marcel Breuer"
           />
         </div>
 
         <div class="field-group">
           <label class="archival-overline" for="origin">Origin</label>
-          <select id="origin" [(ngModel)]="newItem().origin" name="origin">
+          <select id="origin" formControlName="origin">
             <option value="">Select a city</option>
             @for (city of cities(); track city.id) {
               <option [value]="city.name">
@@ -213,10 +210,10 @@
         </div>
 
         <!-- Room Selection -->
-        @if (newItem().category === "decor") {
+        @if (formValue()?.category === "decor") {
           <div class="field-group">
             <label class="archival-overline" for="room">Assign Room</label>
-            <select id="room" [(ngModel)]="newItem().room" name="room">
+            <select id="room" formControlName="room">
               <option value="">Select Room</option>
               @for (room of rooms(); track room.id) {
                 <option [value]="room.id">{{ room.name }}</option>
@@ -232,8 +229,7 @@
           }}</label>
           <select
             id="movement"
-            [(ngModel)]="newItem().movementId"
-            name="movement"
+            formControlName="movementId"
           >
             <option value="">Select {{ movementLabel() }}</option>
             @for (movement of filteredMovements(); track movement.id) {
@@ -246,8 +242,7 @@
           <label class="archival-overline" for="note">Archivist Notes</label>
           <textarea
             id="note"
-            [(ngModel)]="newItem().note"
-            name="note"
+            formControlName="note"
             rows="3"
             placeholder="Condition details, historical context..."
           ></textarea>
@@ -271,7 +266,7 @@
         <button
           type="submit"
           class="submit-btn bg-accent"
-          [disabled]="isSubmitting() || !newItem().name || !isOnline()"
+          [disabled]="isSubmitting() || !formValue()?.name || !isOnline()"
         >
           {{ isSubmitting() ? "Integrating..." : "Register Record" }}
         </button>
@@ -307,8 +302,8 @@
           <span class="archival-overline text-accent">Potential Redundancy</span>
           <h3 class="modal-title">Duplicate Record Detected</h3>
           <p class="modal-subtitle">
-            An item with the name <strong>{{ newItem().name }}</strong> and
-            creator <strong>{{ newItem().designer }}</strong> already exists in
+            An item with the name <strong>{{ formValue()?.name }}</strong> and
+            creator <strong>{{ formValue()?.designer }}</strong> already exists in
             your archive. Do you wish to proceed with a secondary integration?
           </p>
         </div>

@@ -4,6 +4,11 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { ArchiveService } from '../services/archive.service';
 
+/**
+ * A functional guard that restricts access to private routes.
+ * It ensures the application has finished its initial auth check before deciding.
+ * If the user is authenticated, it allows access. Otherwise, it redirects to the landing page.
+ */
 export const privateGuard: CanActivateFn = async () => {
   const archiveService = inject(ArchiveService);
   const router = inject(Router);

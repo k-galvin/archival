@@ -26,6 +26,9 @@ import {
   ChartType,
 } from 'ng-apexcharts';
 
+/**
+ * Interface for ApexCharts Pie Chart configuration.
+ */
 export interface PieChartOptions {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
@@ -41,6 +44,14 @@ export interface PieChartOptions {
 
 import * as L from 'leaflet';
 
+/**
+ * InsightsComponent provides advanced data visualization and geographical analysis of the archive.
+ * Features include:
+ * - Geographical distribution map (Leaflet)
+ * - Temporal density analysis (SVG Area Chart)
+ * - Category-based provenance breakdown (ApexCharts)
+ * - Top designer/author leaderboard
+ */
 @Component({
   selector: 'app-insights',
   standalone: true,
@@ -52,12 +63,15 @@ import * as L from 'leaflet';
 export class InsightsComponent implements OnInit, AfterViewInit {
   private archive = inject(ArchiveService);
 
+  /** Reference to the DOM element where the Leaflet map will be initialized. */
   @ViewChild('mapContainer') mapElement!: ElementRef;
   private map: L.Map | null = null;
   private leafletReady = false;
 
   // --- Local UI State ---
+  /** Signal tracking the movement currently hovered in the taxonomy list. */
   hoveredMovement = signal<string | null>(null);
+  /** Signal tracking the data point currently hovered in the temporal chart. */
   hoveredPoint = signal<{
     decade: number;
     category: string;
@@ -72,6 +86,10 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
   // --- ApexCharts Options ---
 
+  /**
+   * Configuration for the origin distribution pie chart.
+   * Derives data from originCounts() computed signal.
+   */
   pieOptions = computed<Partial<PieChartOptions>>(() => {
     const data = this.originCounts();
     return {
@@ -110,6 +128,7 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   });
 
   // --- Static Metadata ---
+  /** Hardcoded descriptions for common stylistic movements if not provided by the DB. */
   MOVEMENT_DESCRIPTIONS: Record<string, string> = {
     bauhaus:
       'Rational, functional design from Germany (1919-1933) emphasizing geometric forms and the union of art and industry.',
@@ -124,10 +143,15 @@ export class InsightsComponent implements OnInit, AfterViewInit {
       'Broad movement emphasizing structural honesty and the rejection of traditional ornament.',
   };
 
+  /** Base colors for geographical markers. */
   ORIGIN_COLORS = ['#b9d3a4', '#1e3a8a', '#e9d5ff', '#fbcfe8', '#e0f2fe'];
 
   // --- Analytical Computeds ---
 
+  /**
+   * Groups the collection by origin and maps them to geographic coordinates.
+   * Only includes items whose origin matches a known city in the DB.
+   */
   mappedOrigins = computed(() => {
     const grouped: Record<
       string,
@@ -153,7 +177,8 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   });
 
   /**
-   * Returns all mapped origins sorted by item count with pie chart segment data and dynamic colors.
+   * Calculates percentages and dynamic HSL colors for the origin distribution chart.
+   * Sorts origins by item count descending.
    */
   originCounts = computed(() => {
     const origins = this.mappedOrigins()
@@ -183,6 +208,11 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     });
   });
 
+  /**
+   * Processes the collection into a time-series dataset grouped by decade and category.
+   * Generates SVG paths for area-chart visualization.
+   * Handles empty collections and invalid years gracefully.
+   */
   temporalData = computed(() => {
     const items = this.collection();
     const categories: string[] = ['decor', 'music', 'books', 'fashion'];
@@ -272,7 +302,8 @@ export class InsightsComponent implements OnInit, AfterViewInit {
   });
 
   /**
-   * Provenance Leaderboard - Top Designers/Authors/Artists
+   * Provenance Leaderboard: Top 5 designers/authors/artists in the archive.
+   * Excludes 'Unknown' or empty entries.
    */
   topDesigners = computed(() => {
     const counts: Record<string, number> = {};
@@ -305,6 +336,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
   // --- Map Initialization ---
 
+  /**
+   * Dynamically loads Leaflet CSS and JS from CDN if not already present.
+   */
   private loadLeafletAssets() {
     if (!document.getElementById('leaflet-css')) {
       const link = document.createElement('link');
@@ -328,6 +362,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Polls for Leaflet readiness and DOM availability before initializing the map.
+   */
   private checkLeafletReady() {
     if (this.leafletReady && this.mapElement) {
       this.initMap();
@@ -336,6 +373,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Initializes the Leaflet world map, loads global GeoJSON, and plots origin markers.
+   */
   private async initMap() {
     if (!this.mapElement || this.map) return;
 
@@ -398,6 +438,11 @@ export class InsightsComponent implements OnInit, AfterViewInit {
 
   // --- Helper Methods ---
 
+  /**
+   * Calculates the top 5 stylistic movements for a specific category.
+   * @param category The archival category to analyze.
+   * @returns Array of movements with relative density percentages.
+   */
   getTaxonomyCounts(category: string) {
     const items = this.collection().filter((i) => i.category === category);
     const counts: Record<string, number> = {};
@@ -421,6 +466,10 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     }));
   }
 
+  /**
+   * Retrieves a movement's description from the master list or fallback metadata.
+   * @param name Name of the movement.
+   */
   getMovementDescription(name: string): string {
     const movement = this.archive
       .movements()
@@ -435,6 +484,9 @@ export class InsightsComponent implements OnInit, AfterViewInit {
     );
   }
 
+  /**
+   * Utility for cycling through origin palette.
+   */
   getOriginColor(index: number): string {
     return this.ORIGIN_COLORS[index % this.ORIGIN_COLORS.length];
   }

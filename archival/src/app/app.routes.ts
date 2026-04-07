@@ -10,6 +10,12 @@ import { InsightsComponent } from './features/insights/insights.component';
 import { ChronologyComponent } from './features/chronology/chronology.component';
 import { ItemDetailComponent } from './features/item-detail/item-detail.component';
 
+/**
+ * The primary routing configuration for the Archival application.
+ * Routes are partitioned into:
+ * - Public routes: accessible only when logged out (Landing, Auth)
+ * - Private routes: accessible only when logged in (Gallery, Acquire, etc.)
+ */
 export const routes: Routes = [
   {
     path: '',
@@ -57,4 +63,3 @@ export const routes: Routes = [
     canActivate: [publicGuard],
   },
 ];
-

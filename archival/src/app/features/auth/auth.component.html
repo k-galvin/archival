@@ -21,7 +21,7 @@
     }
 
     <!-- Form -->
-    <form (ngSubmit)="handleSubmit()" class="auth-form">
+    <form [formGroup]="authForm" (ngSubmit)="handleSubmit()" class="auth-form">
       @if (!isLogin()) {
         <div class="field-group slide-down">
           <p class="auth-notice">
@@ -32,11 +32,8 @@
           <input
             id="name"
             type="text"
-            [(ngModel)]="authData.name"
-            name="name"
+            formControlName="name"
             placeholder="name / identifier"
-            required
-            [disabled]="archive.isLoggingIn()"
           />
         </div>
       }
@@ -46,19 +43,13 @@
         <input
           id="email"
           type="email"
-          [(ngModel)]="authData.email"
-          name="email"
+          formControlName="email"
           placeholder="email address"
-          required
-          [disabled]="archive.isLoggingIn()"
         />
         <input
           type="password"
-          [(ngModel)]="authData.password"
-          name="password"
+          formControlName="password"
           placeholder="passcode"
-          required
-          [disabled]="archive.isLoggingIn()"
         />
       </div>
 

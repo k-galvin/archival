@@ -5,6 +5,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ArchiveService } from '../../core/services/archive.service';
 import { CollectionItem } from '../../shared/models/archive.models';
 
+/**
+ * ItemDetailComponent
+ * Manages the detailed display of a single archival record, including its metadata,
+ * related items, and administrative functions like editing and deletion.
+ */
 @Component({
   selector: 'app-item-detail',
   standalone: true,
@@ -15,15 +20,27 @@ import { CollectionItem } from '../../shared/models/archive.models';
 export class ItemDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  /** Reference to the global ArchiveService for data operations. */
   public archive = inject(ArchiveService);
 
+  /** Signal containing the current archival item being viewed. */
   item = signal<CollectionItem | null>(null);
+
+  /** Signal containing a mutable partial copy of the item used during editing. */
   editableItem = signal<Partial<CollectionItem> | null>(null);
+
+  /** Signal indicating whether the component is in edit mode. */
   isEditing = signal(false);
+
+  /** Signal indicating whether the collection selection overlay is visible. */
   collectionPickerOpen = signal(false);
+
+  /** Signal indicating whether the deletion confirmation modal is visible. */
   deleteConfirmOpen = signal(false);
 
-  // Helper for detecting book/album covers
+  /**
+   * Helper for detecting if the item's image is a formatted cover from an external API (Google Books or Discogs).
+   */
   isFormattedCover = computed(() => {
     const current = this.item();
     if (!current) return false;
@@ -33,7 +50,9 @@ export class ItemDetailComponent implements OnInit {
     );
   });
 
-  // Filter movements based on the selected item's category
+  /**
+   * Filters historical movements based on the selected item's category (e.g., 'furniture' vs 'music').
+   */
   filteredMovements = computed(() => {
     const category = this.item()?.category;
     const allMovements = this.archive.movements();
@@ -41,12 +60,18 @@ export class ItemDetailComponent implements OnInit {
     return allMovements.filter((m) => m.category === category);
   });
 
+  /**
+   * Computes the appropriate semantic label for the 'movement' field based on the item's category.
+   */
   movementLabel = computed(() => {
     const category = this.item()?.category;
     if (category === 'books' || category === 'music') return 'Genre';
     return 'Movement';
   });
 
+  /**
+   * Computes the appropriate semantic label for the 'designer' field based on the item's category.
+   */
   designerLabel = computed(() => {
     const category = this.item()?.category;
     if (category === 'books') return 'Author';
@@ -54,7 +79,9 @@ export class ItemDetailComponent implements OnInit {
     return 'Designer';
   });
 
-  // Identify related items based on designer or movement
+  /**
+   * Identifies up to three related archival items based on shared designer/author or movement/genre.
+   */
   relatedItems = computed(() => {
     const currentItem = this.item();
     if (!currentItem) return [];
@@ -86,26 +113,51 @@ export class ItemDetailComponent implements OnInit {
   });
 
   // Image Edit State
+  /** Signal containing the locally selected image file for upload. */
   selectedFile = signal<File | null>(null);
+
+  /** Signal containing the base64 preview string for the selected image. */
   imagePreview = signal<string | null>(null);
+
+  /** Signal indicating whether a save or delete operation is in progress. */
   isSubmitting = signal(false);
+
+  /** Signal containing the latest error message from user interactions. */
   errorMessage = signal<string | null>(null);
+
+  /** Signal tracking the browser's connectivity status. */
   isOnline = this.archive.isOnline;
+
+  /** Signal indicating whether a duplicate record warning should be displayed. */
   showDuplicateWarning = signal(false);
 
+  /** The current calendar year for date validation. */
   currentYear = new Date().getFullYear();
 
-  // Getters for easy access in the template
+  /**
+   * Getter for archival rooms from the central service.
+   */
   get rooms() {
     return this.archive.rooms;
   }
+
+  /**
+   * Getter for user-defined collections from the central service.
+   */
   get userCollections() {
     return this.archive.userCollections;
   }
+
+  /**
+   * Getter for city/geographic data from the central service.
+   */
   get cities() {
     return this.archive.cities;
   }
 
+  /**
+   * Initializes the component by fetching the item ID from the route and locating the record.
+   */
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const itemId = params.get('id');
@@ -124,6 +176,9 @@ export class ItemDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Transitions the component into edit mode and prepares the mutable item copy.
+   */
   startEdit(): void {
     const current = this.item();
     if (!current) return;
@@ -163,6 +218,10 @@ export class ItemDetailComponent implements OnInit {
     this.isEditing.set(true);
   }
 
+  /**
+   * Handles local file selection for updating the archival photograph.
+   * @param event The file input change event.
+   */
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
@@ -184,6 +243,10 @@ export class ItemDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Validates and prepares the item updates for persistence.
+   * Checks for duplicates before proceeding.
+   */
   async saveEdit(): Promise<void> {
     const editable = this.editableItem();
     const original = this.item();
@@ -238,16 +301,25 @@ export class ItemDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Confirms the intent to create a duplicate record.
+   */
   async confirmDuplicate(): Promise<void> {
     this.showDuplicateWarning.set(false);
     this.isSubmitting.set(true);
     await this.processUpdate();
   }
 
+  /**
+   * Cancels the duplicate record creation.
+   */
   cancelDuplicate(): void {
     this.showDuplicateWarning.set(false);
   }
 
+  /**
+   * Orchestrates the persistence of item updates, including optional image uploads.
+   */
   private async processUpdate(): Promise<void> {
     const editable = this.editableItem();
     const original = this.item();
@@ -292,10 +364,16 @@ export class ItemDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Triggers the deletion confirmation modal.
+   */
   async deleteItem(): Promise<void> {
     this.deleteConfirmOpen.set(true);
   }
 
+  /**
+   * Performs the actual deletion via the ArchiveService and navigates back to the gallery.
+   */
   async confirmDelete(): Promise<void> {
     const currentItem = this.item();
     if (!currentItem) return;
@@ -305,14 +383,24 @@ export class ItemDetailComponent implements OnInit {
     this.router.navigate(['/gallery']);
   }
 
+  /**
+   * Dismisses the deletion confirmation modal.
+   */
   cancelDelete(): void {
     this.deleteConfirmOpen.set(false);
   }
 
+  /**
+   * Opens the collection assignment overlay.
+   */
   openCollectionPicker(): void {
     this.collectionPickerOpen.set(true);
   }
 
+  /**
+   * Assigns the current item to a curated collection.
+   * @param colId The ID of the target collection.
+   */
   addToCollection(colId: string): void {
     const currentItem = this.item();
     if (currentItem) {
