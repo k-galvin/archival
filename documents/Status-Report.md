@@ -1,5 +1,32 @@
 # Status Report: Archival Project
 
+## April 8, 2026
+
+### Work Completed
+
+- **Fixed issues with mobile responsiveness:**
+    - gallery searchbar cut off
+    - year next to item name on item details page cut off
+    - EST. XXXX text on the magazine spine not being centered on mobile
+    - blueprint map and room list unable to be hovered on mobile to view room contents
+    - automatic zoom in on login
+    - right side of page getting cut off
+    - album/book photos not getting full whitespace border
+    - footer taking up too much space
+- **Added more cities:** Added more cities to the list of choices for place of origin.
+- **Improved comments:** Added docustrings to functions and more comments explaining functionality.
+- **Made preliminary poster:** Created first draft of presentation poster for review.
+- **Created ABCDR slides and filmed presentation:** Made presentation slides and videos and uploaded them.
+- **Improved Documentation:** Added the comprehensive user manual and updated READMEs appropriately.
+
+### Challenges & Observations
+
+- **Testing across devices:** Behavior differed between mobile and desktop, even when using Chrome DevTools to simulate a mobile view on desktop. It required manually testing across devices to fix visual inconsistencies.
+
+### Next Steps
+
+- **Get Poster Approved:** Get poster approved or make necessary edits and then email to Masao for printing.
+
 ## March 25, 2026
 
 ### Work Completed
