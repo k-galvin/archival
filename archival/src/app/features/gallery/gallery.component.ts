@@ -89,21 +89,21 @@ export class GalleryComponent {
   filterOptions = computed(() => {
     const items = this.items();
     return {
-      category: ['all', ...new Set(items.map((i) => i.category))].sort(),
-      origin: ['all', ...new Set(items.map((i) => i.origin))].sort(),
+      category: ['all', ...[...new Set(items.map((i) => i.category))].sort()],
+      origin: ['all', ...[...new Set(items.map((i) => i.origin))].sort()],
       movement: [
         'all',
-        ...new Set(items.map((i) => i.movementName).filter((m) => !!m)),
-      ].sort(),
+        ...[...new Set(items.map((i) => i.movementName).filter((m) => !!m))].sort(),
+      ],
       era: [
         'all',
-        ...new Set(
+        ...[...new Set(
           items.map((i) => {
             const yr = i.year;
             return !yr ? 'unknown' : Math.floor(yr / 10) * 10 + 's';
           }),
-        ),
-      ].sort(),
+        )].sort(),
+      ],
     };
   });
 

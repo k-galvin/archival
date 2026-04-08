@@ -88,6 +88,14 @@ describe('GalleryComponent', () => {
     expect(itemElements.length).toBe(3);
   });
 
+  it('should have "all" at the top of all filter options', () => {
+    const options = component.filterOptions();
+    expect(options.category[0]).toBe('all');
+    expect(options.origin[0]).toBe('all');
+    expect(options.movement[0]).toBe('all');
+    expect(options.era[0]).toBe('all');
+  });
+
   it('should filter items by category', () => {
     component.setFilter('category', 'music');
     fixture.detectChanges();
