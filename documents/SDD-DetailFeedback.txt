@@ -1,0 +1,79 @@
+
+Documentation Feedback ~ Deliverable #4
+Software Design Document ~ Detailed Design
+CMSI 4072 Spring 2026
+==========================================
+
+DETAILED CLASS DESCRIPTIONS:
+   Strengths
+      This section provides concrete and well-scoped CSU descriptions
+         that align closely with the application’s core features.
+   Suggestions
+      The document could be strengthened by explicitly stating class
+         invariants or assumptions, such as synchronization guarantees or
+         required authentication state for certain operations.
+
+DETAILED INTERFACE DESCRIPTIONS:
+   Strengths
+      Interfaces between components and services are clearly described
+         in terms of data flow and control flow.
+   Suggestions
+      Error and timeout handling across subsystem boundaries could be
+         described more explicitly to reduce ambiguity in failure cases.
+
+DETAILED DATA STRUCTURE DESCRIPTIONS:
+   Strengths
+      This section clearly identifies the primary non-class data
+         structures used by the system, including database query results
+         and client-side persisted state.
+   Suggestions
+      Data structures are described at a high level. Listing key
+         fields, optional attributes, and constraints for the core item
+         record would improve completeness.
+
+DETAILED DESIGN DIAGRAMS:
+   Strengths
+      The inclusion of a state management diagram demonstrates
+         awareness of complex reactive behavior and global state flow,
+         which is appropriate for this application.
+   Suggestions
+      The diagrams provided in this section would benefit from brief
+         interpretive text describing what each diagram illustrates and
+         how it supports key design decisions.
+
+DATABASE DESIGN AND DESCRIPTION:
+   Strengths
+      The database design is clearly scoped and consistent with the
+         rest of the architecture. Use of an ER diagram, access strategy,
+         and explicit security measures demonstrates strong design rigor.
+   Suggestions
+      This section is largely complete.
+
+
+----------------------------------------------
+OVERALL ASSESSMENT:
+   Category                          Points
+   Class Descriptions:                  3 of  3
+   Interface Descriptions:              3 of  3
+   Data structure Descriptions:         1 of  1
+   Design diagrams:                     3 of  3
+   Database design/descriptions:        2 of  2    [this is a gimme]
+                                     ===========
+   Subtotal                            10 of 10
+   ------------------------------------------------------
+   Total Percentage:  10/10 = 100% which is an A-plus
+
+
+OVERALL EVALUATION
+==================
+As a detailed design–level SDD, this document is highly complete
+and close to implementation-ready. Sections 6.3.1 through 6.4
+demonstrate strong structure, clear responsibilities, and good
+alignment between architecture and technology choices.
+
+With modest enhancements to interface formalization and data
+structure specificity, this SDD would fully meet detailed design
+expectations for both waterfall review and agile execution.
+
+Great job as usual, Kate!  You have really done well with all of your
+documentation this semester.  Keep up the good work!
