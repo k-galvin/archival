@@ -1,5 +1,15 @@
 # Status Report: Archival Project
 
+## April 22, 2026
+
+### Work Completed
+
+- **Submitted poster for printing:** Completed last bit of work by emailing poster to Masao for printing so it can be presented at the Engineering Design Showcase.
+
+### Next Steps
+
+- **Present poster:** Present poster and finished project at Engineering Design Showcase.
+
 ## April 8, 2026
 
 ### Work Completed
