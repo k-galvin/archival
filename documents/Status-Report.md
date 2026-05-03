@@ -1,5 +1,11 @@
 # Status Report: Archival Project
 
+## May 6, 2026
+
+### Work Completed
+
+- **Poster Presentation:** Attended Engineering Design Showcase.
+
 ## April 22, 2026
 
 ### Work Completed
