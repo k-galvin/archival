@@ -108,11 +108,3 @@ If you encounter a persistent problem or have a feature request, please contact 
 - **Email**: katemgalvin@gmail.com
 
 ---
-
-## Appendix A: Glossary & Acronyms
-
-- **Archivist**: The user of the Archival system.
-- **Curation**: The act of organizing and maintaining a collection.
-- **Nomenclature**: The system of names used for your archival items.
-
----
