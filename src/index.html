@@ -10,10 +10,23 @@
     <meta name="theme-color" content="#000000" />
 
     <!-- iOS "Add to Home Screen" configuration -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Archival" />
     <link rel="apple-touch-icon" href="magazine.png" />
+    <script>
+      // Force remove deprecated meta tags if they are injected at runtime
+      (function() {
+        const removeDeprecated = () => {
+          const tags = document.querySelectorAll('meta[name="apple-mobile-web-app-capable"]');
+          tags.forEach(t => t.remove());
+        };
+        removeDeprecated();
+        // Also observe for any future injections
+        const observer = new MutationObserver(removeDeprecated);
+        observer.observe(document.head, { childList: true });
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>
